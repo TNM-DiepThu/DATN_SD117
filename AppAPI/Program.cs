@@ -1,3 +1,8 @@
+using AppData.data;
+using Bill.Serviece.Implements;
+using Bill.Serviece.Interfaces;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -15,6 +20,19 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+builder.Services.AddTransient<IThuongHieuServiece, ThuongHieuServiece>();
+builder.Services.AddTransient<IXuatSuServiece, XuatSuServiece>();
+builder.Services.AddTransient<ISanPhamServiece, SanPhamServiece>();
+builder.Services.AddTransient<IAnhServiece, AnhServiece>();
+builder.Services.AddTransient<IMauSacServiece, MauSacServiece>();
+builder.Services.AddTransient<ISizeServiece, SizeServiece>();
+builder.Services.AddTransient<IDanhMucServiece, DanhMucServiece>();
+builder.Services.AddTransient<IChatLieuServiece, ChatLieuServiece>();
+builder.Services.AddTransient<ISanPhamChiTietServiece, SanPhamChiTietServiece>();
+builder.Services.AddDbContext<MyDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MyCS"));
+});
 
 app.UseHttpsRedirection();
 
