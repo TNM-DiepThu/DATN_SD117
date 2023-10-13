@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AppData.model.SanPhamChiTiet>
+﻿@model IEnumerable<AppData.ViewModal.SanPhamChiTietVM.SanPhamChiTietViewModel>
 
 @{
     ViewData["Title"] = "GellAllSanPhamCT";
@@ -6,6 +6,7 @@
 
 <h1>GellAllSanPhamCT</h1>
 
+<p>
 <p>
     <a asp-action="CreateSanPhamCT">Create New</a> |
     <a asp-action="GellAllDanhMuc">Danh muc</a> |
@@ -15,6 +16,7 @@
     <a asp-action="GellAllSanPham">San Pham</a> |
     <a asp-action="GellAllAnh">Anh</a>
 </p>
+</p>
 <table class="table">
     <thead>
         <tr>
@@ -22,22 +24,22 @@
                 @Html.DisplayNameFor(model => model.Id)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IdDanhMuc)
+                @Html.DisplayNameFor(model => model.DanhMuc)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IDSP)
+                @Html.DisplayNameFor(model => model.TenSP)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IdChatLieu)
+                @Html.DisplayNameFor(model => model.ChatLieu)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IdMauSac)
+                @Html.DisplayNameFor(model => model.MauSac)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IdSize)
+                @Html.DisplayNameFor(model => model.Size)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IdAnh)
+                @Html.DisplayNameFor(model => model.Anh)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.MaSp)
@@ -64,22 +66,22 @@
                 @Html.DisplayFor(modelItem => item.Id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IdDanhMuc)
+                @Html.DisplayFor(modelItem => item.DanhMuc)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IDSP)
+                @Html.DisplayFor(modelItem => item.TenSP)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IdChatLieu)
+                @Html.DisplayFor(modelItem => item.ChatLieu)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IdMauSac)
+                @Html.DisplayFor(modelItem => item.MauSac)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IdSize)
+                @Html.DisplayFor(modelItem => item.Size)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IdAnh)
+                @Html.DisplayFor(modelItem => item.Anh)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.MaSp)
@@ -98,8 +100,8 @@
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("Details", "GellByIDSanPhamCT", new { id = item.Id }) |
-                    @Html.ActionLink("Delete", "DeleteSanPhamCT", new { ID = item.Id })
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
             </td>
         </tr>
 }
