@@ -1,5 +1,7 @@
-﻿using Bill.Serviece.Interfaces;
-using Bill.ViewModal.SanPhamVM;
+﻿using AppData.model;
+using Bill.Serviece.Implements;
+using Bill.Serviece.Interfaces;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,38 +12,26 @@ namespace AppAPI.Controllers
     public class AnhController : ControllerBase
     {
         private readonly IAnhServiece _anhsv;
-        public AnhController(IAnhServiece anhServiece)
+        public AnhController()
         {
-            _anhsv = anhServiece;
+            _anhsv = new AnhServiece();
         }
         [HttpGet("GetAll")]
 
-        public async Task<IActionResult> GetAllAsync()
+        public IEnumerable<Anh> GetAllAnh()
         {
-            var sp = await _anhsv.GetAll();
-            if (sp != null) return Ok(sp);
-            return BadRequest();
+            return _anhsv.GetAll();
         }
         [HttpPost("Create")]
-        public async Task<IActionResult> CreateUserAsync([FromBody] AnhVM p)
+        public bool CreateAnh(string name)
         {
-            var result = await _anhsv.Add(p);
-            return Ok(result);
-        }
-        [HttpDelete("Delete/{Id}")]
-
-        public async Task<IActionResult> DeleteAsync(Guid Id)
-        {
-            var result = await _anhsv.Del(Id);
-            return Ok(result);
-        }
-
-        [HttpPut("Update/{id}")]
-
-        public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] AnhVM p)
-        {
-            var result = await _anhsv.Edit(id, p);
-            return Ok(result);
+            Anh anh = new Anh()
+            {
+                Id = Guid.NewGuid(),
+                Connect = name,
+                status = 1,
+            };
+            return _anhsv.Add(anh);
         }
     }
 }

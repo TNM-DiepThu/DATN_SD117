@@ -1,7 +1,7 @@
 ﻿using AppData.data;
 using AppData.model;
 using Bill.Serviece.Interfaces;
-using Bill.ViewModal.SanPhamVM;
+
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,109 +14,117 @@ namespace Bill.Serviece.Implements
     public class SanPhamChiTietServiece : ISanPhamChiTietServiece
     {
         private readonly MyDbContext _context;
+        private readonly IMauSacServiece mausacservice;
+        private readonly IAnhServiece anhservice;
+        private readonly ISanPhamServiece sanphamservice;
+        private readonly ISizeServiece sizeservice;
+        private readonly IChatLieuServiece chatLieuServiece;
+        private readonly IDanhMucServiece danhmucservice;
+
+
         public SanPhamChiTietServiece()
         {
             _context = new MyDbContext();
+            mausacservice = new MauSacServiece();
+            anhservice = new AnhServiece();
+            sanphamservice = new SanPhamServiece();
+            sizeservice = new SizeServiece();
+            chatLieuServiece = new ChatLieuServiece();
+            danhmucservice = new DanhMucServiece();
         }
-        public async Task<bool> Add(ViewModal.SanPhamVM.SanPhamChiTietVM p)
+
+        public bool Add(SanPhamChiTiet p)
         {
             try
             {
-                var sp = new SanPhamChiTiet()
+                SanPhamChiTiet spct = new SanPhamChiTiet()
                 {
                     Id = Guid.NewGuid(),
-                    MaSp = p.MaSp,
-                    status = p.status,
-                    SoLuong = p.SoLuong,
+                    IdAnh = anhservice.GetAll().FirstOrDefault(c => c.Id == p.IdAnh).Id,
+                    IdChatLieu = chatLieuServiece.GetAll().FirstOrDefault(c => c.Id == p.IdChatLieu).Id,
+                    IdDanhMuc = danhmucservice.GetAll().FirstOrDefault(c => c.Id == p.IdDanhMuc).Id,
+                    IdMauSac = mausacservice.GetAll().FirstOrDefault(c => c.Id == p.IdMauSac).Id,
+                    IdSize = sizeservice.GetAll().FirstOrDefault(c => c.Id == p.IdSize).Id,
+                    IDSP = sanphamservice.GetAll().FirstOrDefault(c => c.Id == p.IDSP).Id,
                     GiaBan = p.GiaBan,
-                    MoTa = p.MoTa,
-                    IdAnh = p.IdAnh,
-                    IdMauSac = p.IdMauSac,
-                    IDSP = p.IDSP,
-                    IdSize = p.IdSize,
-                    IdChatLieu = p.IdChatLieu,
-                    IdDanhMuc = p.IdDanhMuc,
+                    SoLuong = p.SoLuong,
+                    status = 1,
+                    MaSp = p.MaSp,
+                    MoTa = p.MoTa
                 };
-                _context.Add(sp);
+                _context.sanPhamChiTiets.Add(p);
+                _context.SaveChanges();
+                return true;
+            } catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public bool Del(Guid id)
+        {
+            try
+            {
+                SanPhamChiTiet spct =  _context.sanPhamChiTiets.FirstOrDefault(c => c.Id == id);
+                if (spct != null) 
+                {
+
+                    spct.status = 0;
+   
+                };
+                _context.sanPhamChiTiets.Update(spct);
                 _context.SaveChanges();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
                 return false;
             }
         }
 
-        public async Task<bool> Del(Guid id)
-        {
-
-            try
-            {
-                var list = await _context.sanPhamChiTiets.ToListAsync();
-                var obj = list.FirstOrDefault(c => c.Id == id);
-                _context.sanPhamChiTiets.Remove(obj);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception)
-            {
-
-                return false;
-            }
-        }
-
-        public async Task<bool> Edit(Guid id, ViewModal.SanPhamVM.SanPhamChiTietVM p)
+        public bool Edit(Guid id, SanPhamChiTiet p)
         {
             try
             {
-                var listobj = await _context.sanPhamChiTiets.ToListAsync();
-                var obj = listobj.FirstOrDefault(c => c.Id == id);
-                obj.MaSp = p.MaSp;
-                obj.status = p.status;
-                obj.SoLuong = p.SoLuong;
-                obj.GiaBan = p.GiaBan;
-                obj.MoTa = p.MoTa;
-                obj.IdAnh = p.IdAnh;
-                obj.IdMauSac = p.IdMauSac;
-                obj.IDSP = p.IDSP;
-                obj.IdSize = p.IdSize;
-                obj.IdChatLieu = p.IdChatLieu;
-                obj.IdDanhMuc = p.IdDanhMuc;
-                _context.sanPhamChiTiets.Update(obj);
-                await _context.SaveChangesAsync();
+                SanPhamChiTiet spct = _context.sanPhamChiTiets.FirstOrDefault(c => c.Id == id);
+                if (spct == null) 
+                {
+
+                    spct.IdAnh = anhservice.GetAll().FirstOrDefault(c => c.Id == p.IdAnh).Id;
+                    spct.IdChatLieu = chatLieuServiece.GetAll().FirstOrDefault(c => c.Id == p.IdChatLieu).Id;
+                    spct.IdDanhMuc = danhmucservice.GetAll().FirstOrDefault(c => c.Id == p.IdDanhMuc).Id;
+                    spct.IdMauSac = mausacservice.GetAll().FirstOrDefault(c => c.Id == p.IdMauSac).Id;
+                    spct.IdSize = sizeservice.GetAll().FirstOrDefault(c => c.Id == p.IdSize).Id;
+                    spct.IDSP = sanphamservice.GetAll().FirstOrDefault(c => c.Id == p.IDSP).Id;
+                    spct.GiaBan = p.GiaBan;
+                    spct.SoLuong = p.SoLuong;
+                    spct.status = p.status;
+                    spct.MaSp = p.MaSp;
+                    spct.MoTa = p.MoTa;
+                };
+                _context.sanPhamChiTiets.Update(spct);
+                _context.SaveChanges();
                 return true;
-
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
                 return false;
             }
         }
 
-        public async Task<List<ViewModal.SanPhamVM.SanPhamChiTietVM>> GetAll()
+        public List<SanPhamChiTiet> GetAll()
         {
-            var list = await _context.sanPhamChiTiets.ToListAsync();
-            var listvm = new List<SanPhamChiTietVM>();
-            foreach (var item in list)
-            {
-                var sp = new SanPhamChiTietVM();
-                sp.Id = item.Id;
-                sp.MaSp = item.MaSp;
-                sp.status = item.status;
-                sp.SoLuong = item.SoLuong;
-                sp.GiaBan = item.GiaBan;
-                sp.MoTa = item.MoTa;
-                sp.IdAnh = item.IdAnh;
-                sp.IdMauSac = item.IdMauSac;
-                sp.IDSP = item.IDSP;
-                sp.IdSize   = item.IdSize;
-                sp.IdChatLieu = item.IdChatLieu;
-                sp.IdDanhMuc = item.IdDanhMuc;
-                listvm.Add(sp);
-            }
-            return listvm.ToList();
+            return _context.sanPhamChiTiets.ToList();
+        }
+
+        public SanPhamChiTiet GetByID(Guid id)
+        {
+            return _context.sanPhamChiTiets.FirstOrDefault(c => c.Id == id);
+        }
+
+        public SanPhamChiTiet GetByName(string name)
+        {
+            throw new NotImplementedException();
         }
     }
 }

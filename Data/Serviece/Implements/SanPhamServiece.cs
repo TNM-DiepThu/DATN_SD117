@@ -1,7 +1,7 @@
 ﻿using AppData.data;
 using AppData.model;
 using Bill.Serviece.Interfaces;
-using Bill.ViewModal.SanPhamVM;
+
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -14,87 +14,81 @@ namespace Bill.Serviece.Implements
     public class SanPhamServiece : ISanPhamServiece
     {
         private readonly MyDbContext _context;
+        private readonly IXuatSuServiece xuatxuservice;
+        private readonly IThuongHieuServiece thuongHieuServiece;
+
         public SanPhamServiece()
         {
             _context = new MyDbContext();
+            xuatxuservice = new XuatSuServiece();
+            thuongHieuServiece = new ThuongHieuServiece();
         }
-        public async Task<bool> Add(SanPhamvm p)
+
+        public bool Add(SanPham p)
         {
             try
             {
-                var sp = new SanPham()
+                SanPham sanpham = new SanPham()
                 {
                     Id = Guid.NewGuid(),
+                    IdThuongHieu = thuongHieuServiece.GetAll().FirstOrDefault(c => c.Id == p.IdThuongHieu).Id,
+                    IdXuatSu = xuatxuservice.GetAll().FirstOrDefault(c => c.Id == p.IdXuatSu).Id ,
                     TenSanPham = p.TenSanPham,
-                    status = p.status,
-                    IdThuongHieu = p.IdThuongHieu,
-                    IdXuatSu = p.IdXuatSu,
+                    status = 1
                 };
-                _context.Add(sp);
+                _context.sanPhams.Add(sanpham);
+                _context.SaveChanges();
+                return true;
+            }catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public bool Del(Guid id)
+        {
+            try
+            {
+                SanPham sanpham =_context.sanPhams.FirstOrDefault(c => c.Id == id);
+                if (sanpham != null) 
+                {
+                    sanpham.status = 0;
+                };
+                _context.sanPhams.Update(sanpham);
                 _context.SaveChanges();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
                 return false;
             }
         }
 
-        public async Task<bool> Del(Guid id)
+        public bool Edit(Guid id, SanPham p)
         {
             try
             {
-                var list = await _context.sanPhams.ToListAsync();
-                var obj = list.FirstOrDefault(c => c.Id == id);
-                _context.sanPhams.Remove(obj);
-                await _context.SaveChangesAsync();
+                SanPham sanpham = _context.sanPhams.FirstOrDefault(c => c.Id == id);
+                if (sanpham != null)
+                {
+                    sanpham.IdThuongHieu = xuatxuservice.GetAll().FirstOrDefault(c => c.Id == p.IdXuatSu).Id;
+                    sanpham.IdXuatSu = thuongHieuServiece.GetAll().FirstOrDefault(c => c.Id == p.IdThuongHieu).Id;
+                    sanpham.TenSanPham = p.TenSanPham;
+                    sanpham.status = p.status;
+                };
+                _context.sanPhams.Update(sanpham);
+                _context.SaveChanges();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
                 return false;
             }
         }
 
-        public async Task<bool> Edit(Guid id, SanPhamvm p)
+        public List<SanPham> GetAll()
         {
-            try
-            {
-                var listobj = await _context.sanPhams.ToListAsync();
-                var obj = listobj.FirstOrDefault(c => c.Id == id);
-                obj.TenSanPham = p.TenSanPham;
-                obj.status = p.status;
-                obj.IdThuongHieu = p.IdThuongHieu;
-                obj.IdXuatSu = p.IdXuatSu;
-                _context.sanPhams.Update(obj);
-                await _context.SaveChangesAsync();
-                return true;
-
-            }
-            catch (Exception)
-            {
-
-                return false;
-            }
-        }
-
-        public async Task<List<SanPhamvm>> GetAll()
-        {
-            var list = await _context.sanPhams.ToListAsync();
-            var listvm = new List<SanPhamvm>();
-            foreach (var item in list)
-            {
-                var sp = new SanPhamvm();
-                sp.Id = item.Id;
-                sp.TenSanPham = item.TenSanPham;
-                sp.status = item.status;
-                sp.IdXuatSu = item.IdXuatSu;
-                sp.IdThuongHieu = item.IdThuongHieu;
-                listvm.Add(sp);
-            }
-            return listvm.ToList();
+            return _context.sanPhams.ToList();
         }
     }
 }

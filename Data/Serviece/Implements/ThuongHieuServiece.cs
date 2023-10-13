@@ -1,7 +1,7 @@
 ﻿using AppData.data;
 using AppData.model;
 using Bill.Serviece.Interfaces;
-using Bill.ViewModal.SanPhamVM;
+
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -19,78 +19,67 @@ namespace Bill.Serviece.Implements
             _context = new MyDbContext();
         }
 
-        public async Task<bool> Add(ThuongHieuVM p)
+        public bool Add(ThuongHieu p)
         {
             try
             {
-                var thuonghieu = new ThuongHieu()
+                ThuongHieu thuonghieu = new ThuongHieu()
                 {
                     Id = Guid.NewGuid(),
                     TenThuongHieu = p.TenThuongHieu,
-                    Status = p.Status
+                    Status = 1
                 };
                 _context.Add(thuonghieu);
                 _context.SaveChanges();
                 return true;
-            }
-            catch (Exception)
+            } catch (Exception ex)
             {
-
                 return false;
             }
         }
 
-        public async Task<bool> Del(Guid id)
+        public bool Del(Guid id)
         {
             try
             {
-                var list = await _context.thuongHieus.ToListAsync();
-                var obj = list.FirstOrDefault(c => c.Id == id);
-                _context.thuongHieus.Remove(obj);
-                await _context.SaveChangesAsync();
+                ThuongHieu thuonghieu = _context.thuongHieus.FirstOrDefault(c => c.Id == id);
+                if(thuonghieu == null)
+                {
+                    thuonghieu.Status = 0;
+                };
+                _context.Update(thuonghieu);
+                _context.SaveChanges();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
                 return false;
             }
         }
 
-
-        public async Task<bool> Edit(Guid id, ThuongHieuVM p)
+        public bool Edit(Guid id, ThuongHieu p)
         {
             try
             {
-                var listobj = await _context.thuongHieus.ToListAsync();
-                var obj = listobj.FirstOrDefault(c => c.Id == id);
-                obj.TenThuongHieu = p.TenThuongHieu;
-                obj.Status = p.Status;
-                _context.thuongHieus.Update(obj);
-                await _context.SaveChangesAsync();
+                ThuongHieu thuonghieu = _context.thuongHieus.FirstOrDefault(c => c.Id == id);
+                if (thuonghieu == null)
+                {
+                    thuonghieu.TenThuongHieu = p.TenThuongHieu;
+                    thuonghieu.Status = p.Status;
+                };
+                _context.Update(thuonghieu);
+                _context.SaveChanges();
                 return true;
-
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
                 return false;
             }
         }
 
-        public async Task<List<ThuongHieuVM>> GetAll()
+        public List<ThuongHieu> GetAll()
         {
-            var list = await _context.thuongHieus.ToListAsync();
-            var listvm = new List<ThuongHieuVM>();
-            foreach (var item in list)
-            {
-                var thuonghieu = new ThuongHieuVM();
-                thuonghieu.Id = item.Id;
-                thuonghieu.TenThuongHieu=item.TenThuongHieu;
-                thuonghieu.Status = item.Status;
-                listvm.Add(thuonghieu);
-            }
-            return listvm.ToList();
+            return _context.thuongHieus.ToList();
         }
     }
 }

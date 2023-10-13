@@ -1,7 +1,7 @@
 ﻿using AppData.data;
 using AppData.model;
 using Bill.Serviece.Interfaces;
-using Bill.ViewModal.SanPhamVM;
+
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -18,77 +18,68 @@ namespace Bill.Serviece.Implements
         {
             _context = new MyDbContext();
         }
-        public async Task<bool> Add(XuatSuVM p)
+
+        public bool Add(XuatSu p)
         {
             try
             {
-                var xuatSu = new XuatSu()
+                XuatSu xuatxu = new XuatSu()
                 {
                     Id = Guid.NewGuid(),
                     TenXuatSu = p.TenXuatSu,
-                    Status = p.Status
+                    Status = 1
                 };
-                _context.Add(xuatSu);
+                _context.xuatSus.Add(xuatxu);
+                _context.SaveChanges();
+                return true;
+            }catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public bool Del(Guid id)
+        {
+            try
+            {
+                XuatSu xuatxu = _context.xuatSus.FirstOrDefault(c => c.Id == id);
+                if (xuatxu == null) 
+                {
+                    xuatxu.Status = 0;
+                };
+                _context.xuatSus.Update(xuatxu);
                 _context.SaveChanges();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
                 return false;
             }
         }
 
-        public async Task<bool> Del(Guid id)
+        public bool Edit(Guid id, XuatSu p)
         {
             try
             {
-                var list = await _context.xuatSus.ToListAsync();
-                var obj = list.FirstOrDefault(c => c.Id == id);
-                _context.xuatSus.Remove(obj);
-                await _context.SaveChangesAsync();
+                XuatSu xuatxu = _context.xuatSus.FirstOrDefault(c => c.Id == id);
+                if (xuatxu == null)
+                {
+                    xuatxu.TenXuatSu = p.TenXuatSu;
+                    xuatxu.Status = p.Status;
+                };
+                _context.xuatSus.Update(xuatxu);
+                _context.SaveChanges();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
                 return false;
             }
         }
 
-        public async Task<bool> Edit(Guid id, XuatSuVM p)
+        public List<XuatSu> GetAll()
         {
-            try
-            {
-                var listobj = await _context.xuatSus.ToListAsync();
-                var obj = listobj.FirstOrDefault(c => c.Id == id);
-                obj.TenXuatSu = p.TenXuatSu;
-                obj.Status = p.Status;
-                _context.xuatSus.Update(obj);
-                await _context.SaveChangesAsync();
-                return true;
-
-            }
-            catch (Exception)
-            {
-
-                return false;
-            }
-        }
-
-        public async Task<List<XuatSuVM>> GetAll()
-        {
-            var list = await _context.xuatSus.ToListAsync();
-            var listvm = new List<XuatSuVM>();
-            foreach (var item in list)
-            {
-                var xuatsu = new XuatSuVM();
-                xuatsu.Id = item.Id;
-                xuatsu.TenXuatSu = item.TenXuatSu;
-                xuatsu.Status = item.Status;
-                listvm.Add(xuatsu);
-            }
-            return listvm.ToList();
+            return _context.xuatSus.ToList();
         }
     }
 }

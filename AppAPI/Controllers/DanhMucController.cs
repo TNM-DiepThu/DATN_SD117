@@ -1,5 +1,7 @@
-﻿using Bill.Serviece.Interfaces;
-using Bill.ViewModal.SanPhamVM;
+﻿using AppData.model;
+using Bill.Serviece.Implements;
+using Bill.Serviece.Interfaces;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,38 +12,43 @@ namespace AppAPI.Controllers
     public class DanhMucController : ControllerBase
     {
         private readonly IDanhMucServiece _danhmucsv;
-        public DanhMucController(IDanhMucServiece x)
+        public DanhMucController()
         {
-            _danhmucsv = x;
+            _danhmucsv = new DanhMucServiece();
         }
         [HttpGet("GetAll")]
 
-        public async Task<IActionResult> GetAllAsync()
+        public  IEnumerable<DanhMuc> GetAllDanhMuc()
         {
-            var sp = await _danhmucsv.GetAll();
-            if (sp != null) return Ok(sp);
-            return BadRequest();
+            return _danhmucsv.GetAll();
         }
         [HttpPost("Create")]
-        public async Task<IActionResult> CreateUserAsync([FromBody] DanhMucVM p)
+        public bool CreateDanhMuc(string name)
         {
-            var result = await _danhmucsv.Add(p);
-            return Ok(result);
-        }
-        [HttpDelete("Delete/{Id}")]
-
-        public async Task<IActionResult> DeleteAsync(Guid Id)
-        {
-            var result = await _danhmucsv.Del(Id);
-            return Ok(result);
+            DanhMuc danh = new DanhMuc()
+            {
+                Id = Guid.NewGuid(),
+                TenDanhMuc = name,
+                status = 1 ,
+            };
+            return _danhmucsv.Add(danh);
         }
 
-        [HttpPut("Update/{id}")]
-
-        public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] DanhMucVM p)
+        [HttpPut("[action]")]
+        public bool UpdateDanhMuc(Guid id , string name , int status)
         {
-            var result = await _danhmucsv.Edit(id, p);
-            return Ok(result);
+           DanhMuc danh = _danhmucsv.GetAll().FirstOrDefault(x => x.Id == id);
+            if (danh != null)
+            {
+                danh.TenDanhMuc = name;
+                danh.status = status;
+            }
+            return _danhmucsv.Edit(id, danh);
+        }
+        [HttpPut("[action]")]
+        public bool Delete(Guid id)
+        {
+            return _danhmucsv.Del(id);
         }
     }
 }

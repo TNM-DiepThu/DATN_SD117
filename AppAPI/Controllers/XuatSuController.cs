@@ -1,5 +1,7 @@
-﻿using Bill.Serviece.Interfaces;
-using Bill.ViewModal.SanPhamVM;
+﻿using AppData.model;
+using Bill.Serviece.Implements;
+using Bill.Serviece.Interfaces;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,38 +12,33 @@ namespace AppAPI.Controllers
     public class XuatSuController : ControllerBase
     {
         private readonly IXuatSuServiece _xuatsusv;
-        public XuatSuController(IXuatSuServiece xuatSuServiece)
+        public XuatSuController()
         {
-            _xuatsusv = xuatSuServiece;
+            _xuatsusv = new XuatSuServiece();
         }
         [HttpGet("GetAll")]
 
-        public async Task<IActionResult> GetAllAsync()
+        public IEnumerable<XuatSu> GetAllAsync()
         {
-            var xuatsu = await _xuatsusv.GetAll();
-            if (xuatsu != null) return Ok(xuatsu);
-            return BadRequest();
+            return _xuatsusv.GetAll();
         }
         [HttpPost("Create")]
-        public async Task<IActionResult> CreateUserAsync([FromBody] XuatSuVM p)
+        public bool CreateAsync(string name)
         {
-            var result = await _xuatsusv.Add(p);
-            return Ok(result);
+           XuatSu xx = new XuatSu()
+           {
+               Id = Guid.NewGuid(),
+               TenXuatSu = name,
+               Status = 1 ,
+           };
+            return _xuatsusv.Add(xx);
         }
-        [HttpDelete("Delete/{Id}")]
+        [HttpPut("Delete/{Id}")]
 
-        public async Task<IActionResult> DeleteAsync(Guid Id)
+        public bool DeleteAsync(Guid Id)
         {
-            var result = await _xuatsusv.Del(Id);
-            return Ok(result);
+            return _xuatsusv.Del(Id);
         }
 
-        [HttpPut("Update/{id}")]
-
-        public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] XuatSuVM p)
-        {
-            var result = await _xuatsusv.Edit(id, p);
-            return Ok(result);
-        }
     }
 }

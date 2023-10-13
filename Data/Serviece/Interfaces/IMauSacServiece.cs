@@ -1,4 +1,6 @@
-﻿using Bill.ViewModal.SanPhamVM;
+﻿using AppData.model;
+
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +11,9 @@ namespace Bill.Serviece.Interfaces
 {
     public interface IMauSacServiece
     {
-        public Task<bool> Add(MauSacVM p);
-        public Task<List<MauSacVM>> GetAll();
-        public Task<bool> Del(Guid id);
-        public Task<bool> Edit(Guid id, MauSacVM p);
+        public bool Add(MauSac p);
+        public List<MauSac> GetAll();
+        public bool Del(Guid id);
+        public bool Edit(Guid id, MauSac p);
     }
 }

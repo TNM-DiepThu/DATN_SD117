@@ -49,7 +49,7 @@ namespace AppData.data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS;Database=DB_SD_117;Trusted_Connection=True;TrustServerCertificate=True");
+                optionsBuilder.UseSqlServer("Data Source=WINDOWS10\\SQLEXPRESS;Initial Catalog=DATN_FALL2023;Integrated Security=True");
             }
         }
         

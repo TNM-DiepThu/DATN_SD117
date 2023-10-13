@@ -1,7 +1,7 @@
 ﻿using AppData.data;
 using AppData.model;
 using Bill.Serviece.Interfaces;
-using Bill.ViewModal.SanPhamVM;
+
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -18,78 +18,68 @@ namespace Bill.Serviece.Implements
         {
             _context = new MyDbContext();
         }
-        public async Task<bool> Add(SizeVM p)
+
+        public bool Add(Size p)
         {
             try
             {
-                var anh = new Size()
+                Size size = new Size()
                 {
                     Id = Guid.NewGuid(),
                     SizeName = p.SizeName,
-                    status = p.status
+                    status = 1,
                 };
-                _context.Add(anh);
+                _context.sizes.Add(size);
+                _context.SaveChanges();
+                return true;
+            } catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public bool Del(Guid id)
+        {
+            try
+            {
+                Size size = _context.sizes.FirstOrDefault(x => x.Id == id);
+                if (size != null) 
+                {
+                    size.status = 0;
+                };
+                _context.sizes.Update(size);
                 _context.SaveChanges();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
                 return false;
             }
         }
 
-        public async Task<bool> Del(Guid id)
+        public bool Edit(Guid id, Size p)
         {
             try
             {
-                var list = await _context.sizes.ToListAsync();
-                var obj = list.FirstOrDefault(c => c.Id == id);
-                _context.sizes.Remove(obj);
-                await _context.SaveChangesAsync();
+                Size size = _context.sizes.FirstOrDefault(x => x.Id == id);
+                if (size != null)
+                {
+                    size.SizeName = p.SizeName;
+                    size.status = p.status;
+                };
+                _context.sizes.Update(size);
+                _context.SaveChanges();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
                 return false;
             }
         }
 
-        public async Task<bool> Edit(Guid id, SizeVM p)
+        public List<Size> GetAll()
         {
-            try
-            {
-                var listobj = await _context.sizes.ToListAsync();
-                var obj = listobj.FirstOrDefault(c => c.Id == id);
-                obj.SizeName = p.SizeName;
-                obj.status = p.status;
-
-                _context.sizes.Update(obj);
-                await _context.SaveChangesAsync();
-                return true;
-
-            }
-            catch (Exception)
-            {
-
-                return false;
-            }
-        }
-
-        public async Task<List<SizeVM>> GetAll()
-        {
-            var list = await _context.sizes.ToListAsync();
-            var listvm = new List<SizeVM>();
-            foreach (var item in list)
-            {
-                var x = new SizeVM();
-                x.Id = item.Id;
-                x.SizeName = item.SizeName;
-                x.status = item.status;
-                listvm.Add(x);
-            }
-            return listvm.ToList();
+            return _context.sizes.ToList();
         }
     }
 }

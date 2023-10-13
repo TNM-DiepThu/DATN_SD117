@@ -1,5 +1,7 @@
-﻿using Bill.Serviece.Interfaces;
-using Bill.ViewModal.SanPhamVM;
+﻿using AppData.model;
+using Bill.Serviece.Implements;
+using Bill.Serviece.Interfaces;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,37 +12,39 @@ namespace AppAPI.Controllers
     public class SizeController : ControllerBase
     {
         private readonly ISizeServiece _sizesv;
-        public SizeController(ISizeServiece a)
+        public SizeController()
         {
-            _sizesv = a;
+            _sizesv = new SizeServiece();
         }
         [HttpGet("GetAll")]
 
-        public async Task<IActionResult> GetAllAsync()
+        public  IEnumerable<Size> GetAllSize()
         {
-            var sp = await _sizesv.GetAll();
-            if (sp != null) return Ok(sp);
-            return BadRequest();
+            return _sizesv.GetAll();
         }
         [HttpPost("Create")]
-        public async Task<IActionResult> CreateUserAsync([FromBody] SizeVM p)
+        public bool  CreateAsync(string size)
         {
-            var result = await _sizesv.Add(p);
-            return Ok(result);
+            Size size1 = new Size()
+            {
+                Id = Guid.NewGuid(),
+                SizeName = size,
+                status = 1,
+            };
+            return _sizesv.Add(size1);
         }
-        [HttpDelete("Delete/{Id}")]
+        [HttpPut("Delete/{Id}")]
 
-        public async Task<IActionResult> DeleteAsync(Guid Id)
+        public bool DeleteSize(Guid Id)
         {
-            var result = await _sizesv.Del(Id);
-            return Ok(result);
+            return _sizesv.Del(Id);
         }
 
         [HttpPut("Update/{id}")]
 
-        public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] SizeVM p)
+        public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] Size p)
         {
-            var result = await _sizesv.Edit(id, p);
+            var result =  _sizesv.Edit(id, p);
             return Ok(result);
         }
     }

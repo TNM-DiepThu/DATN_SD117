@@ -1,5 +1,6 @@
-﻿using Bill.Serviece.Interfaces;
-using Bill.ViewModal.SanPhamVM;
+﻿using AppData.model;
+using Bill.Serviece.Implements;
+using Bill.Serviece.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,38 +11,34 @@ namespace AppAPI.Controllers
     public class MauSacController : ControllerBase
     {
         private readonly IMauSacServiece _mausacsv;
-        public MauSacController(IMauSacServiece mau)
+        public MauSacController()
         {
-            _mausacsv = mau;
+            _mausacsv = new MauSacServiece();
         }
+
         [HttpGet("GetAll")]
-
-        public async Task<IActionResult> GetAllAsync()
+        public IEnumerable<MauSac> GetAllMauSac()
         {
-            var sp = await _mausacsv.GetAll();
-            if (sp != null) return Ok(sp);
-            return BadRequest();
+            return _mausacsv.GetAll();
         }
+
         [HttpPost("Create")]
-        public async Task<IActionResult> CreateUserAsync([FromBody] MauSacVM p)
+        public bool CreaterAsync(string name)
         {
-            var result = await _mausacsv.Add(p);
-            return Ok(result);
-        }
-        [HttpDelete("Delete/{Id}")]
-
-        public async Task<IActionResult> DeleteAsync(Guid Id)
-        {
-            var result = await _mausacsv.Del(Id);
-            return Ok(result);
+            MauSac mau = new MauSac()
+            {
+                Id = Guid.NewGuid(),
+                TenMauSac = name,
+                status = 1,
+            };
+            return _mausacsv.Add(mau);
         }
 
-        [HttpPut("Update/{id}")]
-
-        public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] MauSacVM p)
+        [HttpPut("Deltete/{id}")]
+        public bool DeleteAsync(Guid Id)
         {
-            var result = await _mausacsv.Edit(id, p);
-            return Ok(result);
+            return  _mausacsv.Del(Id);
+            
         }
     }
 }

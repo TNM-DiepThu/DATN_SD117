@@ -1,7 +1,6 @@
 ﻿using AppData.data;
 using AppData.model;
 using Bill.Serviece.Interfaces;
-using Bill.ViewModal.SanPhamVM;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -18,79 +17,68 @@ namespace Bill.Serviece.Implements
         {
             _context = new MyDbContext();
         }
-        public async Task<bool> Add(MauSacVM p)
+
+        public bool Add(MauSac p)
         {
             try
             {
-                var anh = new MauSac()
+                MauSac mauSac = new MauSac()
                 {
                     Id = Guid.NewGuid(),
                     TenMauSac = p.TenMauSac,
-                    status = p.status
+                    status = 1
                 };
-                _context.Add(anh);
+                _context.Add(mauSac);
+                _context.SaveChanges();
+                return true;
+            } catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public bool Del(Guid id)
+        {
+            try
+            {
+                MauSac mauSac = _context.mauSacs.FirstOrDefault(c => c.Id == id);
+                if (mauSac != null) 
+                {
+                    mauSac.status = 0;
+                };
+                _context.mauSacs.Update(mauSac);
                 _context.SaveChanges();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
                 return false;
             }
         }
 
-        public async Task<bool> Del(Guid id)
-        {
-
-            try
-            {
-                var list = await _context.mauSacs.ToListAsync();
-                var obj = list.FirstOrDefault(c => c.Id == id);
-                _context.mauSacs.Remove(obj);
-                await _context.SaveChangesAsync();
-                return true;
-            }
-            catch (Exception)
-            {
-
-                return false;
-            }
-        }
-
-        public async Task<bool> Edit(Guid id, MauSacVM p)
+        public bool Edit(Guid id, MauSac p)
         {
             try
             {
-                var listobj = await _context.mauSacs.ToListAsync();
-                var obj = listobj.FirstOrDefault(c => c.Id == id);
-                obj.TenMauSac = p.TenMauSac;
-                obj.status = p.status;
-
-                _context.mauSacs.Update(obj);
-                await _context.SaveChangesAsync();
+                MauSac mauSac = _context.mauSacs.FirstOrDefault(c => c.Id == id);
+                if (mauSac != null)
+                {
+                    mauSac.TenMauSac = p.TenMauSac;
+                    mauSac.status = p.status;
+                };
+                _context.mauSacs.Update(mauSac);
+                _context.SaveChanges();
                 return true;
-
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
                 return false;
             }
         }
 
-        public async Task<List<MauSacVM>> GetAll()
+        public List<MauSac> GetAll()
         {
-            var list = await _context.mauSacs.ToListAsync();
-            var listvm = new List<MauSacVM>();
-            foreach (var item in list)
-            {
-                var x = new MauSacVM();
-                x.Id = item.Id;
-                x.TenMauSac = item.TenMauSac;
-                x.status = item.status;
-                listvm.Add(x);
-            }
-            return listvm.ToList();
+            return _context.mauSacs.ToList();
         }
     }
 }

@@ -1,5 +1,7 @@
-﻿using Bill.Serviece.Interfaces;
-using Bill.ViewModal.SanPhamVM;
+﻿using AppData.model;
+using Bill.Serviece.Implements;
+using Bill.Serviece.Interfaces;
+
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,38 +12,39 @@ namespace AppAPI.Controllers
     public class SanphamController : ControllerBase
     {
         private readonly ISanPhamServiece _sanphamsv;
-        public SanphamController(ISanPhamServiece sanPhamServiece)
+        private readonly IThuongHieuServiece _th;
+        private readonly IXuatSuServiece _xx;
+        public SanphamController()
         {
-            _sanphamsv = sanPhamServiece;
+            _sanphamsv = new SanPhamServiece();
+            _th = new ThuongHieuServiece();
+            _xx = new XuatSuServiece();
         }
         [HttpGet("GetAll")]
 
-        public async Task<IActionResult> GetAllAsync()
+        public IEnumerable<SanPham> GetAllSanPham()
         {
-            var sp = await _sanphamsv.GetAll();
-            if (sp != null) return Ok(sp);
-            return BadRequest();
+            return _sanphamsv.GetAll();
         }
         [HttpPost("Create")]
-        public async Task<IActionResult> CreateUserAsync([FromBody] SanPhamvm p)
+        public bool CreateSanPham(string tensp , Guid idth , Guid idxx)
         {
-            var result = await _sanphamsv.Add(p);
-            return Ok(result);
+            SanPham sp = new SanPham()
+            {
+                Id = Guid.NewGuid(),
+                TenSanPham = tensp,
+                IdThuongHieu = _th.GetAll().FirstOrDefault(c => c.Id == idth).Id,
+                IdXuatSu = _xx.GetAll().FirstOrDefault(c => c.Id == idxx).Id,
+                status = 1 ,
+            };
+            return _sanphamsv.Add(sp);
         }
-        [HttpDelete("Delete/{Id}")]
+        [HttpPut("Delete/{Id}")]
 
-        public async Task<IActionResult> DeleteAsync(Guid Id)
+        public bool DeleteAsync(Guid Id)
         {
-            var result = await _sanphamsv.Del(Id);
-            return Ok(result);
+            return _sanphamsv.Del(Id);
         }
 
-        [HttpPut("Update/{id}")]
-
-        public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] SanPhamvm p)
-        {
-            var result = await _sanphamsv.Edit(id, p);
-            return Ok(result);
-        }
     }
 }

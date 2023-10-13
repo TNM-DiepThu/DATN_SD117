@@ -1,4 +1,5 @@
-﻿using Bill.ViewModal.SanPhamVM;
+﻿using AppData.model;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace Bill.Serviece.Interfaces
 {
     public interface IThuongHieuServiece
     {
-        public Task<bool> Add(ThuongHieuVM p);
-        public Task<List<ThuongHieuVM>> GetAll();
-        public Task<bool> Del(Guid id);
-        public Task<bool> Edit(Guid id,ThuongHieuVM p);
+        public bool Add(ThuongHieu p);
+        public List<ThuongHieu> GetAll();
+        public bool Del(Guid id);
+        public bool Edit(Guid id, ThuongHieu p);
 
     }
 }

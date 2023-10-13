@@ -1,7 +1,6 @@
 ﻿using AppData.data;
 using AppData.model;
 using Bill.Serviece.Interfaces;
-using Bill.ViewModal.SanPhamVM;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -18,78 +17,72 @@ namespace Bill.Serviece.Implements
         {
             _context = new MyDbContext();
         }
-        public async Task<bool> Add(ChatLieuVM p)
+
+        public bool Add(ChatLieu p)
         {
             try
             {
-                var x = new ChatLieu()
+                ChatLieu chatLieu = new ChatLieu()
                 {
                     Id = Guid.NewGuid(),
                     TenChatLieu = p.TenChatLieu,
-                    status = p.status
+                    status = 1,
                 };
-                _context.Add(x);
+                _context.chatLieus.Add(chatLieu);
+                _context.SaveChanges();
+                return true;
+            }catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public bool Del(Guid id)
+        {
+            try
+            {
+                ChatLieu chatlieu = _context.chatLieus.FirstOrDefault(x => x.Id == id);
+                if (chatlieu != null)
+                {
+                    chatlieu.status = 0;
+                }
+                _context.chatLieus.Update(chatlieu);
                 _context.SaveChanges();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
                 return false;
             }
         }
 
-        public async Task<bool> Del(Guid id)
+        public bool Edit(ChatLieu p)
         {
             try
             {
-                var list = await _context.chatLieus.ToListAsync();
-                var obj = list.FirstOrDefault(c => c.Id == id);
-                _context.chatLieus.Remove(obj);
-                await _context.SaveChangesAsync();
+                ChatLieu chatlieu = _context.chatLieus.FirstOrDefault(x => x.Id == p.Id);
+                if (chatlieu != null)
+                {
+                    chatlieu.TenChatLieu = p.TenChatLieu;
+                    chatlieu.status = p.status;
+                }
+                _context.chatLieus.Update(chatlieu);
+                _context.SaveChanges();
                 return true;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
                 return false;
             }
         }
 
-        public async Task<bool> Edit(Guid id, ChatLieuVM p)
+        public List<ChatLieu> GetAll()
         {
-            try
-            {
-                var listobj = await _context.chatLieus.ToListAsync();
-                var obj = listobj.FirstOrDefault(c => c.Id == id);
-                obj.TenChatLieu = p.TenChatLieu;
-                obj.status = p.status;
-
-                _context.chatLieus.Update(obj);
-                await _context.SaveChangesAsync();
-                return true;
-
-            }
-            catch (Exception)
-            {
-
-                return false;
-            }
+            return _context.chatLieus.ToList();
         }
-
-        public async Task<List<ChatLieuVM>> GetAll()
+        public ChatLieu GetAllByID(Guid id)
         {
-            var list = await _context.chatLieus.ToListAsync();
-            var listvm = new List<ChatLieuVM>();
-            foreach (var item in list)
-            {
-                var x = new ChatLieuVM();
-                x.Id = item.Id;
-                x.TenChatLieu = item.TenChatLieu;
-                x.status = item.status;
-                listvm.Add(x);
-            }
-            return listvm.ToList();
+            return _context.chatLieus.FirstOrDefault(c => c.Id == id);
         }
     }
 }

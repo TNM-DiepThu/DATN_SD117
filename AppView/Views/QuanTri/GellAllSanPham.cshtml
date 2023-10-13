@@ -1,0 +1,61 @@
+﻿@model IEnumerable<AppData.model.SanPham>
+
+@{
+    ViewData["Title"] = "GellAllSanPham";
+}
+
+<h1>GellAllSanPham</h1>
+
+<p>
+    <a asp-action="CreateSanPham">Create New</a> | 
+    <a asp-action="GellAllThuongHieu">Thuong hieu</a> |
+    <a asp-action="GellAllXuatXu">Xuat xu</a> |
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdThuongHieu)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdXuatSu)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TenSanPham)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.status)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdThuongHieu)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdXuatSu)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TenSanPham)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.status)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+               @* @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |*@
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
