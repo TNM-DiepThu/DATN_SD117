@@ -1,6 +1,7 @@
 ﻿using AppData.model;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,7 +50,7 @@ namespace AppData.data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer("Data Source=WINDOWS10\\SQLEXPRESS;Initial Catalog=DATN_FALL2023;Integrated Security=True");
+                optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS;Database=DB_SD_117;Trusted_Connection=True;TrustServerCertificate=True");
             }
         }
         
