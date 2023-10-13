@@ -2,7 +2,6 @@
 using AppData.model;
 using AppData.Serviece.Interfaces;
 using AppData.ViewModal.ThanhToanVM;
-using Bill.ViewModal.SanPhamVM;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
