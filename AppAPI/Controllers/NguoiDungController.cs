@@ -1,4 +1,5 @@
 ﻿using AppData.model;
+using AppData.Serviece.Implements;
 using AppData.Serviece.Interfaces;
 using AppData.ViewModal.Usermodalview;
 using Microsoft.AspNetCore.Http;
@@ -18,44 +19,43 @@ namespace AppAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<NguoiDungVM>>> GetAll()
+        public async Task<ActionResult<IEnumerable<NguoiDungVM>>> Get()
         {
-            var nguoiDungs = await _nguoiDungService.GetAll();
+            var nguoiDungs = await _nguoiDungService.GetAllAsync();
             return Ok(nguoiDungs);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<NguoiDungVM>> GetById(Guid id)
+        public async Task<ActionResult<NguoiDungVM>> Get(Guid id)
         {
-            var nguoiDung = await _nguoiDungService.GetById(id);
+            var nguoiDung = await _nguoiDungService.GetByIdAsync(id);
             if (nguoiDung == null)
-            {
                 return NotFound();
-            }
+
             return Ok(nguoiDung);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Guid>> Create(NguoiDungVM nguoiDung)
+        public async Task<ActionResult<Guid>> Post([FromBody] NguoiDungVM nguoiDung)
         {
-            var id = await _nguoiDungService.Create(nguoiDung);
-            return CreatedAtAction("GetById", new
+            var id = await _nguoiDungService.CreateAsync(nguoiDung);
+            return CreatedAtAction(nameof(Get), new
             {
                 id
-            }, nguoiDung);
+            }, id);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(Guid id, NguoiDungVM nguoiDung)
+        public async Task<ActionResult> Put(Guid id, [FromBody] NguoiDungVM nguoiDung)
         {
-            await _nguoiDungService.Update(id, nguoiDung);
+            await _nguoiDungService.UpdateAsync(id, nguoiDung);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<ActionResult> Delete(Guid id)
         {
-            await _nguoiDungService.Delete(id);
+            await _nguoiDungService.DeleteAsync(id);
             return NoContent();
         }
     }

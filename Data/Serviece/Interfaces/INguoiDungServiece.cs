@@ -10,10 +10,10 @@ namespace AppData.Serviece.Interfaces
 {
     public interface INguoiDungServiece
     {
-        Task<NguoiDungVM> GetById(Guid id);
-        Task<IEnumerable<NguoiDungVM>> GetAll();
-        Task<Guid> Create(NguoiDungVM nguoiDung);
-        Task Update(Guid id, NguoiDungVM nguoiDung);
-        Task Delete(Guid id);
+        Task<IEnumerable<NguoiDungVM>> GetAllAsync();
+        Task<NguoiDungVM> GetByIdAsync(Guid id);
+        Task<Guid> CreateAsync(NguoiDungVM nguoiDung);
+        Task UpdateAsync(Guid id, NguoiDungVM nguoiDung);
+        Task DeleteAsync(Guid id);
     }
 }
