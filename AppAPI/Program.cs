@@ -26,6 +26,7 @@ builder.Services.AddTransient<ISanPhamChiTietServiece, SanPhamChiTietServiece>()
 builder.Services.AddTransient<IVoucherServices, VoucherServices>();
 builder.Services.AddTransient<IVoucherDetailServices, VoucherDetailServices>();
 builder.Services.AddTransient<IHinhThucThanhToanServices, IHinhThucThanhToanServices>();
+builder.Services.AddTransient<INguoiDungServiece, NguoiDungServiece>();
 builder.Services.AddDbContext<MyDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("MyCS"));
