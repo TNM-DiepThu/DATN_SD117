@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AppData.Migrations
 {
-    public partial class DATN : Migration
+    public partial class loloa : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -172,7 +172,7 @@ namespace AppData.Migrations
                     NgayTao = table.Column<DateTime>(type: "DateTime", nullable: false),
                     NgayBatDau = table.Column<DateTime>(type: "DateTime", nullable: false),
                     NgayKetThuc = table.Column<DateTime>(type: "DateTime", nullable: false),
-                    GiaTriVouchet = table.Column<decimal>(type: "Decimal", nullable: false),
+                    GiaTriVoucher = table.Column<decimal>(type: "Decimal", nullable: false),
                     SoLuong = table.Column<int>(type: "int", nullable: false),
                     MoTa = table.Column<string>(type: "nvarchar(200)", nullable: false),
                     DieuKienGiamGia = table.Column<string>(type: "nvarchar(200)", nullable: false),
@@ -329,14 +329,14 @@ namespace AppData.Migrations
                     Soluong = table.Column<int>(type: "int", nullable: false),
                     status = table.Column<int>(type: "int", nullable: false),
                     IdVoucher = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IdNhuoiDung = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    IdNguoiDung = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_voucherDetail", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_voucherDetail_AspNetUsers_IdVoucher",
-                        column: x => x.IdVoucher,
+                        name: "FK_voucherDetail_AspNetUsers_IdNguoiDung",
+                        column: x => x.IdNguoiDung,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -353,10 +353,10 @@ namespace AppData.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    TenSanPham = table.Column<string>(type: "nvarchar(100)", nullable: false),
-                    status = table.Column<int>(type: "int", nullable: false),
                     IdThuongHieu = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IdXuatSu = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    IdXuatSu = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TenSanPham = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -427,17 +427,17 @@ namespace AppData.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IdDanhMuc = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IDSP = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IdChatLieu = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IdMauSac = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IdSize = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IdAnh = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     MaSp = table.Column<string>(type: "nvarchar(100)", nullable: false),
                     SoLuong = table.Column<int>(type: "int", nullable: false),
                     GiaBan = table.Column<decimal>(type: "decimal", nullable: false),
                     MoTa = table.Column<string>(type: "nvarchar(100)", nullable: true),
-                    status = table.Column<int>(type: "int", nullable: false),
-                    IDSP = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IdAnh = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IdMauSac = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IdSize = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IdChatLieu = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IdDanhMuc = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -604,7 +604,8 @@ namespace AppData.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    SoLuong = table.Column<string>(type: "nvarchar(100)", nullable: false),
+                    SoLuong = table.Column<int>(type: "int", nullable: false),
+                    status = table.Column<int>(type: "int", nullable: false),
                     Gia = table.Column<decimal>(type: "decimal", nullable: false),
                     IDHD = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     IdCombo = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -791,6 +792,11 @@ namespace AppData.Migrations
                 name: "IX_sanPhamChiTiets_IDSP",
                 table: "sanPhamChiTiets",
                 column: "IDSP");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_voucherDetail_IdNguoiDung",
+                table: "voucherDetail",
+                column: "IdNguoiDung");
 
             migrationBuilder.CreateIndex(
                 name: "IX_voucherDetail_IdVoucher",

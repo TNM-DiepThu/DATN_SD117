@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppData.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20231010164211_DATN")]
-    partial class DATN
+    [Migration("20231013165951_loloa")]
+    partial class loloa
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -339,9 +339,11 @@ namespace AppData.Migrations
                     b.Property<Guid>("IdSPCT")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("SoLuong")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<int>("SoLuong")
+                        .HasColumnType("int");
+
+                    b.Property<int>("status")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -659,7 +661,7 @@ namespace AppData.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<decimal>("GiaTriVouchet")
+                    b.Property<decimal>("GiaTriVoucher")
                         .HasColumnType("Decimal");
 
                     b.Property<string>("MaVoucher")
@@ -696,7 +698,7 @@ namespace AppData.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("IdNhuoiDung")
+                    b.Property<Guid>("IdNguoiDung")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("IdVoucher")
@@ -709,6 +711,8 @@ namespace AppData.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IdNguoiDung");
 
                     b.HasIndex("IdVoucher");
 
@@ -1059,7 +1063,7 @@ namespace AppData.Migrations
                 {
                     b.HasOne("AppData.model.NguoiDung", "NguoiDung")
                         .WithMany("voucherDetails")
-                        .HasForeignKey("IdVoucher")
+                        .HasForeignKey("IdNguoiDung")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
