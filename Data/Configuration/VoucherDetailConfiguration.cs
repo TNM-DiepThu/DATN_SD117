@@ -17,7 +17,7 @@ namespace AppData.Configuration
             builder.Property(x => x.Soluong).HasColumnType("int");
             builder.Property(x => x.status).HasColumnType("int");
             builder.HasOne(x=>x.Voucher).WithMany(x=>x.VoucherDetail).HasForeignKey(x=>x.IdVoucher);
-            builder.HasOne(x=>x.NguoiDung).WithMany(x=>x.voucherDetails).HasForeignKey(x=>x.IdVoucher);
+            builder.HasOne(x=>x.NguoiDung).WithMany(x=>x.voucherDetails).HasForeignKey(x=>x.IdNguoiDung);
         }
     }
 }

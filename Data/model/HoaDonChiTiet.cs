@@ -10,6 +10,7 @@ namespace AppData.model
     {
         public Guid Id { get; set; }
         public int SoLuong { get; set; }
+        public int status { get; set; }
         public decimal Gia { get; set; }
         public Guid IDHD { get; set; }
         public HoaDon HoaDon { get; set; }
