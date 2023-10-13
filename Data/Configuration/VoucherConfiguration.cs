@@ -19,7 +19,7 @@ namespace AppData.Configuration
             builder.Property(x => x.NgayTao).HasColumnType("DateTime");
             builder.Property(x => x.NgayBatDau).HasColumnType("DateTime");
             builder.Property(x => x.NgayKetThuc).HasColumnType("DateTime");
-            builder.Property(x => x.GiaTriVouchet).HasColumnType("Decimal");
+            builder.Property(x => x.GiaTriVoucher).HasColumnType("Decimal");
             builder.Property(x => x.SoLuong).HasColumnType("int");
             builder.Property(x => x.MoTa).HasColumnType("nvarchar(200)"); ;
             builder.Property(x => x.DieuKienGiamGia).HasColumnType("nvarchar(200)");

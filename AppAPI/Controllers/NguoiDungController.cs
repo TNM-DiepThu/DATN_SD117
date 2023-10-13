@@ -1,7 +1,9 @@
-﻿using AppData.data;
+﻿using AppData.model;
+using AppData.Serviece.Implements;
+using AppData.Serviece.Interfaces;
+using AppData.ViewModal.Usermodalview;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace AppAPI.Controllers
 {
@@ -9,38 +11,52 @@ namespace AppAPI.Controllers
     [ApiController]
     public class NguoiDungController : ControllerBase
     {
-        // GET: api/<NguoiDungController
-        
-        
+        private readonly INguoiDungServiece _nguoiDungService;
+
+        public NguoiDungController(INguoiDungServiece nguoiDungService)
+        {
+            _nguoiDungService = nguoiDungService;
+        }
+
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<ActionResult<IEnumerable<NguoiDungVM>>> Get()
         {
-            return new string[] { "value1", "value2" };
+            var nguoiDungs = await _nguoiDungService.GetAllAsync();
+            return Ok(nguoiDungs);
         }
 
-        // GET api/<NguoiDungController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<ActionResult<NguoiDungVM>> Get(Guid id)
         {
-            return "value";
+            var nguoiDung = await _nguoiDungService.GetByIdAsync(id);
+            if (nguoiDung == null)
+                return NotFound();
+
+            return Ok(nguoiDung);
         }
 
-        // POST api/<NguoiDungController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<ActionResult<Guid>> Post([FromBody] NguoiDungVM nguoiDung)
         {
+            var id = await _nguoiDungService.CreateAsync(nguoiDung);
+            return CreatedAtAction(nameof(Get), new
+            {
+                id
+            }, id);
         }
 
-        // PUT api/<NguoiDungController>/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<ActionResult> Put(Guid id, [FromBody] NguoiDungVM nguoiDung)
         {
+            await _nguoiDungService.UpdateAsync(id, nguoiDung);
+            return NoContent();
         }
 
-        // DELETE api/<NguoiDungController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<ActionResult> Delete(Guid id)
         {
+            await _nguoiDungService.DeleteAsync(id);
+            return NoContent();
         }
     }
 }

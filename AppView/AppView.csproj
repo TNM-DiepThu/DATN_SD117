@@ -15,4 +15,8 @@
     <ProjectReference Include="..\Data\AppData.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\NguoiDung\" />
+  </ItemGroup>
+
 </Project>
