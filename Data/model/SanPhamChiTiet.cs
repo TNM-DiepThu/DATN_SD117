@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AppData.ViewModal.SanPhamChiTietVM;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,7 +34,7 @@ namespace AppData.model
         public Size Size { get; set; }
 
         public ChatLieu ChatLieu { get; set; }
-
+        //public ImageUploadModel  imageUploadModel { get; set; }
         public DanhMuc DanhMuc { get; set;}
         public virtual ICollection<BinhLuan> BinhLuans { get; set; }
         public virtual ICollection <HoaDonChiTiet> hoaDonChiTiets { get; set; }

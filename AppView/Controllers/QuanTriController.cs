@@ -19,6 +19,8 @@ using ZXing;
 using iTextSharp.text.pdf.codec;
 using QRCoder;
 using ZXing.QrCode;
+using Bill.Serviece.Interfaces;
+using Bill.Serviece.Implements;
 
 namespace AppView.Controllers
 {
@@ -30,10 +32,14 @@ namespace AppView.Controllers
         HttpClient _client = new HttpClient();
         private readonly MyDbContext _context;
         private readonly SanPhamChiTietViewModelService _spctViewModel;
-        public QuanTriController(ILogger<QuanTriController> logger)
+        private readonly IAnhServiece anhservice;
+        private readonly IWebHostEnvironment _hostingEnvironment;
+        public QuanTriController(ILogger<QuanTriController> logger , IWebHostEnvironment hostingEnvironment)
         {
             _logger = logger;
+            _hostingEnvironment = hostingEnvironment;
             _spctViewModel = new SanPhamChiTietViewModelService();
+            anhservice = new AnhServiece();
             _context = new MyDbContext();
         }
         [HttpGet]
@@ -540,7 +546,8 @@ namespace AppView.Controllers
                 var respon = _client.GetAsync(urlanh).Result;
                 var data = respon.Content.ReadAsStringAsync().Result;
                 List<Anh> album = JsonConvert.DeserializeObject<List<Anh>>(data);
-
+                ImageUploadModel img = new ImageUploadModel();
+                ViewBag.upload = img.ImageFile;
                 ViewBag.listanh = album; 
                 return View();
             }
@@ -575,6 +582,61 @@ namespace AppView.Controllers
 
             return RedirectToAction("GellAllSanPhamCT", "QuanTri");
 
+        }
+        [HttpGet]
+        public IActionResult UploadImage()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadImage(ImageUploadModel model)
+        {
+            if (model.ImageFile != null)
+            {
+                // Xử lý tệp ảnh ở đây
+                if (model.ImageFile.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
+                    var uniqueFileName = model.ImageFile.FileName;
+
+                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await model.ImageFile.CopyToAsync(fileStream);
+                    }
+
+                    // Lưu đường dẫn vào thuộc tính Path của đối tượng Anh
+                    var anh = new Anh
+                    {
+                        Id = Guid.NewGuid(),
+                        Connect = filePath,
+                        status = 1 // Có thể đặt trạng thái khác tùy ý
+                    };
+
+
+                    anhservice.Add(anh);
+
+                    return RedirectToAction("UploadImage");
+                }
+            }
+
+            return View();
+        }
+        public IActionResult DisplayImage(string imagePath)
+        {
+            // Kiểm tra xem đường dẫn có tồn tại không
+            if (System.IO.File.Exists(imagePath))
+            {
+                byte[] imageBytes = System.IO.File.ReadAllBytes(imagePath);
+                return File(imageBytes, "image/jpeg"); // Thay đổi kiểu hình ảnh tùy theo định dạng thực tế
+            }
+            else
+            {
+                // Trả về một hình ảnh mặc định hoặc thông báo lỗi
+                return NotFound();
+            }
         }
 
     }

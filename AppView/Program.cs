@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.Extensions.Hosting.Internal;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

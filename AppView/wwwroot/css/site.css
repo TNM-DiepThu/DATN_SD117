@@ -1,4 +1,4 @@
-html {
+﻿html {
   font-size: 14px;
 }
 
@@ -15,4 +15,19 @@ html {
 
 body {
   margin-bottom: 60px;
+}
+.selectable-image {
+    width: 30%; /* Đặt kích thước của ảnh */
+    margin: 1%; /* Khoảng cách giữa các ảnh */
+    display: inline-block; /* Hiển thị ảnh theo hàng ngang */
+}
+.form-group {
+    margin: 15px;
+}
+
+.custom-modal {
+    max-width: 800px;
+    width: 80%;
+    max-height: 500px; /* Điều chỉnh chiều cao tùy chọn */
+    overflow-y: auto; /* Thêm thanh cuộn nếu nội dung dài hơn */
 }

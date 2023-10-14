@@ -3,24 +3,14 @@
 @{
     ViewData["Title"] = "CreateSanPhamCT";
     var dataanh = ViewBag.listanh;
+    var uploadimg = ViewBag.upload;
 }
-
-<h1>CreateSanPhamCT</h1>
+<script src="~/js/site.js"></script>
+<link href="~/css/site.css" rel="stylesheet" />
 
 <h4>SanPhamChiTiet</h4>
 <hr />
-<style type="text/css">
-    .form-group {
-        margin: 15px;
-    }
 
-    .custom-modal {
-        max-width: 800px;
-        width: 80%;
-        max-height: 500px; /* Điều chỉnh chiều cao tùy chọn */
-        overflow-y: auto; /* Thêm thanh cuộn nếu nội dung dài hơn */
-    }
-</style>
 <div>
     <div>
         <form asp-action="CreateSanPhamCT">
@@ -79,9 +69,11 @@
 
             <div class="form-group row">
                 <label for="IdAnh" class="control-label col-3">Ảnh sản phẩm</label>
-                <div class="col-9">
+                <div class="col-9 row">
+                    <input type="text" id="imageFilename" name="imageFilename" class="col-4" />
+                    <input asp-for="IdAnh" type="text" id="imageId" name="imageId" class="col-4" />
                     @*Mở form anh*@
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+                    <button type="button" class="col-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
                         Chọn ảnh
                     </button>
                     <!-- The Modal -->
@@ -98,19 +90,25 @@
                                 <div class="modal-body">
                                     @foreach (var image in dataanh)
                                     {
-                                        
+                                        <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = image.Connect })" alt="Image" class="selectable-image" data-image-id="@image.Id" data-image-filename="@image.Connect" />
                                     }
                                 </div>
-                                <!-- Modal footer -->
-                                @* @Html.DropDownList("IdAnh", ViewBag.Anh  as IEnumerable<SelectListItem>, "", new { @class = "form-control" })
-                                @Html.ValidationMessageFor(model => model.IdAnh, "", new { @class = "text-danger" })*@
                             </div>
                         </div>
                         <div class="modal-footer">
+                            @*@using (Html.BeginForm("UploadImage", "QuanTri", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                            {
+                            <div class="form-group">
+                            <input asp-for="imageUploadModel.ImageFile" type="file" class="form-control" />
+                            </div>
+                            <button type="submit" class="btn btn-primary">Upload</button>
+                            }*@
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="selectImageBtn">Select</button>
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
+
             </div>
 
             @* Kêt thúc form anh*@
@@ -156,5 +154,7 @@
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
+
     }
 }
+
