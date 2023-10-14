@@ -35,7 +35,7 @@ namespace AppAPI.Controllers
                 TenSanPham = tensp,
                 IdThuongHieu = _th.GetAll().FirstOrDefault(c => c.Id == idth).Id,
                 IdXuatSu = _xx.GetAll().FirstOrDefault(c => c.Id == idxx).Id,
-                status = 1 ,
+                status = 1,
             };
             return _sanphamsv.Add(sp);
         }

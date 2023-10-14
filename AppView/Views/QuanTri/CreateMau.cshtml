@@ -7,6 +7,11 @@
 <h1>CreateMau</h1>
 
 <h4>MauSac</h4>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+
 <hr />
 <div class="row">
     <div class="col-md-4">

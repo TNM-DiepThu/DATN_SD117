@@ -23,7 +23,7 @@ namespace AppAPI.Controllers
             return _thuonghieusv.GetAll();
         }
         [HttpPost("Create")]
-        public bool CreateAsync(string name)
+        public async Task<IActionResult> CreateAsync(string name)
         {
             ThuongHieu th = new ThuongHieu()
             {
@@ -31,7 +31,14 @@ namespace AppAPI.Controllers
                 TenThuongHieu = name , 
                 Status = 1 ,
             };
-            return _thuonghieusv.Add(th);
+            if(_thuonghieusv.GetAll().Any(c => c.TenThuongHieu == name))
+            {
+                return BadRequest();
+            }
+            else
+            {
+                return Ok(await _thuonghieusv.Add(th));
+            }
         }
         [HttpPut("Delete/{Id}")]
 

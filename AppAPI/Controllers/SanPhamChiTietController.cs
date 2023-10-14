@@ -1,4 +1,6 @@
 ﻿using AppData.model;
+using AppData.Serviece.ViewModeService;
+using AppData.ViewModal.SanPhamChiTietVM;
 using Bill.Serviece.Implements;
 using Bill.Serviece.Interfaces;
 
@@ -15,6 +17,8 @@ namespace AppAPI.Controllers
         private readonly ISanPhamChiTietServiece _sanphamCTsv;
         private readonly IAnhServiece _anhServiece;
         private readonly IDanhMucServiece _anhMuc;
+        private readonly SanPhamChiTietViewModelService _spctViewModel;
+        private readonly SanPhamViewModelService _spViewModel;
         private readonly IChatLieuServiece _chatLieu;
         private readonly IMauSacServiece _auSacServiece;
         private readonly ISizeServiece sizeServiece;
@@ -24,16 +28,42 @@ namespace AppAPI.Controllers
             _anhMuc = new DanhMucServiece();
             _anhServiece = new AnhServiece();
             _chatLieu = new ChatLieuServiece();
+            _spctViewModel = new SanPhamChiTietViewModelService();
+            _spViewModel = new SanPhamViewModelService();
             _auSacServiece = new MauSacServiece();
             sizeServiece = new SizeServiece();
             sanPhamServiece = new SanPhamServiece();
             _sanphamCTsv = new SanPhamChiTietServiece();
         }
         [HttpGet("GetAll")]
-
         public IEnumerable<SanPhamChiTiet> GetAllAsync()
         {
             return _sanphamCTsv.GetAll();
+        }
+        [HttpGet("[action]")]
+        public IEnumerable<SanPhamChiTietViewModel> GetAllSanphamchitietViewModel()
+        {
+            return _spctViewModel.GetAll();
+        }
+        [HttpGet("[action]")]
+        public IEnumerable<SanPhamViewModel> GetAllSanPhamViewModel()
+        {
+            return _spViewModel.GetAllSanPham();
+        }
+        [HttpGet("[action]")]
+        public SanPhamChiTietViewModel GetByIDSPCTVM(Guid id)
+        {
+            return _spctViewModel.GetById(id);
+        }
+        [HttpGet("[action]")]
+        public SanPhamChiTietViewModel GetByNameSPCTVM(string name)
+        {
+            return _spctViewModel.GetByName(name);
+        }
+        [HttpGet("[action]")]
+        public SanPhamViewModel GetByIDSPVM(Guid id)
+        {
+            return _spViewModel.GetById(id);
         }
         [HttpGet("GetByID")]
         public SanPhamChiTiet GetByID(Guid Id)

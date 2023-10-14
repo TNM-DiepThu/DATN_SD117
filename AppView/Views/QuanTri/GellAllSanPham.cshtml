@@ -1,4 +1,4 @@
-﻿@model IEnumerable<AppData.model.SanPham>
+﻿@model IEnumerable<AppData.ViewModal.SanPhamChiTietVM.SanPhamViewModel>
 
 @{
     ViewData["Title"] = "GellAllSanPham";
@@ -7,7 +7,7 @@
 <h1>GellAllSanPham</h1>
 
 <p>
-    <a asp-action="CreateSanPham">Create New</a> | 
+    <a asp-action="CreateSanPham">Create New</a> |
     <a asp-action="GellAllThuongHieu">Thuong hieu</a> |
     <a asp-action="GellAllXuatXu">Xuat xu</a> |
 </p>
@@ -18,10 +18,10 @@
                 @Html.DisplayNameFor(model => model.Id)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IdThuongHieu)
+                @Html.DisplayNameFor(model => model.ThuongHieu)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IdXuatSu)
+                @Html.DisplayNameFor(model => model.XuatSu)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.TenSanPham)
@@ -39,10 +39,10 @@
                 @Html.DisplayFor(modelItem => item.Id)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IdThuongHieu)
+                @Html.DisplayFor(modelItem => item.ThuongHieu)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.IdXuatSu)
+                @Html.DisplayFor(modelItem => item.XuatSu)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.TenSanPham)
@@ -52,7 +52,7 @@
             </td>
             <td>
                 @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-               @* @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |*@
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
                 @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
             </td>
         </tr>

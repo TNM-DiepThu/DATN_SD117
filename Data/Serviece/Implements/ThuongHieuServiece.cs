@@ -19,7 +19,7 @@ namespace Bill.Serviece.Implements
             _context = new MyDbContext();
         }
 
-        public bool Add(ThuongHieu p)
+        public async Task<bool> Add(ThuongHieu p)
         {
             try
             {

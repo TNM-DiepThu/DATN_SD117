@@ -1,6 +1,10 @@
-﻿using AppData.model;
+﻿using AppData.data;
+using AppData.model;
+using AppData.ViewModal.SanPhamChiTietVM;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http.Json;
@@ -16,9 +20,11 @@ namespace AppView.Controllers
         // GET: QuanTriController
         private readonly ILogger<QuanTriController> _logger;
         HttpClient _client = new HttpClient();
+        private readonly MyDbContext _context;
         public QuanTriController(ILogger<QuanTriController> logger)
         {
             _logger = logger;
+            _context = new MyDbContext();
         }
         [HttpGet]
         public ActionResult GellAllChatLieu()
@@ -213,7 +219,15 @@ namespace AppView.Controllers
             HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
             if (httpResponseMessage.IsSuccessStatusCode)
             {
-                return RedirectToAction("GellAllMau", "QuanTri");
+                string apiResponse = await httpResponseMessage.Content.ReadAsStringAsync();
+                if(apiResponse == "false")
+                {
+                    TempData["ErrorMessage"] = "Màu bị trùng. Vui lòng chọn màu khác.";
+                    return View();
+                } else
+                {
+                    return RedirectToAction("GellAllMau", "QuanTri");
+                }
             }
             else
             {
@@ -248,6 +262,10 @@ namespace AppView.Controllers
         }
 
         [HttpGet]
+        public async Task<ActionResult> CreateThuongHieu()
+        {
+            return View();
+        }
         [HttpPost]
         public async Task<ActionResult> CreateThuongHieu(ThuongHieu th)
         {
@@ -257,13 +275,15 @@ namespace AppView.Controllers
             var obj = JsonConvert.SerializeObject(th);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
             HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
-            if (httpResponseMessage.IsSuccessStatusCode)
+            if  (httpResponseMessage.IsSuccessStatusCode)
             {
+                TempData["SuccessMessage"] = "Mục đã được thêm thành công.";
                 return RedirectToAction("GellAllThuongHieu", "QuanTri");
             }
-            else
+            else 
             {
-                return View();
+                TempData["ErrorMessage"] = "Mục đã tồn tại. Vui lòng chọn tên khác.";
+                return RedirectToAction("CreateThuongHieu");
             }
 
         }
@@ -327,34 +347,39 @@ namespace AppView.Controllers
         // SanPham 
 
         [HttpGet]
-        public ActionResult GellAllSanPham()
+        public async Task<ActionResult>  GellAllSanPham()
         {
-            string url = "https://localhost:7214/api/XuatSu/GetAll";
-            var respon = _client.GetAsync(url).Result;
-            var data = respon.Content.ReadAsStringAsync().Result;
-            List<SanPham> lstsize = JsonConvert.DeserializeObject<List<SanPham>>(data);
+            string url = "https://localhost:7214/api/SanPhamChiTiet/GetAllSanPhamViewModel";
+            var respon = await _client.GetAsync(url);
+            var data = await respon.Content.ReadAsStringAsync();
+            List<SanPhamViewModel> lstsize = JsonConvert.DeserializeObject<List<SanPhamViewModel>>(data);
 
             return View(lstsize);
         }
 
         [HttpGet]
-        [HttpPost]
+        public async Task<ActionResult> CreateSanPham()
+        {
+            ViewBag.thuonghieu = new SelectList(_context.thuongHieus.ToList().Where(c => c.Status == 1).OrderBy(c => c.TenThuongHieu), "Id", "TenThuongHieu");
+            ViewBag.Xuatsu = new SelectList(_context.xuatSus.ToList().Where(c => c.Status == 1).OrderBy(c => c.TenXuatSu), "Id", "TenXuatSu");
+            return View();
+        }
+
+            [HttpPost]
         public async Task<ActionResult> CreateSanPham(SanPham sp)
         {
             string url = $"https://localhost:7214/api/Sanpham/Create?tensp={sp.TenSanPham}&idth={sp.IdThuongHieu}&idxx={sp.IdXuatSu}";
-
-
             var obj = JsonConvert.SerializeObject(sp);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
             HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
             if (httpResponseMessage.IsSuccessStatusCode)
             {
                 return RedirectToAction("GellAllSanPham", "QuanTri");
-            }
-            else
+            } else
             {
-                return View();
+                return RedirectToAction("CreateSanPham");
             }
+
         }
         [HttpPut]
         public async Task<ActionResult> DeleteSanPham(SanPham sp)
@@ -373,20 +398,30 @@ namespace AppView.Controllers
         [HttpGet]
         public ActionResult GellAllSanPhamCT()
         {
-            string url = "https://localhost:7214/api/SanPhamChiTiet/GetAll";
+            string url = "https://localhost:7214/api/SanPhamChiTiet/GetAllSanphamchitietViewModel";
             var respon = _client.GetAsync(url).Result;
             var data = respon.Content.ReadAsStringAsync().Result;
-            List<SanPhamChiTiet> lstsize = JsonConvert.DeserializeObject<List<SanPhamChiTiet>>(data);
+            List<SanPhamChiTietViewModel> lstsize = JsonConvert.DeserializeObject<List<SanPhamChiTietViewModel>>(data);
 
             return View(lstsize);
         }
         [HttpGet]
         public ActionResult GellByIDSanPhamCT(Guid id)
         {
-            string url = $"https://localhost:7214/api/SanPhamChiTiet/GetByID?Id={id}";
+            string url = $"https://localhost:7214/api/SanPhamChiTiet/GetByIDSPCTVM?id={id}";
             var respon = _client.GetAsync(url).Result;
             var data = respon.Content.ReadAsStringAsync().Result;
-            SanPhamChiTiet lstsize = JsonConvert.DeserializeObject<SanPhamChiTiet>(data);
+            SanPhamChiTietViewModel lstsize = JsonConvert.DeserializeObject<SanPhamChiTietViewModel>(data);
+
+            return View(lstsize);
+        }
+        [HttpGet]
+        public ActionResult GellByNameSanPhamCT(string  name)
+        {
+            string url = $"https://localhost:7214/api/SanPhamChiTiet/GetByNameSPCTVM?name={name}";
+            var respon = _client.GetAsync(url).Result;
+            var data = respon.Content.ReadAsStringAsync().Result;
+            SanPhamChiTietViewModel lstsize = JsonConvert.DeserializeObject<SanPhamChiTietViewModel>(data);
 
             return View(lstsize);
         }
@@ -407,6 +442,13 @@ namespace AppView.Controllers
             }
             else
             {
+                ViewBag.DanhMuc = new SelectList(_context.danhMucs.ToList().Where(c => c.status == 1).OrderBy(c => c.TenDanhMuc), "Id", "TenDanhMuc");
+                ViewBag.SanPham = new SelectList(_context.sanPhams.ToList().Where(c => c.status == 1).OrderBy(c => c.TenSanPham), "Id", "TenSanPham");
+                ViewBag.ChatLieu = new SelectList(_context.chatLieus.ToList().Where(c => c.status == 1).OrderBy(c => c.TenChatLieu), "Id", "TenChatLieu");
+                ViewBag.MauSac = new SelectList(_context.mauSacs.ToList().Where(c => c.status == 1).OrderBy(c => c.TenMauSac), "Id", "TenMauSac");
+                ViewBag.Size = new SelectList(_context.sizes.ToList().Where(c => c.status == 1).OrderBy(c => c.SizeName), "Id", "SizeName");
+                ViewBag.Anh = new SelectList(_context.anhs.ToList(), "Id", "Connect");
+
                 return View();
             }
         }

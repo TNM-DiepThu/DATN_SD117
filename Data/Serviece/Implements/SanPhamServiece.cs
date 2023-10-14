@@ -28,15 +28,7 @@ namespace Bill.Serviece.Implements
         {
             try
             {
-                SanPham sanpham = new SanPham()
-                {
-                    Id = Guid.NewGuid(),
-                    IdThuongHieu = thuongHieuServiece.GetAll().FirstOrDefault(c => c.Id == p.IdThuongHieu).Id,
-                    IdXuatSu = xuatxuservice.GetAll().FirstOrDefault(c => c.Id == p.IdXuatSu).Id ,
-                    TenSanPham = p.TenSanPham,
-                    status = 1
-                };
-                _context.sanPhams.Add(sanpham);
+                _context.sanPhams.Add(p);
                 _context.SaveChanges();
                 return true;
             }catch (Exception ex)

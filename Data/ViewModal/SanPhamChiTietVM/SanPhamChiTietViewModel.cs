@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppData.ViewModal
+namespace AppData.ViewModal.SanPhamChiTietVM
 {
     public class SanPhamChiTietViewModel
     {
         public Guid Id { get; set; }
-        public string  DanhMuc { get; set; }
+        public string DanhMuc { get; set; }
         public string TenSP { get; set; }
         public string ChatLieu { get; set; }
         public string MauSac { get; set; }

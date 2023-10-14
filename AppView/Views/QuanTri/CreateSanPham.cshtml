@@ -10,28 +10,38 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="CreateSanPham">
+        <form asp-action="CreateSanPham" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
          @*   <div class="form-group">
                 <label asp-for="Id" class="control-label"></label>
                 <input asp-for="Id" class="form-control" />
                 <span asp-validation-for="Id" class="text-danger"></span>
             </div>*@
-            <div class="form-group">
-                <label asp-for="IdThuongHieu" class="control-label"></label>
-                <input asp-for="IdThuongHieu" class="form-control" />
-                <span asp-validation-for="IdThuongHieu" class="text-danger"></span>
+            <div class="form-group row">
+                <label for="TenSanPham" class="control-label col-3">Tên sản phẩm</label>
+                @Html.TextBoxFor(m => m.TenSanPham, new { @class = "form-control" })
+                <span asp-validation-for="TenSanPham" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="IdXuatSu" class="control-label"></label>
-                <input asp-for="IdXuatSu" class="form-control" />
-                <span asp-validation-for="IdXuatSu" class="text-danger"></span>
+            <div class="form-group row">
+                <label for="IdThuongHieu" class="control-label col-3">Thương Hiệu</label>
+                <div class="col-9">
+                    @Html.DropDownList("IdThuongHieu", ViewBag.thuonghieu  as IEnumerable<SelectListItem>, "", null)
+                    @Html.ValidationMessageFor(model => model.IdThuongHieu, "", new { @class = "text-danger" })
+                </div>
             </div>
-            <div class="form-group">
+            <div class="form-group row">
+                <label for="IdXuatSu" class="control-label col-3">Xuất sứ</label>
+                <div class="col-9">
+                    @Html.DropDownList("IdXuatSu", ViewBag.Xuatsu  as IEnumerable<SelectListItem>, "", null)
+                    @Html.ValidationMessageFor(model => model.IdXuatSu, "", new { @class = "text-danger" })
+                </div>
+            </div>
+           
+           @* <div class="form-group">
                 <label asp-for="TenSanPham" class="control-label"></label>
                 <input asp-for="TenSanPham" class="form-control" />
                 <span asp-validation-for="TenSanPham" class="text-danger"></span>
-            </div>
+            </div>*@
            @* <div class="form-group">
                 <label asp-for="status" class="control-label"></label>
                 <input asp-for="status" class="form-control" />

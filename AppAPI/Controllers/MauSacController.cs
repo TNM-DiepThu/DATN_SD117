@@ -31,7 +31,14 @@ namespace AppAPI.Controllers
                 TenMauSac = name,
                 status = 1,
             };
-            return _mausacsv.Add(mau);
+            if(_mausacsv.GetAll().Any(c => c.TenMauSac == name))
+            {
+                return false;
+            }
+            else
+            {
+                return _mausacsv.Add(mau);
+            }
         }
 
         [HttpPut("Deltete/{id}")]

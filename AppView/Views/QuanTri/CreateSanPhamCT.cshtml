@@ -8,69 +8,107 @@
 
 <h4>SanPhamChiTiet</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
+<style type="text/css">
+    .form-group{
+        margin: 15px;
+    } 
+    .form-group > .form-control{
+        width: 300px;
+    }
+</style>
+<div >
+    <div >
         <form asp-action="CreateSanPhamCT">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             @*<div class="form-group">
-                <label asp-for="Id" class="control-label"></label>
-                <input asp-for="Id" class="form-control" />
-                <span asp-validation-for="Id" class="text-danger"></span>
+            <label asp-for="Id" class="control-label"></label>
+            <input asp-for="Id" class="form-control" />
+            <span asp-validation-for="Id" class="text-danger"></span>
             </div>*@
-            <div class="form-group">
-                <label asp-for="IdDanhMuc" class="control-label"></label>
-                <input asp-for="IdDanhMuc" class="form-control" />
-                <span asp-validation-for="IdDanhMuc" class="text-danger"></span>
+
+
+            <div class=" row form-group">
+                <label asp-for="MaSp" class=" col-3 control-label">Mã SP</label>
+                <div class="col-9">
+                    <input asp-for="MaSp" class="form-control" />
+                    <span asp-validation-for="MaSp" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="IDSP" class="control-label"></label>
-                <input asp-for="IDSP" class="form-control" />
-                <span asp-validation-for="IDSP" class="text-danger"></span>
+
+            <div class="form-group row">
+                <label for="IDSP" class="control-label col-3">Tên sản phẩm</label>
+                <div class="col-9">
+                    @Html.DropDownList("IDSP", ViewBag.SanPham  as IEnumerable<SelectListItem>, "", null)
+                    @Html.ValidationMessageFor(model => model.IDSP, "", new { @class = "text-danger" })
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="IdChatLieu" class="control-label"></label>
-                <input asp-for="IdChatLieu" class="form-control" />
-                <span asp-validation-for="IdChatLieu" class="text-danger"></span>
+            <div class="form-group row">
+                <label for="IdDanhMuc" class="control-label col-3">Danh muc san pham</label>
+                <div class="col-9">
+                    @Html.DropDownList("IdDanhMuc", ViewBag.DanhMuc  as IEnumerable<SelectListItem>, "", null)
+                    @Html.ValidationMessageFor(model => model.IdDanhMuc, "", new { @class = "text-danger" })
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="IdMauSac" class="control-label"></label>
-                <input asp-for="IdMauSac" class="form-control" />
-                <span asp-validation-for="IdMauSac" class="text-danger"></span>
+
+            <div class="form-group row">
+                <label for="IdChatLieu" class="control-label col-3">Chất liệu</label>
+                <div class="col-9">
+                    @Html.DropDownList("IdChatLieu", ViewBag.ChatLieu  as IEnumerable<SelectListItem>, "", null)
+                    @Html.ValidationMessageFor(model => model.IdChatLieu, "", new { @class = "text-danger" })
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="IdSize" class="control-label"></label>
-                <input asp-for="IdSize" class="form-control" />
-                <span asp-validation-for="IdSize" class="text-danger"></span>
+
+            <div class="form-group row">
+                <label for="IdMauSac" class="control-label col-3">Màu sắc</label>
+                <div class="col-9">
+                    @Html.DropDownList("IdMauSac", ViewBag.MauSac  as IEnumerable<SelectListItem>, "", null)
+                    @Html.ValidationMessageFor(model => model.IdMauSac, "", new { @class = "text-danger" })
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="IdAnh" class="control-label"></label>
-                <input asp-for="IdAnh" class="form-control" />
-                <span asp-validation-for="IdAnh" class="text-danger"></span>
+            <div class="form-group row">
+                <label for="IdSize" class="control-label col-3">Size</label>
+                <div class="col-9">
+                    @Html.DropDownList("IdSize", ViewBag.Size  as IEnumerable<SelectListItem>, "", null)
+                    @Html.ValidationMessageFor(model => model.IdSize, "", new { @class = "text-danger" })
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="MaSp" class="control-label"></label>
-                <input asp-for="MaSp" class="form-control" />
-                <span asp-validation-for="MaSp" class="text-danger"></span>
+
+            <div class="form-group row">
+                <label for="IdAnh" class="control-label col-3">Ảnh sản phẩm</label>
+                <div class="col-9">
+                    @Html.DropDownList("IdAnh", ViewBag.Anh  as IEnumerable<SelectListItem>, "", null)
+                    @Html.ValidationMessageFor(model => model.IdAnh, "", new { @class = "text-danger" })
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="SoLuong" class="control-label"></label>
-                <input asp-for="SoLuong" class="form-control" />
-                <span asp-validation-for="SoLuong" class="text-danger"></span>
+
+            <div class="form-group row">
+                <label asp-for="SoLuong" class=" col-3 control-label"></label>
+                <div class="col-9">
+                    <input asp-for="SoLuong" class="form-control" type="number" min="0" />
+                    <span asp-validation-for="SoLuong" class="text-danger"></span>
+                </div>
+                
             </div>
-            <div class="form-group">
-                <label asp-for="GiaBan" class="control-label"></label>
-                <input asp-for="GiaBan" class="form-control" />
-                <span asp-validation-for="GiaBan" class="text-danger"></span>
+            <div class="form-group row">
+                <label asp-for="GiaBan" class="col-3 control-label"></label>
+                <div class="col-9">
+                    <input asp-for="GiaBan" class="form-control" type="number" min="0" />
+                    <span asp-validation-for="GiaBan" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="MoTa" class="control-label"></label>
-                <input asp-for="MoTa" class="form-control" />
-                <span asp-validation-for="MoTa" class="text-danger"></span>
+
+            <div class="form-group row">
+                <label for="MoTa" class="control-label col-3">Mô tả</label>
+                <div class="col-9">
+                    @Html.TextBoxFor(m => m.MoTa, new { @class = "form-control" })
+                    <span asp-validation-for="MoTa" class="text-danger"></span>
+                </div>
             </div>
-           @* <div class="form-group">
-                <label asp-for="status" class="control-label"></label>
-                <input asp-for="status" class="form-control" />
-                <span asp-validation-for="status" class="text-danger"></span>
+
+            @* <div class="form-group">
+            <label asp-for="status" class="control-label"></label>
+            <input asp-for="status" class="form-control" />
+            <span asp-validation-for="status" class="text-danger"></span>
             </div>*@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -84,5 +122,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
