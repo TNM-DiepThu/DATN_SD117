@@ -22,6 +22,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=QuanTri}/{action=GellAllChatLieu}/{id?}");
+    pattern: "{controller=QuanTri}/{action=GellAllSanPhamCT}/{id?}");
 
 app.Run();

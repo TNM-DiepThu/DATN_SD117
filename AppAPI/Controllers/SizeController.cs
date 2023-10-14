@@ -31,6 +31,10 @@ namespace AppAPI.Controllers
                 SizeName = size,
                 status = 1,
             };
+            if(_sizesv.GetAll().Any(c => c.SizeName == size))
+            {
+                return false;
+            }
             return _sizesv.Add(size1);
         }
         [HttpPut("Delete/{Id}")]

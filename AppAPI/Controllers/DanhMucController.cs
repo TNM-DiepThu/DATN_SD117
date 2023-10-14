@@ -31,6 +31,10 @@ namespace AppAPI.Controllers
                 TenDanhMuc = name,
                 status = 1 ,
             };
+            if(_danhmucsv.GetAll().Any(c => c.TenDanhMuc == name))
+            {
+                return false;
+            }
             return _danhmucsv.Add(danh);
         }
 

@@ -31,6 +31,10 @@ namespace AppAPI.Controllers
                TenXuatSu = name,
                Status = 1 ,
            };
+            if(_xuatsusv.GetAll().Any(c => c.TenXuatSu == name)) 
+            {
+                return false;
+            }
             return _xuatsusv.Add(xx);
         }
         [HttpPut("Delete/{Id}")]

@@ -25,14 +25,14 @@
             <div class="form-group row">
                 <label for="IdThuongHieu" class="control-label col-3">Thương Hiệu</label>
                 <div class="col-9">
-                    @Html.DropDownList("IdThuongHieu", ViewBag.thuonghieu  as IEnumerable<SelectListItem>, "", null)
+                    @Html.DropDownList("IdThuongHieu", ViewBag.thuonghieu  as IEnumerable<SelectListItem>, "",new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.IdThuongHieu, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="form-group row">
                 <label for="IdXuatSu" class="control-label col-3">Xuất sứ</label>
                 <div class="col-9">
-                    @Html.DropDownList("IdXuatSu", ViewBag.Xuatsu  as IEnumerable<SelectListItem>, "", null)
+                    @Html.DropDownList("IdXuatSu", ViewBag.Xuatsu  as IEnumerable<SelectListItem>, "", new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.IdXuatSu, "", new { @class = "text-danger" })
                 </div>
             </div>

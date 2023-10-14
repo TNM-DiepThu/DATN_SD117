@@ -20,9 +20,9 @@
 <table class="table">
     <thead>
         <tr>
-            <th>
+           @* <th>
                 @Html.DisplayNameFor(model => model.Id)
-            </th>
+            </th>*@
             <th>
                 @Html.DisplayNameFor(model => model.DanhMuc)
             </th>
@@ -54,56 +54,67 @@
                 @Html.DisplayNameFor(model => model.MoTa)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.status)
+                Trạng thái
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DanhMuc)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TenSP)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ChatLieu)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MauSac)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Size)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Anh)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MaSp)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SoLuong)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GiaBan)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MoTa)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.status)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>*@
+                <td>
+                    @Html.DisplayFor(modelItem => item.DanhMuc)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TenSP)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChatLieu)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MauSac)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Size)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Anh)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaSp)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SoLuong)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GiaBan)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MoTa)
+                </td>
+                <td>
+                    @if(item.status == 1)
+                    {
+                        <p>Còn hàng</p>
+                    }
+                    @if(item.status == 0)
+                    {
+                        <p>Hết hàng</p>
+                    }
+                </td>
+                <td>
+                    <img src="@item.QRCode" alt="QR Code" />
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

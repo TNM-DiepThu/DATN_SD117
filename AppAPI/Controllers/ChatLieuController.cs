@@ -40,6 +40,10 @@ namespace AppAPI.Controllers
                 TenChatLieu = name,
                 status = 1,
             };
+            if(_chatlieusv.GetAll().Any(c => c.TenChatLieu == name))
+            {
+                return false;
+            }
             return _chatlieusv.Add(chat);
         }
         [HttpDelete("Delete/{Id}")]

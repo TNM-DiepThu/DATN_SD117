@@ -20,7 +20,7 @@ namespace AppData.ViewModal.SanPhamChiTietVM
         public int SoLuong { get; set; }
         public decimal GiaBan { get; set; }
         public string? MoTa { get; set; }
-
+        public string QRCode { get; set; }
         public int status { get; set; }
     }
 }

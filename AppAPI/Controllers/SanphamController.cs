@@ -37,6 +37,10 @@ namespace AppAPI.Controllers
                 IdXuatSu = _xx.GetAll().FirstOrDefault(c => c.Id == idxx).Id,
                 status = 1,
             };
+            if(_sanphamsv.GetAll().Any(c => c.IdThuongHieu == idth && c.IdXuatSu == idxx && c.TenSanPham == tensp))
+            {
+                return false;
+            }
             return _sanphamsv.Add(sp);
         }
         [HttpPut("Delete/{Id}")]

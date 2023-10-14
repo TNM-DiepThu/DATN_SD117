@@ -7,6 +7,7 @@ using Bill.Serviece.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using System.Linq;
 
 namespace AppAPI.Controllers
 {
@@ -72,7 +73,7 @@ namespace AppAPI.Controllers
         }
 
         [HttpPost("Create")]
-        public bool CreateSanPhamChiTiet(Guid iddm , Guid idcl, Guid idms, Guid idsize, Guid idanh , Guid idsp, string masp, int soluong, decimal gia, string? mota)
+        public bool CreateSanPhamChiTiet(Guid iddm, Guid idcl, Guid idms, Guid idsize, Guid idanh, Guid idsp, string masp, int soluong, decimal gia, string? mota)
         {
             SanPhamChiTiet spct = new SanPhamChiTiet()
             {
@@ -89,14 +90,22 @@ namespace AppAPI.Controllers
                 MoTa = mota,
                 status = 1,
             };
+            if (_sanphamCTsv.GetAll().Any(c => c.MaSp == masp))
+            {
+                return false;
+            }
+            if (_sanphamCTsv.GetAll().Any(c => c.IdAnh == idanh && c.IdChatLieu == idcl && c.IdDanhMuc == iddm && c.IdMauSac == idms && c.IDSP == idsp && c.IdSize == idsize && c.MaSp == masp))
+            {
+                return false;
+            }
             return _sanphamCTsv.Add(spct);
         }
 
         [HttpPut("Update")]
-        public bool UpdateSanPhamChiTiet(Guid id , Guid iddm, Guid idcl, Guid idms, Guid idsize, Guid idanh, Guid idsp, string masp, int soluong, decimal gia, string? mota , int trangthai)
+        public bool UpdateSanPhamChiTiet(Guid id, Guid iddm, Guid idcl, Guid idms, Guid idsize, Guid idanh, Guid idsp, string masp, int soluong, decimal gia, string? mota, int trangthai)
         {
             SanPhamChiTiet spct = _sanphamCTsv.GetAll().FirstOrDefault(c => c.Id == id);
-            if(spct != null)
+            if (spct != null)
             {
                 spct.IdAnh = _anhServiece.GetAll().FirstOrDefault(c => c.Id == idanh).Id;
                 spct.IdChatLieu = _chatLieu.GetAll().FirstOrDefault(c => c.Id == idcl).Id;
@@ -110,15 +119,15 @@ namespace AppAPI.Controllers
                 spct.MoTa = mota;
                 spct.status = trangthai;
             }
-       
-            return _sanphamCTsv.Edit(id , spct);
+
+            return _sanphamCTsv.Edit(id, spct);
         }
         [HttpPut("Delete/{Id}")]
 
         public bool DeleteSanPhamChiTiet(Guid Id)
         {
             SanPhamChiTiet spct = _sanphamCTsv.GetAll().FirstOrDefault(c => c.Id == Id);
-            if(spct != null)
+            if (spct != null)
             {
                 spct.status = 0;
             }

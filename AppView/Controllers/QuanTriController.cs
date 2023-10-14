@@ -5,12 +5,20 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGeneration;
 using Newtonsoft.Json;
-using System.Net;
+using System.Drawing.Imaging;
+using System.Drawing;
+using System.IO;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using AppData.Serviece.ViewModeService;
+using ZXing;
+using iTextSharp.text.pdf.codec;
+using QRCoder;
+using ZXing.QrCode;
 
 namespace AppView.Controllers
 {
@@ -21,9 +29,11 @@ namespace AppView.Controllers
         private readonly ILogger<QuanTriController> _logger;
         HttpClient _client = new HttpClient();
         private readonly MyDbContext _context;
+        private readonly SanPhamChiTietViewModelService _spctViewModel;
         public QuanTriController(ILogger<QuanTriController> logger)
         {
             _logger = logger;
+            _spctViewModel = new SanPhamChiTietViewModelService();
             _context = new MyDbContext();
         }
         [HttpGet]
@@ -77,14 +87,14 @@ namespace AppView.Controllers
             string url = "https://localhost:7214/api/Size/GetAll";
             var respon = _client.GetAsync(url).Result;
             var data = respon.Content.ReadAsStringAsync().Result;
-            List<Size> lstsize = JsonConvert.DeserializeObject<List<Size>>(data);
+            List<AppData.model.Size> lstsize = JsonConvert.DeserializeObject<List<AppData.model.Size>>(data);
 
             return View(lstsize);
         }
 
         [HttpGet]
         [HttpPost]
-        public async Task<ActionResult> CreateSize(Size size)
+        public async Task<ActionResult> CreateSize(AppData.model.Size size)
         {
             string url = $"https://localhost:7214/api/Size/Create?size={size.SizeName}";
 
@@ -103,7 +113,7 @@ namespace AppView.Controllers
 
         }
         [HttpPut]
-        public async Task<ActionResult> DeleteSize(Size size)
+        public async Task<ActionResult> DeleteSize(AppData.model.Size size)
         {
             string url = $"https://localhost:7214/api/Size/Delete/{size.Id}";
             var obj = JsonConvert.SerializeObject(size);
@@ -402,9 +412,87 @@ namespace AppView.Controllers
             var respon = _client.GetAsync(url).Result;
             var data = respon.Content.ReadAsStringAsync().Result;
             List<SanPhamChiTietViewModel> lstsize = JsonConvert.DeserializeObject<List<SanPhamChiTietViewModel>>(data);
-
+            foreach (var product in lstsize)
+            {
+                product.QRCode = GenerateQRCode(product.Id);
+            }
             return View(lstsize);
         }
+
+        // tạo QrCode cho SanphamCTViewModel 
+        //public IActionResult GenerateBarcode(Guid Id)
+        //{
+        //    // Tìm sản phẩm trong cơ sở dữ liệu bằng productId
+        //    SanPhamChiTietViewModel product = _spctViewModel.GetById(Id);
+
+        //    if (product != null)
+        //    {
+        //        // Tạo barcode cho sản phẩm
+        //        BarcodeWriter<Bitmap> barcodeWriter = new BarcodeWriter<Bitmap>();
+        //        barcodeWriter.Format = BarcodeFormat.QR_CODE; // Chọn định dạng barcode
+        //        var barcodeBitmap = barcodeWriter.Write(product);
+
+        //        // Lưu hình ảnh barcode vào thư mục hoặc cơ sở dữ liệu
+
+        //        // Trả về hình ảnh barcode dưới dạng FileResult
+        //        return File(ImageToByte2D(barcodeBitmap), "image/png");
+        //    }
+
+        //    // Xử lý trường hợp sản phẩm không tồn tại
+        //    return NotFound();
+        //}
+        //public static byte[] ImageToByte2D(Bitmap img)
+        //{
+        //    using (MemoryStream stream = new MemoryStream())
+        //    {
+        //        img.Save(stream, ImageFormat.Png);
+        //        return stream.ToArray();
+        //    }
+        //}
+
+        public string GenerateQRCode(Guid id)
+        {
+            // Truy xuất thông tin đối tượng dựa trên ID
+            SanPhamChiTietViewModel spct = _spctViewModel.GetById(id);
+            var infor = $"Mã Sản phẩm: {spct.MaSp} Tên: {spct.TenSP} Màu sắc : {spct.MauSac} Chất liệu: {spct.ChatLieu} Size : {spct.Size}";
+            if (spct != null)
+            {
+                // Tạo mã QR từ thông tin đối tượng
+                BarcodeWriter<Bitmap> qrCodeWriter = new BarcodeWriter<Bitmap>();
+                qrCodeWriter.Format = BarcodeFormat.QR_CODE;
+                qrCodeWriter.Options = new QrCodeEncodingOptions
+                {
+                    DisableECI = true,
+                    CharacterSet = "UTF-8",
+                    Width = 200,
+                    Height = 200,
+                };
+
+                var qrCodeBitmap = qrCodeWriter.Write(infor);
+
+                // Chuyển đổi mã QR thành một dạng hiển thị trên giao diện
+                using (var bitmap = new Bitmap(qrCodeBitmap))
+                {
+                    var byteArray = BitmapToByteArray(bitmap);
+                    var base64String = Convert.ToBase64String(byteArray);
+
+                    // Trả về mã QR dưới dạng hình ảnh hoặc sử dụng nó trong giao diện
+                    return$"<img src='data:image/png;base64,{base64String}' />";
+                }
+            }
+
+            return "Không tìm thấy đối tượng.";
+        }
+        private byte[] BitmapToByteArray(Bitmap bitmap)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                bitmap.Save(stream, ImageFormat.Png);
+                return stream.ToArray();
+            }
+        }
+        // Kết thúc 
+
         [HttpGet]
         public ActionResult GellByIDSanPhamCT(Guid id)
         {
@@ -447,8 +535,13 @@ namespace AppView.Controllers
                 ViewBag.ChatLieu = new SelectList(_context.chatLieus.ToList().Where(c => c.status == 1).OrderBy(c => c.TenChatLieu), "Id", "TenChatLieu");
                 ViewBag.MauSac = new SelectList(_context.mauSacs.ToList().Where(c => c.status == 1).OrderBy(c => c.TenMauSac), "Id", "TenMauSac");
                 ViewBag.Size = new SelectList(_context.sizes.ToList().Where(c => c.status == 1).OrderBy(c => c.SizeName), "Id", "SizeName");
-                ViewBag.Anh = new SelectList(_context.anhs.ToList(), "Id", "Connect");
+                //ViewBag.Anh = new SelectList(_context.anhs.ToList(), "Id", "Connect");
+                string urlanh = "https://localhost:7214/api/Anh/GetAll";
+                var respon = _client.GetAsync(urlanh).Result;
+                var data = respon.Content.ReadAsStringAsync().Result;
+                List<Anh> album = JsonConvert.DeserializeObject<List<Anh>>(data);
 
+                ViewBag.listanh = album; 
                 return View();
             }
         }
