@@ -2,6 +2,7 @@
 using AppData.Serviece.Implements;
 using AppData.Serviece.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -33,6 +34,11 @@ namespace AppAPI.Controllers
                 TienGiamGia = giatien,
                 status = 1,
             };
+            if (comBoSer.GetAll().Any(c => c.TenCombo == Ten))
+            {
+                return false;
+            }
+            
             return comBoSer.Add(combo);
         }
         [HttpDelete("Delete/{Id}")]
