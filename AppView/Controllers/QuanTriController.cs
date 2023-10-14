@@ -412,10 +412,10 @@ namespace AppView.Controllers
             var respon = _client.GetAsync(url).Result;
             var data = respon.Content.ReadAsStringAsync().Result;
             List<SanPhamChiTietViewModel> lstsize = JsonConvert.DeserializeObject<List<SanPhamChiTietViewModel>>(data);
-            foreach (var product in lstsize)
-            {
-                product.QRCode = GenerateQRCode(product.Id);
-            }
+            //foreach (var product in lstsize)
+            //{
+            //    product.QRCode = GenerateQRCode(product.Id);
+            //}
             return View(lstsize);
         }
 
@@ -450,47 +450,47 @@ namespace AppView.Controllers
         //    }
         //}
 
-        public string GenerateQRCode(Guid id)
-        {
-            // Truy xuất thông tin đối tượng dựa trên ID
-            SanPhamChiTietViewModel spct = _spctViewModel.GetById(id);
-            var infor = $"Mã Sản phẩm: {spct.MaSp} Tên: {spct.TenSP} Màu sắc : {spct.MauSac} Chất liệu: {spct.ChatLieu} Size : {spct.Size}";
-            if (spct != null)
-            {
-                // Tạo mã QR từ thông tin đối tượng
-                BarcodeWriter<Bitmap> qrCodeWriter = new BarcodeWriter<Bitmap>();
-                qrCodeWriter.Format = BarcodeFormat.QR_CODE;
-                qrCodeWriter.Options = new QrCodeEncodingOptions
-                {
-                    DisableECI = true,
-                    CharacterSet = "UTF-8",
-                    Width = 200,
-                    Height = 200,
-                };
+        //public string GenerateQRCode(Guid id)
+        //{
+        //    // Truy xuất thông tin đối tượng dựa trên ID
+        //    SanPhamChiTietViewModel spct = _spctViewModel.GetById(id);
+        //    var infor = $"Mã Sản phẩm: {spct.MaSp} Tên: {spct.TenSP} Màu sắc : {spct.MauSac} Chất liệu: {spct.ChatLieu} Size : {spct.Size}";
+        //    if (spct != null)
+        //    {
+        //        // Tạo mã QR từ thông tin đối tượng
+        //        BarcodeWriter<Bitmap> qrCodeWriter = new BarcodeWriter<Bitmap>();
+        //        qrCodeWriter.Format = BarcodeFormat.QR_CODE;
+        //        qrCodeWriter.Options = new QrCodeEncodingOptions
+        //        {
+        //            DisableECI = true,
+        //            CharacterSet = "UTF-8",
+        //            Width = 200,
+        //            Height = 200,
+        //        };
 
-                var qrCodeBitmap = qrCodeWriter.Write(infor);
+        //        var qrCodeBitmap = qrCodeWriter.Write(infor);
 
-                // Chuyển đổi mã QR thành một dạng hiển thị trên giao diện
-                using (var bitmap = new Bitmap(qrCodeBitmap))
-                {
-                    var byteArray = BitmapToByteArray(bitmap);
-                    var base64String = Convert.ToBase64String(byteArray);
+        //        // Chuyển đổi mã QR thành một dạng hiển thị trên giao diện
+        //        using (var bitmap = new Bitmap(qrCodeBitmap))
+        //        {
+        //            var byteArray = BitmapToByteArray(bitmap);
+        //            var base64String = Convert.ToBase64String(byteArray);
 
-                    // Trả về mã QR dưới dạng hình ảnh hoặc sử dụng nó trong giao diện
-                    return$"<img src='data:image/png;base64,{base64String}' />";
-                }
-            }
+        //            // Trả về mã QR dưới dạng hình ảnh hoặc sử dụng nó trong giao diện
+        //            return$"<img src='data:image/png;base64,{base64String}' />";
+        //        }
+        //    }
 
-            return "Không tìm thấy đối tượng.";
-        }
-        private byte[] BitmapToByteArray(Bitmap bitmap)
-        {
-            using (MemoryStream stream = new MemoryStream())
-            {
-                bitmap.Save(stream, ImageFormat.Png);
-                return stream.ToArray();
-            }
-        }
+        //    return "Không tìm thấy đối tượng.";
+        //}
+        //private byte[] BitmapToByteArray(Bitmap bitmap)
+        //{
+        //    using (MemoryStream stream = new MemoryStream())
+        //    {
+        //        bitmap.Save(stream, ImageFormat.Png);
+        //        return stream.ToArray();
+        //    }
+        //}
         // Kết thúc 
 
         [HttpGet]
