@@ -1,4 +1,4 @@
-﻿@model AppData.model.SanPhamChiTiet
+﻿@model AppData.ViewModal.SanPhamChiTietVM.SanPhamChiTietViewModel
 
 @{
     ViewData["Title"] = "GellByIDSanPhamCT";
@@ -7,7 +7,7 @@
 <h1>GellByIDSanPhamCT</h1>
 
 <div>
-    <h4>SanPhamChiTiet</h4>
+    <h4>SanPhamChiTietViewModel</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -17,40 +17,40 @@
             @Html.DisplayFor(model => model.Id)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdDanhMuc)
+            @Html.DisplayNameFor(model => model.DanhMuc)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdDanhMuc)
+            @Html.DisplayFor(model => model.DanhMuc)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IDSP)
+            @Html.DisplayNameFor(model => model.TenSP)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IDSP)
+            @Html.DisplayFor(model => model.TenSP)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdChatLieu)
+            @Html.DisplayNameFor(model => model.ChatLieu)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdChatLieu)
+            @Html.DisplayFor(model => model.ChatLieu)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdMauSac)
+            @Html.DisplayNameFor(model => model.MauSac)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdMauSac)
+            @Html.DisplayFor(model => model.MauSac)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdSize)
+            @Html.DisplayNameFor(model => model.Size)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdSize)
+            @Html.DisplayFor(model => model.Size)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IdAnh)
+            @Html.DisplayNameFor(model => model.Anh)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IdAnh)
+            @Html.DisplayFor(model => model.Anh)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.MaSp)
@@ -75,6 +75,12 @@
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.MoTa)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.QRCode)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.QRCode)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.status)

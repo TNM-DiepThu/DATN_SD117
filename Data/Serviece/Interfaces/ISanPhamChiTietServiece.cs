@@ -10,7 +10,7 @@ namespace Bill.Serviece.Interfaces
 {
     public interface ISanPhamChiTietServiece
     {
-        public bool Add(SanPhamChiTiet p);
+        public string Add(SanPhamChiTiet p);
         public List<SanPhamChiTiet> GetAll();
         public bool Del(Guid id);
         public bool Edit(Guid id, SanPhamChiTiet p);

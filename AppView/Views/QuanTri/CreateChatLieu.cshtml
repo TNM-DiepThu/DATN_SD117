@@ -5,7 +5,10 @@
 }
 
 <h1>CreateChatLieu</h1>
-
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
 <h4>ChatLieu</h4>
 <hr />
 <div class="row">

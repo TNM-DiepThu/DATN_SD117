@@ -82,7 +82,7 @@ namespace AppData.Serviece.ViewModeService
             return spct.FirstOrDefault(c => c.Id == ID);
         }
 
-        public SanPhamChiTietViewModel GetByName(string name)
+        public IEnumerable<SanPhamChiTietViewModel> GetByName(string name)
         {
             var spct = from a in _spct.GetAll()
                        join b in _sanpham.GetAll() on a.IDSP equals b.Id
@@ -106,7 +106,7 @@ namespace AppData.Serviece.ViewModeService
                            MoTa = a.MoTa,
                            status = a.status,
                        };
-            return spct.FirstOrDefault(c => c.TenSP.Contains(name));
+            return spct.Where(c => c.TenSP.Contains(name)).ToList();
         }
     }
 }

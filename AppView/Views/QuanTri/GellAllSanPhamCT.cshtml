@@ -18,6 +18,13 @@
     <a asp-action="UploadImage">Upload</a>
 </p>
 </p>
+
+<form asp-action="GellAllSanPhamCT" method="get">
+    <div>
+        <input type="text" id="name" name="name" placeholder="Tên sản phẩm" style="height : 40px; width: 90%;" />
+        <button type="submit" class="btn btn-primary" style="border-radius:5px;">Search</button>
+    </div>
+</form>
 <table class="table">
     <thead>
         <tr>
@@ -111,9 +118,9 @@
                     <img src="@item.QRCode" alt="QR Code" />
                 </td>*@
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+                    @Html.ActionLink("Edit", "UpdateSanPhamCT", new { id = item.Id  }) |
+                    @Html.ActionLink("Details", "GellByIDSanPhamCT", new { id = item.Id }) |
+                    @Html.ActionLink("Delete", "DeleteSanPhamCT", new { Id = item.Id })
                 </td>
             </tr>
         }

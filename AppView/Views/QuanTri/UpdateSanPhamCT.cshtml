@@ -1,4 +1,4 @@
-﻿@model AppData.model.SanPhamChiTiet
+﻿@model AppData.ViewModal.SanPhamChiTietVM.SanPhamChiTietViewModel
 
 @{
     ViewData["Title"] = "UpdateSanPhamCT";
@@ -6,7 +6,7 @@
 
 <h1>UpdateSanPhamCT</h1>
 
-<h4>SanPhamChiTiet</h4>
+<h4>SanPhamChiTietViewModel</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -18,40 +18,41 @@
                 <span asp-validation-for="Id" class="text-danger"></span>
             </div>*@
             <div class="form-group">
-                <label asp-for="IdDanhMuc" class="control-label"></label>
-                <input asp-for="IdDanhMuc" class="form-control" />
-                <span asp-validation-for="IdDanhMuc" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IDSP" class="control-label"></label>
-                <input asp-for="IDSP" class="form-control" />
-                <span asp-validation-for="IDSP" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdChatLieu" class="control-label"></label>
-                <input asp-for="IdChatLieu" class="form-control" />
-                <span asp-validation-for="IdChatLieu" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdMauSac" class="control-label"></label>
-                <input asp-for="IdMauSac" class="form-control" />
-                <span asp-validation-for="IdMauSac" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdSize" class="control-label"></label>
-                <input asp-for="IdSize" class="form-control" />
-                <span asp-validation-for="IdSize" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="IdAnh" class="control-label"></label>
-                <input asp-for="IdAnh" class="form-control" />
-                <span asp-validation-for="IdAnh" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MaSp" class="control-label"></label>
+                <label asp-for="MaSp" class="control-label" style="disabled"></label>
                 <input asp-for="MaSp" class="form-control" />
                 <span asp-validation-for="MaSp" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="DanhMuc" class="control-label"></label>
+                <input asp-for="DanhMuc" class="form-control" />
+                <span asp-validation-for="DanhMuc" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TenSP" class="control-label"></label>
+                <input asp-for="TenSP" class="form-control" />
+                <span asp-validation-for="TenSP" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ChatLieu" class="control-label"></label>
+                <input asp-for="ChatLieu" class="form-control" />
+                <span asp-validation-for="ChatLieu" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MauSac" class="control-label"></label>
+                <input asp-for="MauSac" class="form-control" />
+                <span asp-validation-for="MauSac" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Size" class="control-label"></label>
+                <input asp-for="Size" class="form-control" />
+                <span asp-validation-for="Size" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Anh" class="control-label"></label>
+                <input asp-for="Anh" class="form-control" />
+                <span asp-validation-for="Anh" class="text-danger"></span>
+            </div>
+            
             <div class="form-group">
                 <label asp-for="SoLuong" class="control-label"></label>
                 <input asp-for="SoLuong" class="form-control" />
@@ -67,6 +68,11 @@
                 <input asp-for="MoTa" class="form-control" />
                 <span asp-validation-for="MoTa" class="text-danger"></span>
             </div>
+           @* <div class="form-group">
+                <label asp-for="QRCode" class="control-label"></label>
+                <input asp-for="QRCode" class="form-control" />
+                <span asp-validation-for="QRCode" class="text-danger"></span>
+            </div>*@
             <div class="form-group">
                 <label asp-for="status" class="control-label"></label>
                 <input asp-for="status" class="form-control" />

@@ -21,6 +21,7 @@ using QRCoder;
 using ZXing.QrCode;
 using Bill.Serviece.Interfaces;
 using Bill.Serviece.Implements;
+using System.Collections.Generic;
 
 namespace AppView.Controllers
 {
@@ -34,7 +35,7 @@ namespace AppView.Controllers
         private readonly SanPhamChiTietViewModelService _spctViewModel;
         private readonly IAnhServiece anhservice;
         private readonly IWebHostEnvironment _hostingEnvironment;
-        public QuanTriController(ILogger<QuanTriController> logger , IWebHostEnvironment hostingEnvironment)
+        public QuanTriController(ILogger<QuanTriController> logger, IWebHostEnvironment hostingEnvironment)
         {
             _logger = logger;
             _hostingEnvironment = hostingEnvironment;
@@ -65,7 +66,16 @@ namespace AppView.Controllers
             HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
             if (httpResponseMessage.IsSuccessStatusCode)
             {
-                return RedirectToAction("GellAllChatLieu", "QuanTri");
+                var error = await httpResponseMessage.Content.ReadAsStringAsync();
+                if(error == "false")
+                {
+                    TempData["ErrorMessage"] = "Chất liệu bị trùng. Mời bạn nhập loại chất liệu khác";
+                    return RedirectToAction("CreateChatLieu", "QuanTri");
+                } else
+                {
+                    return RedirectToAction("GellAllChatLieu", "QuanTri");
+                }
+                
             }
             else
             {
@@ -110,7 +120,16 @@ namespace AppView.Controllers
             HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
             if (httpResponseMessage.IsSuccessStatusCode)
             {
-                return RedirectToAction("GellAllSize", "QuanTri");
+                var error = await httpResponseMessage.Content.ReadAsStringAsync();
+                if (error == "false")
+                {
+                    TempData["ErrorMessage"] = "Size bị trùng mã. Mời bạn nhập size khác";
+                    return RedirectToAction("CreateSize", "QuanTri");
+                }
+                else
+                {
+                    return RedirectToAction("GellAllSize", "QuanTri");
+                }
             }
             else
             {
@@ -190,7 +209,16 @@ namespace AppView.Controllers
             HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
             if (httpResponseMessage.IsSuccessStatusCode)
             {
-                return RedirectToAction("GellAllDanhMuc", "QuanTri");
+                var error = await httpResponseMessage.Content.ReadAsStringAsync();
+                if (error == "false")
+                {
+                    TempData["ErrorMessage"] = "Danh mục bị trùng mã. Mời bạn nhập Danh mục khác";
+                    return RedirectToAction("CreateDanhMuc", "QuanTri");
+                }
+                else
+                {
+                    return RedirectToAction("GellAllDanhMuc", "QuanTri");
+                }
             }
             else
             {
@@ -236,11 +264,12 @@ namespace AppView.Controllers
             if (httpResponseMessage.IsSuccessStatusCode)
             {
                 string apiResponse = await httpResponseMessage.Content.ReadAsStringAsync();
-                if(apiResponse == "false")
+                if (apiResponse == "false")
                 {
                     TempData["ErrorMessage"] = "Màu bị trùng. Vui lòng chọn màu khác.";
                     return View();
-                } else
+                }
+                else
                 {
                     return RedirectToAction("GellAllMau", "QuanTri");
                 }
@@ -278,10 +307,6 @@ namespace AppView.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> CreateThuongHieu()
-        {
-            return View();
-        }
         [HttpPost]
         public async Task<ActionResult> CreateThuongHieu(ThuongHieu th)
         {
@@ -291,17 +316,23 @@ namespace AppView.Controllers
             var obj = JsonConvert.SerializeObject(th);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
             HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
-            if  (httpResponseMessage.IsSuccessStatusCode)
+            if (httpResponseMessage.IsSuccessStatusCode)
             {
-                TempData["SuccessMessage"] = "Mục đã được thêm thành công.";
-                return RedirectToAction("GellAllThuongHieu", "QuanTri");
-            }
-            else 
-            {
-                TempData["ErrorMessage"] = "Mục đã tồn tại. Vui lòng chọn tên khác.";
-                return RedirectToAction("CreateThuongHieu");
-            }
+                string apiResponse = await httpResponseMessage.Content.ReadAsStringAsync();
+                if (apiResponse == "false")
+                {
+                    TempData["ErrorMessage"] = "Thương Hiệu bị trùng. Vui lòng chọn thương hiệu khác.";
+                    return View();
+                }
+                else
+                {
+                    return RedirectToAction(" GellAllThuongHieu", "QuanTri");
+                }
 
+            } else
+            {
+                return View();
+            }
         }
         [HttpPut]
         public async Task<ActionResult> DeleteThuongHieu(ThuongHieu th)
@@ -340,7 +371,15 @@ namespace AppView.Controllers
             HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
             if (httpResponseMessage.IsSuccessStatusCode)
             {
-                return RedirectToAction("GellAllXuatXu", "QuanTri");
+                var apiresponse = await httpResponseMessage.Content.ReadAsStringAsync();
+                if(apiresponse == "false")
+                {
+                    TempData["ErrorMessage"] = "Xuất sứ bị trùng. Vui lòng chọn xuất sứ khác.";
+                    return RedirectToAction("CreateXuatXu");
+                } else
+                {
+                    return RedirectToAction("GellAllXuatXu", "QuanTri");
+                }
             }
             else
             {
@@ -363,7 +402,7 @@ namespace AppView.Controllers
         // SanPham 
 
         [HttpGet]
-        public async Task<ActionResult>  GellAllSanPham()
+        public async Task<ActionResult> GellAllSanPham()
         {
             string url = "https://localhost:7214/api/SanPhamChiTiet/GetAllSanPhamViewModel";
             var respon = await _client.GetAsync(url);
@@ -381,7 +420,7 @@ namespace AppView.Controllers
             return View();
         }
 
-            [HttpPost]
+        [HttpPost]
         public async Task<ActionResult> CreateSanPham(SanPham sp)
         {
             string url = $"https://localhost:7214/api/Sanpham/Create?tensp={sp.TenSanPham}&idth={sp.IdThuongHieu}&idxx={sp.IdXuatSu}";
@@ -390,8 +429,17 @@ namespace AppView.Controllers
             HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
             if (httpResponseMessage.IsSuccessStatusCode)
             {
-                return RedirectToAction("GellAllSanPham", "QuanTri");
-            } else
+                var error = await httpResponseMessage.Content.ReadAsStringAsync();
+                if(error == "false")
+                {
+                    TempData["ErrorMessage"] = "Sản phẩm bị trùng. Vui lòng chọn sản phẩm khác.";
+                    return RedirectToAction("CreateSanPham");
+                } else
+                {
+                    return RedirectToAction("GellAllSanPham", "QuanTri");
+                }
+            }
+            else
             {
                 return RedirectToAction("CreateSanPham");
             }
@@ -412,17 +460,29 @@ namespace AppView.Controllers
         // san pham chi tiet
 
         [HttpGet]
-        public ActionResult GellAllSanPhamCT()
+        public ActionResult GellAllSanPhamCT(string name)
         {
-            string url = "https://localhost:7214/api/SanPhamChiTiet/GetAllSanphamchitietViewModel";
-            var respon = _client.GetAsync(url).Result;
-            var data = respon.Content.ReadAsStringAsync().Result;
-            List<SanPhamChiTietViewModel> lstsize = JsonConvert.DeserializeObject<List<SanPhamChiTietViewModel>>(data);
-            //foreach (var product in lstsize)
-            //{
-            //    product.QRCode = GenerateQRCode(product.Id);
-            //}
-            return View(lstsize);
+            if (name == null || name == "")
+            {
+                string url = "https://localhost:7214/api/SanPhamChiTiet/GetAllSanphamchitietViewModel";
+                var respon = _client.GetAsync(url).Result;
+                var datalist = respon.Content.ReadAsStringAsync().Result;
+                List<SanPhamChiTietViewModel> list = JsonConvert.DeserializeObject<List<SanPhamChiTietViewModel>>(datalist);
+                //foreach (var product in lstsize)
+                //{
+                //    product.QRCode = GenerateQRCode(product.Id);
+                //}
+                return View(list);
+            }
+            else
+            {
+             
+                string urltimliem = $"https://localhost:7214/api/SanPhamChiTiet/GetByNameSPCTVM?name={name}";
+                var respon1 = _client.GetAsync(urltimliem).Result;
+                var data = respon1.Content.ReadAsStringAsync().Result;
+                List<SanPhamChiTietViewModel> listbyname = JsonConvert.DeserializeObject<List<SanPhamChiTietViewModel>>(data);
+                return View(listbyname);
+            }
         }
 
         // tạo QrCode cho SanphamCTViewModel 
@@ -510,7 +570,7 @@ namespace AppView.Controllers
             return View(lstsize);
         }
         [HttpGet]
-        public ActionResult GellByNameSanPhamCT(string  name)
+        public ActionResult GellByNameSanPhamCT(string name)
         {
             string url = $"https://localhost:7214/api/SanPhamChiTiet/GetByNameSPCTVM?name={name}";
             var respon = _client.GetAsync(url).Result;
@@ -532,7 +592,20 @@ namespace AppView.Controllers
             HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
             if (httpResponseMessage.IsSuccessStatusCode)
             {
-                return RedirectToAction("GellAllSanPhamCT", "QuanTri");
+                var error = await httpResponseMessage.Content.ReadAsStringAsync();
+                if(error == "Sản phẩm bị trùng mã")
+                {
+                    TempData["ErrorMessage"] = "Sản phẩm bị trùng mã. Mời bạn nhập mã khác";
+                    return RedirectToAction("CreateSanPhamCT", "QuanTri");
+
+                } else if (error == "Sản phẩm đã tồn tại")
+                {
+                    TempData["ErrorMessage"] = "Sản phẩm bạn nhập đã có trong danh sách sản phẩm.";
+                    return RedirectToAction("CreateSanPhamCT", "QuanTri");
+                } else
+                {
+                    return RedirectToAction("GellAllSanPhamCT", "QuanTri");
+                }
             }
             else
             {
@@ -548,11 +621,19 @@ namespace AppView.Controllers
                 List<Anh> album = JsonConvert.DeserializeObject<List<Anh>>(data);
                 ImageUploadModel img = new ImageUploadModel();
                 ViewBag.upload = img.ImageFile;
-                ViewBag.listanh = album; 
+                ViewBag.listanh = album;
                 return View();
             }
         }
         [HttpGet]
+        public ActionResult UpdateSanPhamCT(Guid id)
+        {
+            string url = $"https://localhost:7214/api/SanPhamChiTiet/GetByIDSPCTVM?id={id}";
+            var respon = _client.GetAsync(url).Result;
+            var data = respon.Content.ReadAsStringAsync().Result;
+            SanPhamChiTietViewModel lstsize = JsonConvert.DeserializeObject<SanPhamChiTietViewModel>(data);
+            return View(lstsize);
+        }
         [HttpPost]
         public async Task<ActionResult> UpdateSanPhamCT(SanPhamChiTiet spct)
         {
@@ -571,7 +652,7 @@ namespace AppView.Controllers
                 return View();
             }
         }
-     
+
         [HttpPut]
         public async Task<ActionResult> DeleteSanPhamCT(SanPhamChiTiet sp)
         {

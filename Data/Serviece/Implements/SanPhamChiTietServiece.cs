@@ -33,7 +33,7 @@ namespace Bill.Serviece.Implements
             danhmucservice = new DanhMucServiece();
         }
 
-        public bool Add(SanPhamChiTiet p)
+        public string Add(SanPhamChiTiet p)
         {
             try
             {
@@ -54,10 +54,10 @@ namespace Bill.Serviece.Implements
                 };
                 _context.sanPhamChiTiets.Add(p);
                 _context.SaveChanges();
-                return true;
+                return "Them thanh cong";
             } catch (Exception ex)
             {
-                return false;
+                return "Them that bai";
             }
         }
 

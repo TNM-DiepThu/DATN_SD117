@@ -57,7 +57,7 @@ namespace AppAPI.Controllers
             return _spctViewModel.GetById(id);
         }
         [HttpGet("[action]")]
-        public SanPhamChiTietViewModel GetByNameSPCTVM(string name)
+        public IEnumerable<SanPhamChiTietViewModel> GetByNameSPCTVM(string name)
         {
             return _spctViewModel.GetByName(name);
         }
@@ -73,7 +73,7 @@ namespace AppAPI.Controllers
         }
 
         [HttpPost("Create")]
-        public bool CreateSanPhamChiTiet(Guid iddm, Guid idcl, Guid idms, Guid idsize, Guid idanh, Guid idsp, string masp, int soluong, decimal gia, string? mota)
+        public string CreateSanPhamChiTiet(Guid iddm, Guid idcl, Guid idms, Guid idsize, Guid idanh, Guid idsp, string masp, int soluong, decimal gia, string? mota)
         {
             SanPhamChiTiet spct = new SanPhamChiTiet()
             {
@@ -92,11 +92,11 @@ namespace AppAPI.Controllers
             };
             if (_sanphamCTsv.GetAll().Any(c => c.MaSp == masp))
             {
-                return false;
+                return "Sản phẩm bị trùng mã";
             }
-            if (_sanphamCTsv.GetAll().Any(c => c.IdAnh == idanh && c.IdChatLieu == idcl && c.IdDanhMuc == iddm && c.IdMauSac == idms && c.IDSP == idsp && c.IdSize == idsize && c.MaSp == masp))
+            if (_sanphamCTsv.GetAll().Any(c => c.IdAnh == idanh && c.IdChatLieu == idcl && c.IdDanhMuc == iddm && c.IdMauSac == idms && c.IDSP == idsp && c.IdSize == idsize))
             {
-                return false;
+                return "Sản phẩm đã tồn tại";
             }
             return _sanphamCTsv.Add(spct);
         }
