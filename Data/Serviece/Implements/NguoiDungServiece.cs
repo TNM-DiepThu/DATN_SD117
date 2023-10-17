@@ -112,13 +112,17 @@ namespace AppData.Serviece.Implements
             await _userManager.UpdateAsync(user);
         }
 
-        public async Task DeleteAsync(Guid id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
-            if (user == null)
-                return;
-
-            await _userManager.DeleteAsync(user);
+            user.status = 0;
+            _dbContext.Users.Update(user);
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                return true;
+            }
+            return false;
         }
     }
 }

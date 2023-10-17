@@ -18,14 +18,14 @@ namespace AppAPI.Controllers
             _nguoiDungService = nguoiDungService;
         }
 
-        [HttpGet]
+        [HttpGet("GetAll")]
         public async Task<ActionResult<IEnumerable<NguoiDungVM>>> Get()
         {
             var nguoiDungs = await _nguoiDungService.GetAllAsync();
             return Ok(nguoiDungs);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("GetById/{id}")]
         public async Task<ActionResult<NguoiDungVM>> Get(Guid id)
         {
             var nguoiDung = await _nguoiDungService.GetByIdAsync(id);
@@ -35,7 +35,7 @@ namespace AppAPI.Controllers
             return Ok(nguoiDung);
         }
 
-        [HttpPost]
+        [HttpPost("Create")]
         public async Task<ActionResult<Guid>> Post([FromBody] NguoiDungVM nguoiDung)
         {
             var id = await _nguoiDungService.CreateAsync(nguoiDung);
@@ -45,14 +45,14 @@ namespace AppAPI.Controllers
             }, id);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("Edit/{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] NguoiDungVM nguoiDung)
         {
             await _nguoiDungService.UpdateAsync(id, nguoiDung);
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("Delete/{id}")]
         public async Task<ActionResult> Delete(Guid id)
         {
             await _nguoiDungService.DeleteAsync(id);
