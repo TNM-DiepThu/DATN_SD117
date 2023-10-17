@@ -1,4 +1,5 @@
 ﻿using AppData.model;
+using AppData.ViewModal.Login;
 using AppData.ViewModal.Usermodalview;
 using System;
 using System.Collections.Generic;
@@ -15,5 +16,6 @@ namespace AppData.Serviece.Interfaces
         Task<Guid> CreateAsync(NguoiDungVM nguoiDung);
         Task UpdateAsync(Guid id, NguoiDungVM nguoiDung);
         Task<bool>  DeleteAsync(Guid id);
+        public Task<LoginResponesVM> LoginWithJWT(LoginRequestVM loginRequest);
     }
 }

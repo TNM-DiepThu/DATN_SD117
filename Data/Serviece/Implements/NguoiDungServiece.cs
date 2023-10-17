@@ -1,15 +1,21 @@
 ﻿using AppData.data;
 using AppData.model;
 using AppData.Serviece.Interfaces;
+using AppData.ViewModal.Login;
 using AppData.ViewModal.Usermodalview;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,12 +23,16 @@ namespace AppData.Serviece.Implements
 {
     public class NguoiDungServiece : INguoiDungServiece
     {
+        private readonly SignInManager<NguoiDung> _signInManager;
         private readonly UserManager<NguoiDung> _userManager;
+        private readonly IConfiguration _configuration;
         MyDbContext _dbContext;
 
-        public NguoiDungServiece(UserManager<NguoiDung> userManager)
+        public NguoiDungServiece(UserManager<NguoiDung> userManager, SignInManager<NguoiDung> signInManager, IConfiguration configuration)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
+            _configuration = configuration;
             _dbContext = new MyDbContext();
         }
 
@@ -123,6 +133,52 @@ namespace AppData.Serviece.Implements
                 return true;
             }
             return false;
+        }
+
+        public async Task<LoginResponesVM> LoginWithJWT(LoginRequestVM loginRequest)
+        {
+            var user = await _userManager.FindByEmailAsync(loginRequest.Email);
+            if (user == null) return new LoginResponesVM
+            {
+                Successful = false,
+                Error = "Người dùng không tồn tại trong hệ thống."
+            };
+            var login = await _signInManager.PasswordSignInAsync(user, loginRequest.Password, false, false);
+            if (!login.Succeeded) return new LoginResponesVM
+            {
+                Successful = false,
+                Error = "Người dùng không tồn tại trong hệ thống."
+            };
+            var rolesOfUser = await _userManager.GetRolesAsync(user);
+            var claims = new List<Claim>()
+            {
+                new Claim(ClaimTypes.Name,user.UserName),
+                new Claim(ClaimTypes.Email,user.Email),
+            };
+            foreach (var role in rolesOfUser)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:SecretKey"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            SecurityToken token = new JwtSecurityToken(
+              _configuration["Jwt:Issuer"],
+              _configuration["Jwt:Audience"],
+              claims,
+              expires: DateTime.Now.AddHours(3),
+              signingCredentials: creds);
+            if (token is not JwtSecurityToken jwtSecurityToken ||
+                    !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            {
+                return new LoginResponesVM
+                {
+                    Successful = false,
+                    Error = "Refresh token không hợp lệ."
+                };
+            }
+            LoginResponesVM loginResponesVm = new LoginResponesVM { Successful = true, Token = new JwtSecurityTokenHandler().WriteToken(token) };
+
+            return loginResponesVm;
         }
     }
 }

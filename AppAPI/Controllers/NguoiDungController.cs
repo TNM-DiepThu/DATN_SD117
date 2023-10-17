@@ -1,6 +1,7 @@
 ﻿using AppData.model;
 using AppData.Serviece.Implements;
 using AppData.Serviece.Interfaces;
+using AppData.ViewModal.Login;
 using AppData.ViewModal.Usermodalview;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -57,6 +58,12 @@ namespace AppAPI.Controllers
         {
             await _nguoiDungService.DeleteAsync(id);
             return NoContent();
+        }
+        [HttpPost("Login")]
+        public async Task<IActionResult> LoginWithJWT(LoginRequestVM loginRequest)
+        {
+            var result = await _nguoiDungService.LoginWithJWT(loginRequest);
+            return Ok(result.Token);
         }
     }
 }
