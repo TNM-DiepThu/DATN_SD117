@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 
 namespace AppData.Serviece.Interfaces
 {
-    public interface IHoaDonCTService
-    {
+    
         public interface IHoaDonCTService<T>
         {
             public IEnumerable<T> GetAll();
@@ -15,5 +14,5 @@ namespace AppData.Serviece.Interfaces
             public bool RemoveItem(T item);
             public bool EditItem(T item);
         }
-    }
+    
 }
