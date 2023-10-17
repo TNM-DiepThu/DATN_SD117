@@ -1,4 +1,23 @@
-﻿<!DOCTYPE html>
+﻿@using System.IdentityModel.Tokens.Jwt
+@using System.Security.Claims
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor httpAccess
+@{
+
+    var sessionJWT = httpAccess.HttpContext.Session.GetString("JWTToken");
+    var sessionGG = httpAccess.HttpContext.Session.GetString("User");
+    var username = "";
+    if (!string.IsNullOrEmpty(sessionJWT))
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var decodedToken = handler.ReadJwtToken(sessionJWT);
+
+        if (decodedToken != null)
+        {
+            username = decodedToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+        }
+    }
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -32,6 +51,34 @@
                         </li>
                     </ul>
                 </div>
+                @if (sessionJWT == null)
+                {
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        <ul class="navbar-nav flex-grow-1" style="flex-direction:row-reverse">
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="LoginJWT">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="NguoiDung" asp-action="CreateNguoiDung">SignUp</a>
+                            </li>
+                        </ul>
+                    </div>
+                }
+                else if (User.Identity != null && User.Identity.IsAuthenticated && sessionJWT != null)
+                {
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        <ul class="navbar-nav flex-grow-1" style="flex-direction:row-reverse">
+
+
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="Logout">Logout</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark"><span>Xin Chao: @username</span></a>
+                            </li>
+                        </ul>
+                    </div>
+                }
             </div>
         </nav>
     </header>

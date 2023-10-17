@@ -16,9 +16,9 @@ namespace AppData.Configuration
            builder.HasKey(x => x.Id);
             builder.Property(x=>x.SoLuong).HasColumnType("int");
             builder.Property(x=>x.DonGia).HasColumnType("decimal");
-            builder.HasOne(x=>x.GioHang).WithMany(x=>x.gioHangChiTiets).HasForeignKey(x=>x.IdGioHang).OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(x=>x.ComboChiTiet).WithMany(x=>x.GioHangChiTiets).HasForeignKey(x=>x.IdComboChiTiet).OnDelete(DeleteBehavior.Restrict).IsRequired(false);
-            builder.HasOne(x=>x.SanPhamChiTiet).WithMany(x=>x.gioHangChiTiets).HasForeignKey(x=>x.IdSanPhamChiTiet).OnDelete(DeleteBehavior.Restrict).IsRequired(false);
+            builder.HasOne(x=>x.GioHang).WithMany(x=>x.gioHangChiTiets).HasForeignKey(x=>x.IdGioHang).OnDelete(DeleteBehavior.Restrict); ;
+            builder.HasOne(x=>x.ComboChiTiet).WithMany(x=>x.GioHangChiTiets).HasForeignKey(x=>x.IdComboChiTiet).OnDelete(DeleteBehavior.Restrict).IsRequired(false); ;
+            builder.HasOne(x=>x.SanPhamChiTiet).WithMany(x=>x.gioHangChiTiets).HasForeignKey(x=>x.IdSanPhamChiTiet).OnDelete(DeleteBehavior.Restrict).IsRequired(false); ;
         }
     }
 }

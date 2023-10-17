@@ -18,8 +18,8 @@ namespace AppData.Configuration
             builder.Property(x => x.status).HasColumnType("int");
             builder.Property(x => x.Gia).HasColumnType("decimal");
             builder.HasOne(x => x.HoaDon).WithMany(x => x.hoaDonChiTiets).HasForeignKey(x => x.IDHD).OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(x => x.comboChiTiet).WithMany(x => x.hoaDonChiTiets).HasForeignKey(x => x.IdCombo).OnDelete(DeleteBehavior.Restrict);
-            builder.HasOne(x => x.SanPhamChiTiet).WithMany(x => x.hoaDonChiTiets).HasForeignKey(x => x.IdSPCT).OnDelete(DeleteBehavior.Restrict);
+            builder.HasOne(x => x.comboChiTiet).WithMany(x => x.hoaDonChiTiets).HasForeignKey(x => x.IdCombo).OnDelete(DeleteBehavior.Restrict).IsRequired(false);
+            builder.HasOne(x => x.SanPhamChiTiet).WithMany(x => x.hoaDonChiTiets).HasForeignKey(x => x.IdSPCT).OnDelete(DeleteBehavior.Restrict).IsRequired(false);
 
         }
     }

@@ -12,11 +12,11 @@ namespace AppData.Serviece.Implements
     public class GioHangService : IGioHangService
     {
         private readonly MyDbContext _context;
-        private readonly INguoiDungService _ND;
+        private readonly INguoiDungServiece _ND;
         public GioHangService()
         {
             _context = new MyDbContext();
-            _ND = new NguoiDungService();
+            //_ND = new NguoiDungServiece();
         }
 
         public bool Add(GioHang p)
@@ -24,14 +24,14 @@ namespace AppData.Serviece.Implements
             try
             {
 
-                GioHang GH = new GioHang()
-                {
-                    Id = Guid.NewGuid(),
-                    GhiChu = p.GhiChu,
-                    IdNguoiDung = _ND.GetAll().FirstOrDefault(c => c.Id == p.IdNguoiDung).Id,
-                };
-                _context.gioHangs.Add(GH);
-                _context.SaveChanges();
+                //GioHang GH = new GioHang()
+                //{
+                //    Id = Guid.NewGuid(),
+                //    GhiChu = p.GhiChu,
+                //    IdNguoiDung = _ND.GetAll().FirstOrDefault(c => c.Id == p.IdNguoiDung).Id,
+                //};
+                //_context.gioHangs.Add(GH);
+                //_context.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -61,14 +61,14 @@ namespace AppData.Serviece.Implements
 
         public bool Edit(Guid id, GioHang p)
         {
-            var listobj = _context.gioHangs.ToList();
-            var obj = listobj.FirstOrDefault(c => c.Id == id);
-            obj.GhiChu = p.GhiChu;
-            obj.IdNguoiDung = _ND.GetAll().FirstOrDefault(c => c.Id == p.IdNguoiDung).Id;
+            //var listobj = _context.gioHangs.ToList();
+            //var obj = listobj.FirstOrDefault(c => c.Id == id);
+            //obj.GhiChu = p.GhiChu;
+            //obj.IdNguoiDung = _ND.GetAll().FirstOrDefault(c => c.Id == p.IdNguoiDung).Id;
 
 
-            _context.gioHangs.Update(obj);
-            _context.SaveChangesAsync();
+            //_context.gioHangs.Update(obj);
+            //_context.SaveChangesAsync();
             return true;
         }
         public List<GioHang> GetAll()
