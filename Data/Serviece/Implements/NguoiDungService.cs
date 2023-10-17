@@ -17,7 +17,7 @@ namespace AppData.Serviece.Implements
         {
             _context = new MyDbContext();
             quyen = new Quyen();
-        }
+        }        
 
         public bool Add(NguoiDung user)
         {

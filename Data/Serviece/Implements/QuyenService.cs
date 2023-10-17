@@ -1,6 +1,9 @@
 ﻿using AppData.data;
 using AppData.model;
 using AppData.Serviece.Interfaces;
+using Microsoft.AspNet.Identity;
+using Microsoft.Azure.Cosmos.Spatial;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,8 +17,7 @@ namespace AppData.Serviece.Implements
         private readonly MyDbContext _context;
         public QuyenService(MyDbContext context)
         {
-            _context = context;
-        }
+            _context = context;        }
         public bool AddQuyen(Quyen quyen)
         {
             try
@@ -34,6 +36,12 @@ namespace AppData.Serviece.Implements
                 return false;
             }
         }
+
+        public async Task<List<Quyen>> GetAllPositionActive()
+        {
+            return await _context.Roles.Where(p => p.status != 0).ToListAsync();
+        }
+
         public List<Quyen> GetAllQuyen()
         {
             try

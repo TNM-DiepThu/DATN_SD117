@@ -5,8 +5,11 @@ using AppData.Serviece.Interfaces;
 using Bill.Serviece.Implements;
 using Bill.Serviece.Interfaces;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,14 +33,41 @@ builder.Services.AddTransient<IVoucherServices, VoucherServices>();
 builder.Services.AddTransient<IVoucherDetailServices, VoucherDetailServices>();
 builder.Services.AddTransient<IHinhThucThanhToanServices, HinhThucThanhToanServiece>();
 builder.Services.AddTransient<INguoiDungServiece, NguoiDungServiece>();
+builder.Services.AddTransient<IQuyenService, QuyenService>();
 
 builder.Services.AddDbContext<MyDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("MyCS"));
 });
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+                    .AddJwtBearer(opt =>
+                    {
+                        opt.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = true,
+                            ValidateAudience = true,
+                            ValidateLifetime = true,
+                            ValidateIssuerSigningKey = true,
+                            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                            ValidAudience = builder.Configuration["Jwt:Audience"],
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"])),
+
+                        };
+
+                    });
+
+
 builder.Services.AddIdentity<NguoiDung, Quyen>()
-                .AddEntityFrameworkStores<MyDbContext>()
-    .AddSignInManager<SignInManager<NguoiDung>>();
+    .AddEntityFrameworkStores<MyDbContext>()
+    .AddSignInManager<SignInManager<NguoiDung>>()
+    .AddDefaultTokenProviders();
+
 
 var app = builder.Build();
 

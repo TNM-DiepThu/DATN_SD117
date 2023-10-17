@@ -18,5 +18,6 @@ namespace AppData.ViewModal.Usermodalview
         public string DiaChi { get; set; }
         public DateTime NgaySinh { get; set; }
         public int status { get; set; }
+        public List<string>? roleNames { get; set; }
     }
 }
