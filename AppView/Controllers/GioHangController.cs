@@ -1,10 +1,19 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AppData.model;
+using AppData.ViewModal.Usermodalview;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
+using System.Net.Http;
+using System.Text;
 
 namespace AppView.Controllers
 {
     public class GioHangController : Controller
     {
+        HttpClient _client = new HttpClient();
+        
+
         // GET: GioHangController
         public ActionResult Index()
         {
@@ -12,15 +21,29 @@ namespace AppView.Controllers
         }
 
         // GET: GioHangController/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> GetallGH()
         {
-            return View();
+            var response = await _client.GetFromJsonAsync<List<GioHang>>($"https://localhost:7214/api/GioHang/GetAll");
+            return View(response);
         }
 
         // GET: GioHangController/Create
-        public ActionResult Create()
+        public async Task<ActionResult> CreateGioHang(GioHang gh)
         {
-            return View();
+            string url = $"https://localhost:7214/api/GioHang/Create";
+
+
+            var obj = JsonConvert.SerializeObject(gh);
+            StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
+            HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
+            if (httpResponseMessage.IsSuccessStatusCode)
+            {
+                return RedirectToAction("GetallGH", "QuanTri");
+            }
+            else
+            {
+                return View("CreateGioHang");
+            }
         }
 
         // POST: GioHangController/Create
@@ -47,22 +70,29 @@ namespace AppView.Controllers
         // POST: GioHangController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> EditAsync(Guid id, GioHang gh)
         {
-            try
+            var roleJson = JsonConvert.SerializeObject(gh);
+            HttpContent content = new StringContent(roleJson, Encoding.UTF8, "application/json");
+            var response = await _client.PutAsync($"https://localhost:7214/api/Gio/Delete/{gh.Id}", content);
+            var roles = await _client.GetFromJsonAsync<List<Combo>>($"https://localhost:7214/api/GioHang/GetAll");
+            ViewBag.Roles = new SelectList(roles, "Name", "Name");
+            if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(GetallGH));
             }
-            catch
-            {
-                return View();
-            }
+            return View();
         }
 
         // GET: GioHangController/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> DeleteAsync(GioHang gio)
         {
-            return View();
+            string url = $"https://localhost:7214/api/GioHang/Delete/{gio.Id}";
+            var obj = JsonConvert.SerializeObject(gio);
+            StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
+            HttpResponseMessage httpResponseMessage = await _client.PutAsync(url, content);
+
+            return RedirectToAction("GetallGH", "QuanTri");
         }
 
         // POST: GioHangController/Delete/5

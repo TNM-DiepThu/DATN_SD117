@@ -1,0 +1,59 @@
+﻿@model IEnumerable<AppData.model.ComboChiTiet>
+
+@{
+    ViewData["Title"] = "GetlistComBOCT";
+}
+
+<h1>GetlistComBOCT</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SoLuongSanPham)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GiaBan)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdCombo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IdSPCT)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SoLuongSanPham)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.GiaBan)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdCombo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IdSPCT)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
