@@ -16,7 +16,7 @@ namespace AppAPI.Controllers
         public GioHangController()
         {
             _GH = new GioHangService();
-            _nguoidungservice = new NguoiDungService();
+            //_nguoidungservice = new NguoiDungService();
         }
         [HttpGet("GetAll")]
 

@@ -3,20 +3,19 @@
 @{
     ViewData["Title"] = "CreateSanPhamCT";
     var dataanh = ViewBag.listanh;
-    var uploadimg = ViewBag.upload;
 }
 <script src="~/js/site.js"></script>
 <link href="~/css/site.css" rel="stylesheet" />
 
 <h4>SanPhamChiTiet</h4>
 <hr />
-@if (TempData["ErrorMessage"] != null)
+@*@if (TempData["ErrorMessage"] != null)
 {
     <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
-}
+}*@
 <div>
     <div>
-        <form asp-action="CreateSanPhamCT">
+        <form asp-action="CreateSanPhamCT" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             @*<div class="form-group">
             <label asp-for="Id" class="control-label"></label>
@@ -35,7 +34,8 @@
             <div class="form-group row">
                 <label for="IDSP" class="control-label col-3">Tên sản phẩm</label>
                 <div class="col-9 ">
-                    @Html.DropDownList("IDSP", ViewBag.SanPham  as IEnumerable<SelectListItem>, "", new { @class = "form-control" })
+                    @Html.DropDownList("IDSP", ViewBag.SanPham as IEnumerable<SelectListItem>, "", new { @class = "form-control" })
+                  @*  @Html.DropDownListFor(m => m.IDSP, (IEnumerable<SelectListItem>)ViewBag.SanPham, new { @class = "form-control" })*@
                     @Html.ValidationMessageFor(model => model.IDSP, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -73,8 +73,13 @@
             <div class="form-group row">
                 <label for="IdAnh" class="control-label col-3">Ảnh sản phẩm</label>
                 <div class="col-9 row">
-                    <input type="text" id="imageFilename" name="imageFilename" class="col-4" />
-                    <input asp-for="IdAnh" type="text" id="imageId" name="imageId" class="col-4" />
+
+                    <input type="text" id="imageFilename" name="imageFilename" class="col-4"  />
+                    <div >
+                        @Html.TextBoxFor(m => m.IdAnh, new { @class = "form-control", id = "imageId", name ="imageId" })
+                    </div>
+                    @*<input asp-for="IdAnh" id="imageId" name="imageId" class="col-4" />*@
+                    
                     @*Mở form anh*@
                     <button type="button" class="col-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
                         Chọn ảnh
@@ -111,7 +116,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
 
             @* Kêt thúc form anh*@

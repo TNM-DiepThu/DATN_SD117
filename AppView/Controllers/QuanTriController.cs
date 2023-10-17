@@ -584,9 +584,23 @@ namespace AppView.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateSanPhamCT(SanPhamChiTiet spct)
         {
+            ViewBag.DanhMuc = new SelectList(_context.danhMucs.ToList().Where(c => c.status == 1).OrderBy(c => c.TenDanhMuc), "Id", "TenDanhMuc");
+            ViewBag.SanPham = new SelectList(_context.sanPhams.ToList().Where(c => c.status == 1).OrderBy(c => c.TenSanPham), "Id", "TenSanPham");
+            //ViewBag.IDSP = new SelectList(_context.sanPhams.ToList().Where(c => c.status == 1).OrderBy(c => c.TenSanPham), "Id", "TenSanPham");
+
+            ViewBag.ChatLieu = new SelectList(_context.chatLieus.ToList().Where(c => c.status == 1).OrderBy(c => c.TenChatLieu), "Id", "TenChatLieu");
+            ViewBag.MauSac = new SelectList(_context.mauSacs.ToList().Where(c => c.status == 1).OrderBy(c => c.TenMauSac), "Id", "TenMauSac");
+            ViewBag.Size = new SelectList(_context.sizes.ToList().Where(c => c.status == 1).OrderBy(c => c.SizeName), "Id", "SizeName");
+            //ViewBag.Anh = new SelectList(_context.anhs.ToList(), "Id", "Connect");
+            string urlanh = "https://localhost:7214/api/Anh/GetAll";
+            var respon = _client.GetAsync(urlanh).Result;
+            var data = respon.Content.ReadAsStringAsync().Result;
+            List<Anh> album = JsonConvert.DeserializeObject<List<Anh>>(data);
+            ImageUploadModel img = new ImageUploadModel();
+            ViewBag.upload = img.ImageFile;
+            ViewBag.listanh = album;
             string url = $"https://localhost:7214/api/SanPhamChiTiet/Create?iddm={spct.IdDanhMuc}&idcl={spct.ChatLieu}&idms={spct.IdMauSac}&idsize={spct.IdSize}&idanh={spct.IdAnh}&idsp={spct.IDSP}&masp={spct.MaSp}&soluong={spct.SoLuong}&gia={spct.GiaBan}&mota={spct.MoTa}";
-
-
+       
             var obj = JsonConvert.SerializeObject(spct);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
             HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
@@ -609,19 +623,6 @@ namespace AppView.Controllers
             }
             else
             {
-                ViewBag.DanhMuc = new SelectList(_context.danhMucs.ToList().Where(c => c.status == 1).OrderBy(c => c.TenDanhMuc), "Id", "TenDanhMuc");
-                ViewBag.SanPham = new SelectList(_context.sanPhams.ToList().Where(c => c.status == 1).OrderBy(c => c.TenSanPham), "Id", "TenSanPham");
-                ViewBag.ChatLieu = new SelectList(_context.chatLieus.ToList().Where(c => c.status == 1).OrderBy(c => c.TenChatLieu), "Id", "TenChatLieu");
-                ViewBag.MauSac = new SelectList(_context.mauSacs.ToList().Where(c => c.status == 1).OrderBy(c => c.TenMauSac), "Id", "TenMauSac");
-                ViewBag.Size = new SelectList(_context.sizes.ToList().Where(c => c.status == 1).OrderBy(c => c.SizeName), "Id", "SizeName");
-                //ViewBag.Anh = new SelectList(_context.anhs.ToList(), "Id", "Connect");
-                string urlanh = "https://localhost:7214/api/Anh/GetAll";
-                var respon = _client.GetAsync(urlanh).Result;
-                var data = respon.Content.ReadAsStringAsync().Result;
-                List<Anh> album = JsonConvert.DeserializeObject<List<Anh>>(data);
-                ImageUploadModel img = new ImageUploadModel();
-                ViewBag.upload = img.ImageFile;
-                ViewBag.listanh = album;
                 return View();
             }
         }
