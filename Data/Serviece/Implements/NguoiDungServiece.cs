@@ -36,6 +36,7 @@ namespace AppData.Serviece.Implements
             _dbContext = new MyDbContext();
         }
 
+
         public async Task<IEnumerable<NguoiDungVM>> GetAllAsync()
         {
             var users = await _userManager.Users.ToListAsync();
