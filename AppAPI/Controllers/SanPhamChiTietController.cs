@@ -1,4 +1,6 @@
 ﻿using AppData.model;
+using AppData.Serviece.Implements;
+using AppData.Serviece.Interfaces;
 using AppData.Serviece.ViewModeService;
 using AppData.ViewModal.SanPhamChiTietVM;
 using Bill.Serviece.Implements;
@@ -17,6 +19,9 @@ namespace AppAPI.Controllers
     {
         private readonly ISanPhamChiTietServiece _sanphamCTsv;
         private readonly IAnhServiece _anhServiece;
+        private readonly IComboChiTietService _comboctsevice;
+        private readonly IGioHangCTService _giohangctservice;
+        private readonly IGioHangService _giohangservice;
         private readonly IDanhMucServiece _anhMuc;
         private readonly SanPhamChiTietViewModelService _spctViewModel;
         private readonly SanPhamViewModelService _spViewModel;
@@ -28,8 +33,11 @@ namespace AppAPI.Controllers
         {
             _anhMuc = new DanhMucServiece();
             _anhServiece = new AnhServiece();
+            _giohangctservice = new GioHangCTService();
+            _giohangservice = new GioHangService();
             _chatLieu = new ChatLieuServiece();
             _spctViewModel = new SanPhamChiTietViewModelService();
+            _comboctsevice = new ComBoChiTietService();
             _spViewModel = new SanPhamViewModelService();
             _auSacServiece = new MauSacServiece();
             sizeServiece = new SizeServiece();
@@ -134,6 +142,46 @@ namespace AppAPI.Controllers
             return _sanphamCTsv.Edit(Id, spct);
         }
 
+        [HttpPost]
+        public bool ThemSPvaoGioHang(Guid id ,Guid? IDcombo , Guid? IDspct)
+        {
+            if(IDcombo == null && IDspct == null)
+            {
+                return false;
+            } else if(IDcombo == null && IDspct != null)
+            {
+                if( _giohangctservice.GetAll().Any(c => c.IdSanPhamChiTiet == IDspct) == false)
+                {
+                    Guid idtest = _sanphamCTsv.GetAll().FirstOrDefault(c => c.Id == IDspct).Id ;
+                    GioHangChiTiet ghct = new GioHangChiTiet()
+                    {
+                        Id = Guid.NewGuid(),
+                        IdGioHang = _giohangservice.GetAll().FirstOrDefault(c => c.Id == id).Id,
+                        IdComboChiTiet = null,
+                        IdSanPhamChiTiet = idtest,
+                        SoLuong = 1,
+                        DonGia = _sanphamCTsv.GetAll().FirstOrDefault(c => c.Id == IDspct).GiaBan
+                    };
+                    _giohangctservice.Add(ghct);
+                }else
+                {
+                    GioHangChiTiet ghct1 = _giohangctservice.GetAll().FirstOrDefault(c => c.IdSanPhamChiTiet == IDspct);
+                    ghct1.SoLuong += 1;
+                    ghct1.DonGia = _sanphamCTsv.GetAll().FirstOrDefault(c => c.Id == IDspct).GiaBan;
+                    _giohangctservice.Edit(id, ghct1);
+                }
+            } else if(IDcombo != null && IDspct == null)
+            {
+                if(_comboctsevice.GetAll().Any(c => c.Id == IDcombo))
+                {
+
+                }else
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
 
     }
 }

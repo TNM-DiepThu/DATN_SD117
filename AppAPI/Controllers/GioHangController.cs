@@ -12,9 +12,11 @@ namespace AppAPI.Controllers
     public class GioHangController : ControllerBase
     {
         private readonly IGioHangService _GH;
+        private readonly INguoiDungServiece _nguoidungservice;
         public GioHangController()
         {
             _GH = new GioHangService();
+            _nguoidungservice = new NguoiDungService();
         }
         [HttpGet("GetAll")]
 
@@ -29,7 +31,6 @@ namespace AppAPI.Controllers
             {
                 Id = Guid.NewGuid(),
                 GhiChu = GhiChu,
-                
             };
             return _GH.Add(GH);
         }

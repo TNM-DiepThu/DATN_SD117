@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppData.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20231014150447_DATN")]
+    [Migration("20231016162050_DATN")]
     partial class DATN
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -198,13 +198,13 @@ namespace AppData.Migrations
                     b.Property<decimal>("DonGia")
                         .HasColumnType("decimal");
 
-                    b.Property<Guid>("IdComboChiTiet")
+                    b.Property<Guid?>("IdComboChiTiet")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("IdGioHang")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("IdSanPhamChiTiet")
+                    b.Property<Guid?>("IdSanPhamChiTiet")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("SoLuong")
@@ -894,8 +894,7 @@ namespace AppData.Migrations
                     b.HasOne("AppData.model.ComboChiTiet", "ComboChiTiet")
                         .WithMany("GioHangChiTiets")
                         .HasForeignKey("IdComboChiTiet")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("AppData.model.GioHang", "GioHang")
                         .WithMany("gioHangChiTiets")
@@ -906,8 +905,7 @@ namespace AppData.Migrations
                     b.HasOne("AppData.model.SanPhamChiTiet", "SanPhamChiTiet")
                         .WithMany("gioHangChiTiets")
                         .HasForeignKey("IdSanPhamChiTiet")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("ComboChiTiet");
 
