@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace AppData.Serviece.Interfaces
 {
-    internal interface ILichsuHoaDonService
+    public interface ILichsuHoaDonService<T>
     {
+        public IEnumerable<T> GetAll();
+        public bool AddItem(T item);
+        public bool RemoveItem(T item);
+        public bool EditItem(T item);
     }
 }
