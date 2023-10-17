@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using AppData.model;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,6 +70,26 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
                     });
 
+builder.Services.AddAuthentication(options =>
+{
+    // DefaultAuthenticateScheme: Đây là Scheme sẽ được sử dụng để xác thực yêu cầu đã được xác thực thành công.
+    // Trong trường hợp này,CookieAuthenticationDefaults.AuthenticationScheme  được sử dụng, điều này có nghĩa là sử dụng xác thực bằng cookie.
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+
+ // cau hinh cookie
+ .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+ {
+     options.Cookie.Name = "User";
+     options.LoginPath = "/Login/Login";
+     options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // Thiết lập chính sách bảo mật
+     options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Thiết lập thời gian sống của cookie
+     options.SlidingExpiration = true; // Cho phép cookie được cập nhật thời gian sống mỗi khi có request mới
+     options.Cookie.HttpOnly = true;
+ });
+
 //
 var sessionTimes = new Dictionary<string, TimeSpan>()
 {
@@ -102,9 +123,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
+app.UseSession();
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

@@ -17,5 +17,6 @@ namespace AppData.Serviece.Interfaces
         Task UpdateAsync(Guid id, NguoiDungVM nguoiDung);
         Task<bool>  DeleteAsync(Guid id);
         public Task<LoginResponesVM> LoginWithJWT(LoginRequestVM loginRequest);
+
     }
 }

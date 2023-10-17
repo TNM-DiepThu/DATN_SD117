@@ -1,0 +1,46 @@
+﻿@using AppData.ViewModal.Login;
+@model LoginRequestVM
+
+@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Login</h2>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="LoginJWT">
+            <div asp-validation-summary="None" class="text-danger"></div>
+            @if (!string.IsNullOrEmpty(ViewBag.Message))
+            {
+                <span class="text-danger">
+                    @ViewBag.Message
+                </span>
+            }
+            @Html.HiddenFor(x => x.ReturnUrl)
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                @*<div class="checkbox">
+                <label>
+                <input asp-for="RememberMe" /> @Html.DisplayNameFor(model => model.RememberMe)
+                </label>
+                </div>*@
+            </div>
+            <div class="form-group">
+                <input type="submit" class="btn btn-outline-primary" value="Login" />
+            </div>
+        </form>
+    </div>
+</div>
+
