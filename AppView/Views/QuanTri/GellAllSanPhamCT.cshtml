@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "GellAllSanPhamCT";
+
 }
 
 <h1>GellAllSanPhamCT</h1>
@@ -90,7 +91,7 @@
                     @Html.DisplayFor(modelItem => item.Size)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Anh)
+                    <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = item.Anh })" alt="Image" class="selectable-image" />
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.MaSp)
@@ -118,7 +119,7 @@
                     <img src="@item.QRCode" alt="QR Code" />
                 </td>*@
                 <td>
-                    @Html.ActionLink("Edit", "UpdateSanPhamCT", new { id = item.Id  }) |
+                    @Html.ActionLink("Edit", "UpdateSanPhamCT", new { Id = item.Id  }) |
                     @Html.ActionLink("Details", "GellByIDSanPhamCT", new { id = item.Id }) |
                     @Html.ActionLink("Delete", "DeleteSanPhamCT", new { Id = item.Id })
                 </td>

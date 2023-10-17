@@ -2,6 +2,7 @@
 using AppData.Serviece.Implements;
 using AppData.Serviece.Interfaces;
 using AppData.ViewModal.GioHangChiTietViewModel;
+using AppData.ViewModal.SanPhamChiTietVM;
 using Bill.Serviece.Implements;
 using Bill.Serviece.Interfaces;
 using System;
@@ -19,7 +20,7 @@ namespace AppData.Serviece.ViewModeService
         private readonly SanPhamChiTietViewModelService _spctviewmodelservice;
         private readonly IGioHangService _giohangservice;
         private readonly ISanPhamChiTietServiece _sanphamctservice;
-        private readonly IComboChiTietService _comboctservice;
+        private readonly ComBoChiTietViewModelService _comboctservice;
         public GioHangChiTietViewModelService()
         {
             _context = new MyDbContext();
@@ -27,7 +28,7 @@ namespace AppData.Serviece.ViewModeService
             _spctviewmodelservice = new SanPhamChiTietViewModelService();
             _giohangctservice = new GioHangCTService();
             _sanphamctservice = new SanPhamChiTietServiece();
-            _comboctservice = new ComBoChiTietService();
+            _comboctservice = new ComBoChiTietViewModelService();
         }
         public List<GioHangChiTietViewModel> GetAllListGioHang()
         {
@@ -35,17 +36,17 @@ namespace AppData.Serviece.ViewModeService
             var lst = from a in _giohangctservice.GetAll()
                       join b in _giohangservice.GetAll() on a.IdGioHang equals b.Id
                       join c in _spctviewmodelservice.GetAll() on a.IdSanPhamChiTiet equals c.Id
-                      join d in _comboctservice.GetAll() on a.IdComboChiTiet equals d.Id
+                      join d in _comboctservice.GetAllComBoChiTiet() on a.IdComboChiTiet equals d.Id
                       select new GioHangChiTietViewModel
                       {
                           ID = a.Id,
                           IDGH = b.Id,
-                          IDSanPham = _spctviewmodelservice.GetAll().FirstOrDefault(c => c.Id == a.IdSanPhamChiTiet).Id != null ? c.Id : _comboctservice.GetAll().FirstOrDefault(c => c.Id == a.IdComboChiTiet).Id,
-                          //TenSanPham = _spctviewmodelservice.GetAll().FirstOrDefault(c => c.Id == a.IdSanPhamChiTiet).TenSP != null ? c.TenSP : _comboctservice.GetAll().FirstOrDefault(c => c.Id == a.IdComboChiTiet).,
+                          IDSanPham = _spctviewmodelservice.GetAll().FirstOrDefault(c => c.Id == a.IdSanPhamChiTiet).Id != null ? c.Id : _comboctservice.GetAllComBoChiTiet().FirstOrDefault(c => c.Id == a.IdComboChiTiet).Id,
+                          TenSanPham = _spctviewmodelservice.GetAll().FirstOrDefault(c => c.Id == a.IdSanPhamChiTiet).TenSP != null ? c.TenSP : _comboctservice.GetAllComBoChiTiet().FirstOrDefault(c => c.Id == a.IdComboChiTiet).TenComBo,
                           Soluong = a.SoLuong,
                           GiaSanPham = a.DonGia,
                       };
-            return new List<GioHangChiTietViewModel>();
+            return lst.ToList();
         }
 
     }

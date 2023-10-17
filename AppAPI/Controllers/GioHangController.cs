@@ -16,6 +16,7 @@ namespace AppAPI.Controllers
         public GioHangController()
         {
             _GH = new GioHangService();
+            //_nguoidungservice = new NguoiDungServiece();
             
         }
         [HttpGet("GetAll")]
@@ -30,6 +31,7 @@ namespace AppAPI.Controllers
             GioHang GH = new GioHang()
             {
                 Id = Guid.NewGuid(),
+                //IdNguoiDung = _
                 GhiChu = GhiChu,
             };
             return _GH.Add(GH);

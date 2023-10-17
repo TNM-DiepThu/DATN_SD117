@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppData.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20231016162050_DATN")]
+    [Migration("20231017164759_DATN")]
     partial class DATN
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -333,10 +333,10 @@ namespace AppData.Migrations
                     b.Property<Guid>("IDHD")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("IdCombo")
+                    b.Property<Guid?>("IdCombo")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("IdSPCT")
+                    b.Property<Guid?>("IdSPCT")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("SoLuong")
@@ -952,14 +952,12 @@ namespace AppData.Migrations
                     b.HasOne("AppData.model.ComboChiTiet", "comboChiTiet")
                         .WithMany("hoaDonChiTiets")
                         .HasForeignKey("IdCombo")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("AppData.model.SanPhamChiTiet", "SanPhamChiTiet")
                         .WithMany("hoaDonChiTiets")
                         .HasForeignKey("IdSPCT")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("HoaDon");
 

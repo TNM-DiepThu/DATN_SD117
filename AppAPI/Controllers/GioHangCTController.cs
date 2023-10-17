@@ -1,6 +1,8 @@
 ﻿using AppData.model;
 using AppData.Serviece.Implements;
 using AppData.Serviece.Interfaces;
+using AppData.Serviece.ViewModeService;
+using AppData.ViewModal.GioHangChiTietViewModel;
 using Bill.Serviece.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,12 +15,22 @@ namespace AppAPI.Controllers
     public class GioHangCTController : ControllerBase
     {
         private readonly IGioHangCTService _GH;
+        private readonly GioHangChiTietViewModelService _giohangctviewmodelservice;
         private readonly ISanPhamChiTietServiece _SP;
         private readonly IGioHangService _Ga;
         public GioHangCTController()
         {
             _GH = new GioHangCTService();
+            _giohangctviewmodelservice = new GioHangChiTietViewModelService();
         }
+
+
+        [HttpGet("[action]")]
+        public IEnumerable<GioHangChiTietViewModel> GetAllFullGioHangChiTiet()
+        {
+            return _giohangctviewmodelservice.GetAllListGioHang();
+        }
+
         [HttpGet("GetAll")]
 
         public IEnumerable<GioHangChiTiet> GetAllAsync()

@@ -599,11 +599,13 @@ namespace AppView.Controllers
             ImageUploadModel img = new ImageUploadModel();
             ViewBag.upload = img.ImageFile;
             ViewBag.listanh = album;
-            string url = $"https://localhost:7214/api/SanPhamChiTiet/Create?iddm={spct.IdDanhMuc}&idcl={spct.ChatLieu}&idms={spct.IdMauSac}&idsize={spct.IdSize}&idanh={spct.IdAnh}&idsp={spct.IDSP}&masp={spct.MaSp}&soluong={spct.SoLuong}&gia={spct.GiaBan}&mota={spct.MoTa}";
-       
+
+            //string url = $"https://localhost:7214/api/SanPhamChiTiet/CreateSanPhamChiTiet?iddm={spct.IdDanhMuc}&idcl={spct.ChatLieu}&idms={spct.IdMauSac}&idsize={spct.IdSize}&idanh={spct.IdAnh}&idsp={spct.IDSP}&masp={spct.MaSp}&soluong={spct.SoLuong}&gia={spct.GiaBan}&mota={spct.MoTa}";
+            string url2 = $"https://localhost:7214/api/SanPhamChiTiet/CreateSanPhamChiTiet?iddm={spct.IdDanhMuc}&idcl={spct.IdChatLieu}&idms={spct.IdMauSac}&idsize={spct.IdSize}&idanh={spct.IdAnh}&idsp={spct.IDSP}&masp={spct.MaSp}&soluong={spct.SoLuong}&gia={spct.GiaBan}&mota={spct.MoTa}";
             var obj = JsonConvert.SerializeObject(spct);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
-            HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
+            HttpResponseMessage httpResponseMessage =  _client.PostAsync(url2, content).Result;
+
             if (httpResponseMessage.IsSuccessStatusCode)
             {
                 var error = await httpResponseMessage.Content.ReadAsStringAsync();
@@ -627,19 +629,26 @@ namespace AppView.Controllers
             }
         }
         [HttpGet]
-        public ActionResult UpdateSanPhamCT(Guid id)
-        {
-            string url = $"https://localhost:7214/api/SanPhamChiTiet/GetByIDSPCTVM?id={id}";
-            var respon = _client.GetAsync(url).Result;
-            var data = respon.Content.ReadAsStringAsync().Result;
-            SanPhamChiTietViewModel lstsize = JsonConvert.DeserializeObject<SanPhamChiTietViewModel>(data);
-            return View(lstsize);
-        }
         [HttpPost]
         public async Task<ActionResult> UpdateSanPhamCT(SanPhamChiTiet spct)
         {
-            string url = $"   https://localhost:7214/api/SanPhamChiTiet/Update?id={spct.Id}&iddm={spct.IdDanhMuc}&idcl={spct.ChatLieu}&idms={spct.IdMauSac}&idsize={spct.IdSize}&idanh={spct.IdAnh}&idsp={spct.IDSP}&masp={spct.MaSp}&soluong={spct.SoLuong}&gia={spct.GiaBan}&mota={spct.MoTa}&trangthai={spct.status}";
 
+            ViewBag.DanhMuc = new SelectList(_context.danhMucs.ToList().Where(c => c.status == 1).OrderBy(c => c.TenDanhMuc), "Id", "TenDanhMuc");
+            ViewBag.SanPham = new SelectList(_context.sanPhams.ToList().Where(c => c.status == 1).OrderBy(c => c.TenSanPham), "Id", "TenSanPham");
+
+            ViewBag.ChatLieu = new SelectList(_context.chatLieus.ToList().Where(c => c.status == 1).OrderBy(c => c.TenChatLieu), "Id", "TenChatLieu");
+            ViewBag.MauSac = new SelectList(_context.mauSacs.ToList().Where(c => c.status == 1).OrderBy(c => c.TenMauSac), "Id", "TenMauSac");
+            ViewBag.Size = new SelectList(_context.sizes.ToList().Where(c => c.status == 1).OrderBy(c => c.SizeName), "Id", "SizeName");
+
+            string urlanh = "https://localhost:7214/api/Anh/GetAll";
+            var respon = _client.GetAsync(urlanh).Result;
+            var data = respon.Content.ReadAsStringAsync().Result;
+            List<Anh> album = JsonConvert.DeserializeObject<List<Anh>>(data);
+            ImageUploadModel img = new ImageUploadModel();
+            ViewBag.upload = img.ImageFile;
+            ViewBag.listanh = album;
+
+            string url = $"   https://localhost:7214/api/SanPhamChiTiet/Update?id={spct.Id}&iddm={spct.IdDanhMuc}&idcl={spct.ChatLieu}&idms={spct.IdMauSac}&idsize={spct.IdSize}&idanh={spct.IdAnh}&idsp={spct.IDSP}&masp={spct.MaSp}&soluong={spct.SoLuong}&gia={spct.GiaBan}&mota={spct.MoTa}&trangthai={spct.status}";
 
             var obj = JsonConvert.SerializeObject(spct);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
@@ -650,15 +659,19 @@ namespace AppView.Controllers
             }
             else
             {
-                return View();
+                string urldetail = $"https://localhost:7214/api/SanPhamChiTiet/GetByIDSPCTVM?id={spct.Id}";
+                var respon1 = _client.GetAsync(urldetail).Result;
+                var data1 = respon1.Content.ReadAsStringAsync().Result;
+                SanPhamChiTietViewModel lstsize = JsonConvert.DeserializeObject<SanPhamChiTietViewModel>(data1);
+                return View(lstsize);
             }
         }
 
         [HttpPut]
-        public async Task<ActionResult> DeleteSanPhamCT(SanPhamChiTiet sp)
+        public async Task<ActionResult> DeleteSanPhamCT(SanPhamChiTiet spct)
         {
-            string url = $"https://localhost:7214/api/SanPhamChiTiet/Delete/{sp.Id}";
-            var obj = JsonConvert.SerializeObject(sp);
+            string url = $"https://localhost:7214/api/SanPhamChiTiet/Delete/{spct.Id}";
+            var obj = JsonConvert.SerializeObject(spct);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
             HttpResponseMessage httpResponseMessage = await _client.PutAsync(url, content);
 
@@ -720,6 +733,10 @@ namespace AppView.Controllers
                 return NotFound();
             }
         }
-
+        public IActionResult Themsanphamvaogiohang(Guid id )
+        {
+            string url = $"https://localhost:7214/api/SanPhamChiTiet/ThemSPvaoGioHang?iduser=911a9476-05be-4a4f-8325-2ea61766e2a0&IDspct={id}";
+            return View(url);
+        }
     }
 }

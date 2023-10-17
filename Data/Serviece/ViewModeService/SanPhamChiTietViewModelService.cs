@@ -106,7 +106,7 @@ namespace AppData.Serviece.ViewModeService
                            MoTa = a.MoTa,
                            status = a.status,
                        };
-            return spct.Where(c => c.TenSP.Contains(name)).ToList();
+            return spct.Where(c => c.TenSP.Contains(name) || c.DanhMuc.Contains(name)).ToList();
         }
     }
 }

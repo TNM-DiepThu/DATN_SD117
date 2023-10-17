@@ -29,17 +29,7 @@ namespace AppData.Serviece.Implements
         {
             try
             {
-
-                GioHangChiTiet GH = new GioHangChiTiet()
-                {
-                    Id = Guid.NewGuid(),
-                    SoLuong = p.SoLuong,
-                    DonGia = p.DonGia,
-                    IdSanPhamChiTiet = _SP.GetAll().FirstOrDefault(c => c.Id == p.IdSanPhamChiTiet).Id,
-                    IdGioHang = _GH.GetAll().FirstOrDefault(c => c.Id == p.IdGioHang).Id,
-                    IdComboChiTiet = _CB.GetAll().FirstOrDefault(c => c.Id == p.IdComboChiTiet).Id,
-                };
-                _context.gioHangChiTiets.Add(GH);
+                _context.gioHangChiTiets.Add(p);
                 _context.SaveChanges();
                 return true;
             }
