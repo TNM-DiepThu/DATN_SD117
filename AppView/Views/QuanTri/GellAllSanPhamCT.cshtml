@@ -7,123 +7,135 @@
 
 <h1>GellAllSanPhamCT</h1>
 
-<p>
-<p>
-    <a asp-action="CreateSanPhamCT">Create New</a> |
-    <a asp-action="GellAllDanhMuc">Danh muc</a> |
-    <a asp-action="GellAllMau">Mau Sac</a> |
-    <a asp-action="GellAllChatLieu">Chat lieu</a> |
-    <a asp-action="GellAllSize">Size</a> |
-    <a asp-action="GellAllSanPham">San Pham</a> |
-    <a asp-action="GellAllAnh">Anh</a> | 
-    <a asp-action="UploadImage">Upload</a>
-</p>
-</p>
+<ul class="nav nav-tabs">
+    <li class="nav-item active">
+        <a class="nav-link active" asp-action="GellAllSanPhamCT">Sản Phẩm Chi Tiết</a>
+    </li>
+    <li class="nav-item active">
+        <a class="nav-link active" asp-action="GellAllDanhMuc">Thuộc tính</a>
+    </li>
+</ul>
 
 <form asp-action="GellAllSanPhamCT" method="get">
-    <div>
-        <input type="text" id="name" name="name" placeholder="Tên sản phẩm" style="height : 40px; width: 90%;" />
-        <button type="submit" class="btn btn-primary" style="border-radius:5px;">Search</button>
+    <div class="row" style="padding:5px ; margin : 5px;">
+        <div class="col-4">
+            <a asp-action="CreateSanPhamCT" class="btn btn-primary">Thêm mới</a>
+        </div>
+        <div class="col-8">
+            <input type="text" list="datalistOptions" id="name" name="name" placeholder="Tên sản phẩm" style="height : 40px; width: 90%; border-radius:10px" />
+            <button type="submit" class="btn btn-primary" style="border-radius:5px; margin-left: 5px;">Search</button>
+            
+            <datalist id="datalistOptions">
+                <option value="Ví" />
+                <option value="Quần" /> 
+                <option value="Áo phao" />
+                <option value="Quần tây" />
+                <option value="áo sơ mi" />
+            </datalist>
+        </div>
     </div>
-</form>
-<table class="table">
-    <thead>
-        <tr>
-           @* <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>*@
-            <th>
-                @Html.DisplayNameFor(model => model.DanhMuc)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TenSP)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ChatLieu)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MauSac)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Size)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Anh)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MaSp)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SoLuong)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GiaBan)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MoTa)
-            </th>
-            <th>
-                Trạng thái
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+
+    <table class="table table-bordered">
+        <thead>
             <tr>
-                @*<td>
-                    @Html.DisplayFor(modelItem => item.Id)
-                </td>*@
-                <td>
-                    @Html.DisplayFor(modelItem => item.DanhMuc)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TenSP)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ChatLieu)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.MauSac)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Size)
-                </td>
-                <td>
-                    <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = item.Anh })" alt="Image" class="selectable-image" />
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.MaSp)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.SoLuong)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.GiaBan)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.MoTa)
-                </td>
-                <td>
-                    @if(item.status == 1)
-                    {
-                        <p>Còn hàng</p>
-                    }
-                    @if(item.status == 0)
-                    {
-                        <p>Hết hàng</p>
-                    }
-                </td>
-                @*<td>
-                    <img src="@item.QRCode" alt="QR Code" />
-                </td>*@
-                <td>
-                    @Html.ActionLink("Edit", "UpdateSanPhamCT", new { Id = item.Id  }) |
-                    @Html.ActionLink("Details", "GellByIDSanPhamCT", new { id = item.Id }) |
-                    @Html.ActionLink("Delete", "DeleteSanPhamCT", new { Id = item.Id })
-                </td>
+                @* <th>
+                @Html.DisplayNameFor(model => model.Id)
+                </th>*@
+                <th>
+                    @Html.DisplayNameFor(model => model.MaSp)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TenSP)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DanhMuc)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ChatLieu)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.MauSac)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Size)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Anh)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.SoLuong)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.GiaBan)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.MoTa)
+                </th>
+                <th>
+                    Trạng thái
+                </th>
+                <th></th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    @*<td>
+                @Html.DisplayFor(modelItem => item.Id)
+                </td>*@
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MaSp)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TenSP)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DanhMuc)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ChatLieu)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MauSac)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Size)
+                    </td>
+                    <td>
+                        <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = item.Anh })" alt="Image" width="70%" height="70%" />
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SoLuong)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.GiaBan)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MoTa)
+                    </td>
+                    <td>
+                        @if (item.status == 1)
+                        {
+                            <p>Còn hàng</p>
+                        }
+                        @if (item.status == 0)
+                        {
+                            <p>Hết hàng</p>
+                        }
+                    </td>
+                    @*<td>
+                <img src="@item.QRCode" alt="QR Code" />
+                </td>*@
+                    <td>
+                        <a class="btn btn-dark" @Html.ActionLink("Edit", "UpdateSanPhamCT", new { Id = item.Id })></a>
+                        @Html.ActionLink("Details", "GellByIDSanPhamCT", new { id = item.Id }) |
+                        <a href="@Url.Action("DeleteSanPhamCT","QuanTri",new { id = item.Id})" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?');" class="btn btn-danger btn-sm">Xóa</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</form>
+

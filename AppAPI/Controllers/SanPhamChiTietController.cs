@@ -111,7 +111,7 @@ namespace AppAPI.Controllers
             return _sanphamCTsv.Add(spct);
         }
 
-        [HttpPut("Update")]
+        [HttpPut("[action]")]
         public bool UpdateSanPhamChiTiet(Guid id, Guid iddm, Guid idcl, Guid idms, Guid idsize, Guid idanh, Guid idsp, string masp, int soluong, decimal gia, string? mota, int trangthai)
         {
             SanPhamChiTiet spct = _sanphamCTsv.GetAll().FirstOrDefault(c => c.Id == id);

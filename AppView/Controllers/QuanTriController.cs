@@ -43,6 +43,7 @@ namespace AppView.Controllers
             anhservice = new AnhServiece();
             _context = new MyDbContext();
         }
+
         [HttpGet]
         public ActionResult GellAllChatLieu()
         {
@@ -592,6 +593,8 @@ namespace AppView.Controllers
             ViewBag.MauSac = new SelectList(_context.mauSacs.ToList().Where(c => c.status == 1).OrderBy(c => c.TenMauSac), "Id", "TenMauSac");
             ViewBag.Size = new SelectList(_context.sizes.ToList().Where(c => c.status == 1).OrderBy(c => c.SizeName), "Id", "SizeName");
             //ViewBag.Anh = new SelectList(_context.anhs.ToList(), "Id", "Connect");
+
+
             string urlanh = "https://localhost:7214/api/Anh/GetAll";
             var respon = _client.GetAsync(urlanh).Result;
             var data = respon.Content.ReadAsStringAsync().Result;
@@ -635,7 +638,6 @@ namespace AppView.Controllers
 
             ViewBag.DanhMuc = new SelectList(_context.danhMucs.ToList().Where(c => c.status == 1).OrderBy(c => c.TenDanhMuc), "Id", "TenDanhMuc");
             ViewBag.SanPham = new SelectList(_context.sanPhams.ToList().Where(c => c.status == 1).OrderBy(c => c.TenSanPham), "Id", "TenSanPham");
-
             ViewBag.ChatLieu = new SelectList(_context.chatLieus.ToList().Where(c => c.status == 1).OrderBy(c => c.TenChatLieu), "Id", "TenChatLieu");
             ViewBag.MauSac = new SelectList(_context.mauSacs.ToList().Where(c => c.status == 1).OrderBy(c => c.TenMauSac), "Id", "TenMauSac");
             ViewBag.Size = new SelectList(_context.sizes.ToList().Where(c => c.status == 1).OrderBy(c => c.SizeName), "Id", "SizeName");
@@ -648,8 +650,8 @@ namespace AppView.Controllers
             ViewBag.upload = img.ImageFile;
             ViewBag.listanh = album;
 
-            string url = $"   https://localhost:7214/api/SanPhamChiTiet/Update?id={spct.Id}&iddm={spct.IdDanhMuc}&idcl={spct.ChatLieu}&idms={spct.IdMauSac}&idsize={spct.IdSize}&idanh={spct.IdAnh}&idsp={spct.IDSP}&masp={spct.MaSp}&soluong={spct.SoLuong}&gia={spct.GiaBan}&mota={spct.MoTa}&trangthai={spct.status}";
 
+            string url = $"https://localhost:7214/api/SanPhamChiTiet/UpdateSanPhamChiTiet?id={spct.Id}&iddm={spct.DanhMuc}&idcl={spct.IdChatLieu}&idms={spct.IdMauSac}&idsize={spct.IdSize}&idanh={spct.IdAnh}&idsp={spct.IDSP}&masp={spct.MaSp}&soluong={spct.SoLuong}&gia={spct.GiaBan}&mota={spct.MoTa}&trangthai={spct.status}";
             var obj = JsonConvert.SerializeObject(spct);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
             HttpResponseMessage httpResponseMessage = await _client.PutAsync(url, content);
@@ -659,14 +661,13 @@ namespace AppView.Controllers
             }
             else
             {
-                string urldetail = $"https://localhost:7214/api/SanPhamChiTiet/GetByIDSPCTVM?id={spct.Id}";
+                string urldetail = $"https://localhost:7214/api/SanPhamChiTiet/GetByID?Id={spct.Id}";
                 var respon1 = _client.GetAsync(urldetail).Result;
                 var data1 = respon1.Content.ReadAsStringAsync().Result;
-                SanPhamChiTietViewModel lstsize = JsonConvert.DeserializeObject<SanPhamChiTietViewModel>(data1);
+                SanPhamChiTiet lstsize = JsonConvert.DeserializeObject<SanPhamChiTiet>(data1);
                 return View(lstsize);
             }
         }
-
         [HttpPut]
         public async Task<ActionResult> DeleteSanPhamCT(SanPhamChiTiet spct)
         {
@@ -716,7 +717,6 @@ namespace AppView.Controllers
                     return RedirectToAction("UploadImage");
                 }
             }
-
             return View();
         }
         public IActionResult DisplayImage(string imagePath)

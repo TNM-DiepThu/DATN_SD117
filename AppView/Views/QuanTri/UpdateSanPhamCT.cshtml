@@ -9,16 +9,16 @@
 
 <h1>UpdateSanPhamCT</h1>
 
-<h4>SanPhamChiTietViewModel</h4>
+<h4>SanPhamChiTiet</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="UpdateSanPhamCT">
+<div>
+    <div>
+        <form asp-action="UpdateSanPhamCT" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-           @* <div class="form-group">
-                <label asp-for="Id" class="control-label"></label>
-                <input asp-for="Id" class="form-control" />
-                <span asp-validation-for="Id" class="text-danger"></span>
+            @*<div class="form-group">
+            <label asp-for="Id" class="control-label"></label>
+            <input asp-for="Id" class="form-control" />
+            <span asp-validation-for="Id" class="text-danger"></span>
             </div>*@
 
             <div class=" row form-group">
@@ -140,10 +140,10 @@
                     <span asp-validation-for="MoTa" class="text-danger"></span>
                 </div>
             </div>
-            <div class="form-group">
-                <label asp-for="status" class="control-label"></label>
-                <input asp-for="status" class="form-control" />
-                <span asp-validation-for="status" class="text-danger"></span>
+             <div class="form-group">
+            <label asp-for="status" class="control-label"></label>
+            <input asp-for="status" class="form-control" />
+            <span asp-validation-for="status" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

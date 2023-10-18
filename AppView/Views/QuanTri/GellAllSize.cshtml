@@ -4,17 +4,46 @@
     ViewData["Title"] = "GellAllSize";
 }
 
-<h1>GellAllSize</h1>
+<ul class="nav nav-tabs" style="margin:10px;">
+    <li class="nav-item active">
+        <a class="nav-link active" asp-action="GellAllSanPhamCT">Sản Phẩm Chi Tiết</a>
+    </li>
+    <li class="nav-item active">
+        <a class="nav-link active" asp-action="GellAllDanhMuc">Thuộc tính</a>
+    </li>
+</ul>
+
+
+<ul class="nav nav-tabs" style="margin:10px;">
+    <li class="nav-item active">
+        <a class="nav-link active" asp-action="GellAllDanhMuc">Danh mục</a>
+    </li>
+    <li class="nav-item active">
+        <a class="nav-link active" asp-action="GellAllMau">Màu sắc</a>
+    </li>
+    <li class="nav-item active">
+        <a class="nav-link active" asp-action="GellAllChatLieu">Chất liệu</a>
+    </li>
+    <li class="nav-item active">
+        <a class="nav-link active" asp-action="GellAllSize">Size</a>
+    </li>
+    <li class="nav-item active">
+        <a class="nav-link active" asp-action="GellAllSanPham">Sản phẩm</a>
+    </li>
+    <li class="nav-item active">
+        <a class="nav-link active" asp-action="GellAllAnh">Ảnh</a>
+    </li>
+</ul>
 
 <p>
-    <a asp-action="CreateSize">Create New</a>
+    <a asp-action="CreateSize" style="margin:10px;" class="btn btn-primary">Thêm mới</a>
 </p>
-<table class="table">
-    <thead>
+<table class="table table-bordered">
+    <thead style="text-align:center;">
         <tr>
-            <th>
+            @*<th>
                 @Html.DisplayNameFor(model => model.Id)
-            </th>
+            </th>*@
             <th>
                 @Html.DisplayNameFor(model => model.SizeName)
             </th>
@@ -24,17 +53,24 @@
             <th></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody style="text-align:center;">
 @foreach (var item in Model) {
         <tr>
-            <td>
+            @*<td>
                 @Html.DisplayFor(modelItem => item.Id)
-            </td>
+            </td>*@
             <td>
                 @Html.DisplayFor(modelItem => item.SizeName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.status)
+                    @if (item.status == 1)
+                    {
+                        <p>Hoạt động</p>
+                    }
+                    else if (item.status == 0)
+                    {
+                        <p>Không hoạt động</p>
+                    }
             </td>
             <td>
               @*  @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
