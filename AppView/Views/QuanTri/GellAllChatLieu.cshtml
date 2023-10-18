@@ -4,13 +4,42 @@
     ViewData["Title"] = "GellAllChatLieu";
 }
 
-<h1>GellAllChatLieu</h1>
+<ul class="nav nav-tabs">
+    <li class="nav-item active">
+        <a class="nav-link active" asp-action="GellAllSanPhamCT">Sản Phẩm Chi Tiết</a>
+    </li>
+    <li class="nav-item active">
+        <a class="nav-link active" asp-action="GellAllDanhMuc">Thuộc tính</a>
+    </li>
+</ul>
+
+
+<ul class="nav nav-tabs" style="margin:10px;">
+    <li class="nav-item active">
+        <a class="nav-link active" asp-action="GellAllDanhMuc">Danh mục</a>
+    </li>
+    <li class="nav-item active">
+        <a class="nav-link active" asp-action="GellAllMau">Màu sắc</a>
+    </li>
+    <li class="nav-item active">
+        <a class="nav-link active" asp-action="GellAllChatLieu">Chất liệu</a>
+    </li>
+    <li class="nav-item active">
+        <a class="nav-link active" asp-action="GellAllSize">Size</a>
+    </li>
+    <li class="nav-item active">
+        <a class="nav-link active" asp-action="GellAllSanPham">Sản phẩm</a>
+    </li>
+    <li class="nav-item active">
+        <a class="nav-link active" asp-action="GellAllAnh">Ảnh</a>
+    </li>
+</ul>
 
 <p>
-    <a asp-action="CreateChatLieu">Create New</a>
+    <a asp-action="CreateChatLieu" class="btn btn-primary" style="margin:10px;">Create New</a>
 </p>
-<table class="table">
-    <thead>
+<table class="table table-bordered">
+    <thead style="text-align:center;">
         <tr>
            @* <th>
                 @Html.DisplayNameFor(model => model.Id)
@@ -24,7 +53,7 @@
             <th></th>
         </tr>
     </thead>
-    <tbody>
+    <tbody style="text-align:center;">
 @foreach (var item in Model) {
         <tr>
            @* <td>
@@ -38,7 +67,6 @@
             </td>*@
             <td>
                 @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
                 @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
             </td>
         </tr>

@@ -30,23 +30,44 @@ namespace AppData.Serviece.ViewModeService
             _sanphamctservice = new SanPhamChiTietServiece();
             _comboctservice = new ComBoChiTietViewModelService();
         }
-        public List<GioHangChiTietViewModel> GetAllListGioHang()
+        public IEnumerable<GioHangChiTietViewModel> GetAllListGioHang()
         {
+            IEnumerable<GioHangChiTietViewModel> lst = new List<GioHangChiTietViewModel>();
+            if (_giohangctservice.GetAll().Any(c => c.IdComboChiTiet == null))
+            {
+                     lst = from a in _giohangctservice.GetAll()
+                          join b in _giohangservice.GetAll() on a.IdGioHang equals b.Id
+                          join c in _spctviewmodelservice.GetAll() on a.IdSanPhamChiTiet equals c.Id
+                          select new GioHangChiTietViewModel
+                          {
+                              ID = a.Id,
+                              IDGH = b.Id,
+                              IDSanPham = _spctviewmodelservice.GetAll().FirstOrDefault(c => c.Id == a.IdSanPhamChiTiet).Id,
+                              TenSanPham = _spctviewmodelservice.GetAll().FirstOrDefault(c => c.Id == a.IdSanPhamChiTiet).TenSP,
+                              Soluong = a.SoLuong,
+                              GiaSanPham = a.DonGia,
+                          };
+                    lst.ToList();
+            }
+            else if (_giohangctservice.GetAll().Any(c => c.IdSanPhamChiTiet == null))
+            {
+                 lst = from a in _giohangctservice.GetAll()
+                          join b in _giohangservice.GetAll() on a.IdGioHang equals b.Id
+                          join c in _spctviewmodelservice.GetAll() on a.IdSanPhamChiTiet equals c.Id
+                          join d in _comboctservice.GetAllComBoChiTiet() on a.IdComboChiTiet equals d.Id
+                          select new GioHangChiTietViewModel
+                          {
+                              ID = a.Id,
+                              IDGH = b.Id,
+                              IDSanPham = _comboctservice.GetAllComBoChiTiet().FirstOrDefault(c => c.Id == a.IdComboChiTiet).Id,
+                              TenSanPham = _comboctservice.GetAllComBoChiTiet().FirstOrDefault(c => c.Id == a.IdComboChiTiet).TenComBo,
+                              Soluong = a.SoLuong,
+                              GiaSanPham = a.DonGia,
+                          };
+                lst.ToList();
+            }
+            return lst;
 
-            var lst = from a in _giohangctservice.GetAll()
-                      join b in _giohangservice.GetAll() on a.IdGioHang equals b.Id
-                      join c in _spctviewmodelservice.GetAll() on a.IdSanPhamChiTiet equals c.Id
-                      join d in _comboctservice.GetAllComBoChiTiet() on a.IdComboChiTiet equals d.Id
-                      select new GioHangChiTietViewModel
-                      {
-                          ID = a.Id,
-                          IDGH = b.Id,
-                          IDSanPham = _spctviewmodelservice.GetAll().FirstOrDefault(c => c.Id == a.IdSanPhamChiTiet).Id != null ? c.Id : _comboctservice.GetAllComBoChiTiet().FirstOrDefault(c => c.Id == a.IdComboChiTiet).Id,
-                          TenSanPham = _spctviewmodelservice.GetAll().FirstOrDefault(c => c.Id == a.IdSanPhamChiTiet).TenSP != null ? c.TenSP : _comboctservice.GetAllComBoChiTiet().FirstOrDefault(c => c.Id == a.IdComboChiTiet).TenComBo,
-                          Soluong = a.SoLuong,
-                          GiaSanPham = a.DonGia,
-                      };
-            return lst.ToList();
         }
 
     }
