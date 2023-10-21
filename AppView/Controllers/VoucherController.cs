@@ -1,6 +1,7 @@
 ﻿using AppData.data;
 using AppData.model;
 using AppData.Serviece.Implements;
+using AppData.ViewModal.VoucherVM;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -35,24 +36,16 @@ namespace AppView.Controllers
             return View(lstVoucher);
         }
 
-        //// GET: VoucherController/Details/5
-
-        //public async Task<ActionResult> Details(Voucher voucher)
-        //{
-        //    string url = $"{voucher.Id}"; 
-        //    HttpResponseMessage response = await _client.GetAsync(url);
-
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        string responseBody = await response.Content.ReadAsStringAsync();
-        //        Voucher voucherdetail = JsonConvert.DeserializeObject<Voucher>(responseBody);
-        //        return View("VoucherDetails", voucherdetail);
-        //    }
-        //    else
-        //    {
-        //        return View("Error");
-        //    }
-        //}
+        // GET: VoucherController/Details/5
+        [HttpGet]
+        public async Task<ActionResult> GetVoucherById(Guid id)
+        {
+            string url = $"https://localhost:7214/api/Voucher/GetVooucherById?id={id}";
+            var respon = _client.GetAsync(url).Result;
+            var data = respon.Content.ReadAsStringAsync().Result;
+            VoucherVM voucherVM = JsonConvert.DeserializeObject<VoucherVM>(data);
+            return View(data);
+        }
 
         [HttpGet]
         [HttpPost]
@@ -84,8 +77,27 @@ namespace AppView.Controllers
             var obj = JsonConvert.SerializeObject(voucher);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
             HttpResponseMessage httpResponseMessage = await _client.PutAsync(url, content);
+            if (httpResponseMessage.IsSuccessStatusCode)
+            {
+                var Error = await httpResponseMessage.Content.ReadAsStringAsync();
+                if (Error == "true")
+                {
 
-            return RedirectToAction("GellAllCVoucher");
+                    TempData["SuccessFull"] = "Ok ";
+                    return RedirectToAction("GellAllSanPhamCT", "QuanTri");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Xóa thất bại.";
+                    return RedirectToAction("GellAllSanPhamCT", "QuanTri");
+                }
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Xóa thất bại.";
+                return RedirectToAction("GellAllVoucher", "QuanTri");
+            }
+            //return RedirectToAction("GellAllCVoucher");
         }
     }
 }

@@ -4,66 +4,103 @@
     ViewData["Title"] = "CreateVoucher";
 }
 
-<h1>CreateVoucher</h1>
+@*<h1>CreateVoucher</h1>*@
+
+<script type="text/javascript" src="~/js/site.js"></script>
+<link href="~/css/site.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" rel="stylesheet" />
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
 
 <h4>Voucher</h4>
 <hr />
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="CreateVoucher">
+        <form asp-action="CreateVoucher" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
+            @*<div class="form-group">
                 <label asp-for="Id" class="control-label"></label>
                 <input asp-for="Id" class="form-control" />
                 <span asp-validation-for="Id" class="text-danger"></span>
+            </div>*@
+            <div class="row form-group">
+                <label asp-for="MaVoucher" class="col-3 control-label">Mã Voucher</label>
+                <div class="col-9">
+                     <input asp-for="MaVoucher" class="form-control" />
+                    <span asp-validation-for="MaVoucher" class="text-danger"></span>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="MaVoucher" class="control-label"></label>
-                <input asp-for="MaVoucher" class="form-control" />
-                <span asp-validation-for="MaVoucher" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="NgayTao" class="control-label"></label>
+
+            <div class="form-group row">
+                <label asp-for="NgayTao" class="col-3 control-label">NgayTao</label>
+                <div class="col-9">
                 <input asp-for="NgayTao" type="datetime" class="form-control" />
                 <span asp-validation-for="NgayTao" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="NgayBatDau" class="control-label"></label>
+            </div>
+
+            <div class="form-group row">
+                <label asp-for="NgayBatDau" class="col-3 control-label">NgayBatDau</label>
+                <div class="col-9">
                 <input asp-for="NgayBatDau" type="datetime" class="form-control" />
                 <span asp-validation-for="NgayBatDau" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="NgayKetThuc" class="control-label"></label>
+            </div>
+
+            <div class="form-group row">
+                <label asp-for="NgayKetThuc" class="col-3 control-label">NgayKetThuc</label>
+                <div class="col-9">
                 <input asp-for="NgayKetThuc" type="datetime" class="form-control" />
                 <span asp-validation-for="NgayKetThuc" class="text-danger"></span>
             </div>
-             <div class="form-group">
-                <label asp-for="GiaTriVoucher" class="control-label"></label>
-                <input asp-for="GiaTriVoucher" class="form-control" />
+            </div>
+
+            <div class="form-group row">
+                <label asp-for="GiaTriVoucher" class="col-3 control-label">GiaTriVoucher</label>
+                <div class="col-9">
+                <input asp-for="GiaTriVoucher" class="form-control" min="0"/>
                 <span asp-validation-for="GiaTriVoucher" class="text-danger"></span>
             </div>
-             <div class="form-group">
-                <label asp-for="SoLuong" class="control-label"></label>
-                <input asp-for="SoLuong" class="form-control" />
+            </div>
+
+            <div class="form-group row">
+                <label asp-for="SoLuong" class="col-3 control-label">SoLuong</label>
+                <div class="col-9">
+                <input asp-for="SoLuong" class="form-control" min="0"/>
                 <span asp-validation-for="SoLuong" class="text-danger"></span>
             </div>
-               <div class="form-group">
-                <label asp-for="MoTa" class="control-label"></label>
-                <input asp-for="MoTa" class="form-control" />
-                <span asp-validation-for="MoTa" class="text-danger"></span>
             </div>
-             <div class="form-group">
-                <label asp-for="DieuKienGiamGia" class="control-label"></label>
-                <input asp-for="DieuKienGiamGia" class="form-control" />
+
+            <div class="form-group row">
+                <label asp-for="DieuKienGiamGia" class="col-3 control-label">DieuKienGiamGia</label>
+                <div class="col-9">
+                <input asp-for="DieuKienGiamGia" class="form-control"/>
                 <span asp-validation-for="DieuKienGiamGia" class="text-danger"></span>
             </div>
-             <div class="form-group">
-                <label asp-for="status" class="control-label"></label>
-                <input asp-for="status" class="form-control" />
+            </div>
+
+             <div class="form-group row">
+                <label asp-for="status" class="col-3 control-label">TrangThai</label>
+                <div class="col-9">
+                <input asp-for="status" class="form-control"/>
                 <span asp-validation-for="status" class="text-danger"></span>
             </div>
+            </div>
+
+            <div class="form-group row">
+                <label for="MoTa" class="control-label col-3">Mô tả</label>
+                <div class="col-9">
+                    @Html.TextBoxFor(m => m.MoTa, new { @class = "form-control" })
+                    <span asp-validation-for="MoTa" class="text-danger"></span>
+                </div>
+            </div>
+
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Create" class="btn btn-primary" onclick="return confirm('Bạn có chắc muốn thêm voucher này không ?');" />
             </div>
         </form>
     </div>
