@@ -109,5 +109,11 @@ namespace AppView.Controllers
                 return View();
             }
         }
+
+        [HttpGet]
+        public ActionResult GioHangChiTiet()
+        {
+            return View();
+        }
     }
 }

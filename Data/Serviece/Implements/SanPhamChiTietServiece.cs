@@ -87,7 +87,7 @@ namespace Bill.Serviece.Implements
             try
             {
                 SanPhamChiTiet spct = _context.sanPhamChiTiets.FirstOrDefault(c => c.Id == id);
-                if (spct == null) 
+                if (spct != null) 
                 {
 
                     spct.IdAnh = anhservice.GetAll().FirstOrDefault(c => c.Id == p.IdAnh).Id;

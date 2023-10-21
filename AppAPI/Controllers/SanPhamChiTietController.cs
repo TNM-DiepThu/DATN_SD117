@@ -111,7 +111,7 @@ namespace AppAPI.Controllers
             return _sanphamCTsv.Add(spct);
         }
 
-        [HttpPut("[action]")]
+        [HttpPost("[action]")]
         public bool UpdateSanPhamChiTiet(Guid id, Guid iddm, Guid idcl, Guid idms, Guid idsize, Guid idanh, Guid idsp, string masp, int soluong, decimal gia, string? mota, int trangthai)
         {
             SanPhamChiTiet spct = _sanphamCTsv.GetAll().FirstOrDefault(c => c.Id == id);
@@ -132,7 +132,7 @@ namespace AppAPI.Controllers
 
             return _sanphamCTsv.Edit(id, spct);
         }
-        [HttpPut("Delete/{Id}")]
+        [HttpPut("[action]")]
 
         public bool DeleteSanPhamChiTiet(Guid Id)
         {
@@ -153,7 +153,7 @@ namespace AppAPI.Controllers
             }
             else if (IDcombo == null && IDspct != null)
             {
-                if (_giohangctservice.GetAll().Any(c => c.IdSanPhamChiTiet == IDspct) == false)
+                if (_giohangctservice.GetAllGioHangTheoNguoiDungDangNhap(iduser).Any(c => c.IdSanPhamChiTiet == IDspct) == false)
                 {
                     GioHangChiTiet ghct = new GioHangChiTiet()
                     {
@@ -168,15 +168,15 @@ namespace AppAPI.Controllers
                 }
                 else
                 {
-                    GioHangChiTiet ghct1 = _giohangctservice.GetAll().FirstOrDefault(c => c.IdSanPhamChiTiet == IDspct);
+                    GioHangChiTiet ghct1 = _giohangctservice.GetAllGioHangTheoNguoiDungDangNhap(iduser).FirstOrDefault(c => c.IdSanPhamChiTiet == IDspct);
                     ghct1.SoLuong += 1;
                     ghct1.DonGia = _sanphamCTsv.GetAll().FirstOrDefault(c => c.Id == IDspct).GiaBan;
-                    return _giohangctservice.Edit(iduser, ghct1);
+                    return _giohangctservice.Edit(ghct1.Id, ghct1);
                 }
             }
             else if (IDcombo != null && IDspct == null)
             {
-                if (_giohangctservice.GetAll().Any(c => c.IdComboChiTiet == IDcombo) == false)
+                if (_giohangctservice.GetAllGioHangTheoNguoiDungDangNhap(iduser).Any(c => c.IdComboChiTiet == IDcombo) == false)
                 {
                     GioHangChiTiet ghct = new GioHangChiTiet()
                     {
@@ -191,14 +191,58 @@ namespace AppAPI.Controllers
                 }
                 else
                 {
-                    GioHangChiTiet ghct1 = _giohangctservice.GetAll().FirstOrDefault(c => c.IdComboChiTiet == IDcombo);
+                    GioHangChiTiet ghct1 = _giohangctservice.GetAllGioHangTheoNguoiDungDangNhap(iduser).FirstOrDefault(c => c.IdComboChiTiet == IDcombo);
                     ghct1.SoLuong += 1;
                     ghct1.DonGia = _comchitietviewmodelsevice.GetAllComBoChiTiet().FirstOrDefault(c => c.Id == IDcombo).ThanhTienComBo;
-                    return _giohangctservice.Edit(iduser, ghct1);
+                    return _giohangctservice.Edit(ghct1.Id, ghct1);
                 }
             }
             return false;
-        
+
+        }
+
+        [HttpPost("[action]")]
+        public string ThemSPCTVaoGioHang(Guid idnguoidung, Guid idSP, Guid IdMau, Guid IdSize, int soluong)
+        {
+            if (IdMau == null)
+            {
+                return "Bạn chưa chọn màu. Mời bạn chọn màu.";
+            }
+            else if (IdSize == null)
+            {
+                return "Bạn chưa chọn size. Mời bạn chọn size.";
+            }
+            else
+            {
+                if (soluong <= 0) return "Số lượng của bạn phải lớn hơn 0.";
+
+                var spct = _sanphamCTsv.GetAll().FirstOrDefault(c => c.IdMauSac == IdMau && c.IdSize == IdSize && c.IDSP == idSP);
+                if(spct.status == 0 && spct.SoLuong ==0) return "Sản phẩm đã hết hàng. Mời bạn chọn sản phẩm khác.";
+
+                if (soluong > 0 && soluong < spct.SoLuong) {
+                    if (spct == null) return "Không có sản phẩm.";
+                    GioHangChiTiet ghct = _giohangctservice.GetAllGioHangTheoNguoiDungDangNhap(idnguoidung).FirstOrDefault(c => c.IdSanPhamChiTiet == spct.Id);
+                    if (ghct == null)
+                    {
+                        GioHangChiTiet newghct = new GioHangChiTiet()
+                        {
+                            Id = Guid.NewGuid(),
+                            IdComboChiTiet = null,
+                            IdGioHang = _giohangservice.GetAll().FirstOrDefault(c => c.IdNguoiDung == idnguoidung).Id,
+                            IdSanPhamChiTiet = spct.Id,
+                            SoLuong = soluong,
+                            DonGia = spct.GiaBan
+                        };
+                        _giohangctservice.Add(ghct);
+                        return "Thêm Thành công.";
+                    }
+                } else
+                {
+                    return "Số lượng vượt quá số lượng tổng sản phẩm. Mời bạn nhập lại số lượng.";
+                }
+
+                return "";
+            }
         }
     }
 }

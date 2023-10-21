@@ -68,15 +68,16 @@ namespace AppView.Controllers
             if (httpResponseMessage.IsSuccessStatusCode)
             {
                 var error = await httpResponseMessage.Content.ReadAsStringAsync();
-                if(error == "false")
+                if (error == "false")
                 {
                     TempData["ErrorMessage"] = "Chất liệu bị trùng. Mời bạn nhập loại chất liệu khác";
                     return RedirectToAction("CreateChatLieu", "QuanTri");
-                } else
+                }
+                else
                 {
                     return RedirectToAction("GellAllChatLieu", "QuanTri");
                 }
-                
+
             }
             else
             {
@@ -330,7 +331,8 @@ namespace AppView.Controllers
                     return RedirectToAction(" GellAllThuongHieu", "QuanTri");
                 }
 
-            } else
+            }
+            else
             {
                 return View();
             }
@@ -373,11 +375,12 @@ namespace AppView.Controllers
             if (httpResponseMessage.IsSuccessStatusCode)
             {
                 var apiresponse = await httpResponseMessage.Content.ReadAsStringAsync();
-                if(apiresponse == "false")
+                if (apiresponse == "false")
                 {
                     TempData["ErrorMessage"] = "Xuất sứ bị trùng. Vui lòng chọn xuất sứ khác.";
                     return RedirectToAction("CreateXuatXu");
-                } else
+                }
+                else
                 {
                     return RedirectToAction("GellAllXuatXu", "QuanTri");
                 }
@@ -431,11 +434,12 @@ namespace AppView.Controllers
             if (httpResponseMessage.IsSuccessStatusCode)
             {
                 var error = await httpResponseMessage.Content.ReadAsStringAsync();
-                if(error == "false")
+                if (error == "false")
                 {
                     TempData["ErrorMessage"] = "Sản phẩm bị trùng. Vui lòng chọn sản phẩm khác.";
                     return RedirectToAction("CreateSanPham");
-                } else
+                }
+                else
                 {
                     return RedirectToAction("GellAllSanPham", "QuanTri");
                 }
@@ -477,7 +481,7 @@ namespace AppView.Controllers
             }
             else
             {
-             
+
                 string urltimliem = $"https://localhost:7214/api/SanPhamChiTiet/GetByNameSPCTVM?name={name}";
                 var respon1 = _client.GetAsync(urltimliem).Result;
                 var data = respon1.Content.ReadAsStringAsync().Result;
@@ -607,21 +611,23 @@ namespace AppView.Controllers
             string url2 = $"https://localhost:7214/api/SanPhamChiTiet/CreateSanPhamChiTiet?iddm={spct.IdDanhMuc}&idcl={spct.IdChatLieu}&idms={spct.IdMauSac}&idsize={spct.IdSize}&idanh={spct.IdAnh}&idsp={spct.IDSP}&masp={spct.MaSp}&soluong={spct.SoLuong}&gia={spct.GiaBan}&mota={spct.MoTa}";
             var obj = JsonConvert.SerializeObject(spct);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
-            HttpResponseMessage httpResponseMessage =  _client.PostAsync(url2, content).Result;
+            HttpResponseMessage httpResponseMessage = _client.PostAsync(url2, content).Result;
 
             if (httpResponseMessage.IsSuccessStatusCode)
             {
                 var error = await httpResponseMessage.Content.ReadAsStringAsync();
-                if(error == "Sản phẩm bị trùng mã")
+                if (error == "Sản phẩm bị trùng mã")
                 {
                     TempData["ErrorMessage"] = "Sản phẩm bị trùng mã. Mời bạn nhập mã khác";
                     return RedirectToAction("CreateSanPhamCT", "QuanTri");
 
-                } else if (error == "Sản phẩm đã tồn tại")
+                }
+                else if (error == "Sản phẩm đã tồn tại")
                 {
                     TempData["ErrorMessage"] = "Sản phẩm bạn nhập đã có trong danh sách sản phẩm.";
                     return RedirectToAction("CreateSanPhamCT", "QuanTri");
-                } else
+                }
+                else
                 {
                     return RedirectToAction("GellAllSanPhamCT", "QuanTri");
                 }
@@ -635,13 +641,17 @@ namespace AppView.Controllers
         [HttpPost]
         public async Task<ActionResult> UpdateSanPhamCT(SanPhamChiTiet spct)
         {
-
             ViewBag.DanhMuc = new SelectList(_context.danhMucs.ToList().Where(c => c.status == 1).OrderBy(c => c.TenDanhMuc), "Id", "TenDanhMuc");
             ViewBag.SanPham = new SelectList(_context.sanPhams.ToList().Where(c => c.status == 1).OrderBy(c => c.TenSanPham), "Id", "TenSanPham");
             ViewBag.ChatLieu = new SelectList(_context.chatLieus.ToList().Where(c => c.status == 1).OrderBy(c => c.TenChatLieu), "Id", "TenChatLieu");
             ViewBag.MauSac = new SelectList(_context.mauSacs.ToList().Where(c => c.status == 1).OrderBy(c => c.TenMauSac), "Id", "TenMauSac");
             ViewBag.Size = new SelectList(_context.sizes.ToList().Where(c => c.status == 1).OrderBy(c => c.SizeName), "Id", "SizeName");
 
+            string urldetail = $"https://localhost:7214/api/SanPhamChiTiet/GetByID?Id={spct.Id}";
+            var respon1 = _client.GetAsync(urldetail).Result;
+            var data1 = respon1.Content.ReadAsStringAsync().Result;
+            SanPhamChiTiet lstsize = JsonConvert.DeserializeObject<SanPhamChiTiet>(data1);
+           
             string urlanh = "https://localhost:7214/api/Anh/GetAll";
             var respon = _client.GetAsync(urlanh).Result;
             var data = respon.Content.ReadAsStringAsync().Result;
@@ -650,34 +660,47 @@ namespace AppView.Controllers
             ViewBag.upload = img.ImageFile;
             ViewBag.listanh = album;
 
-
-            string url = $"https://localhost:7214/api/SanPhamChiTiet/UpdateSanPhamChiTiet?id={spct.Id}&iddm={spct.DanhMuc}&idcl={spct.IdChatLieu}&idms={spct.IdMauSac}&idsize={spct.IdSize}&idanh={spct.IdAnh}&idsp={spct.IDSP}&masp={spct.MaSp}&soluong={spct.SoLuong}&gia={spct.GiaBan}&mota={spct.MoTa}&trangthai={spct.status}";
+            string urltest = $"https://localhost:7214/api/SanPhamChiTiet/UpdateSanPhamChiTiet?id={spct.Id}&iddm={spct.IdDanhMuc}&idcl={spct.IdChatLieu}&idms={spct.IdMauSac}&idsize={spct.IdSize}&idanh={spct.IdAnh}&idsp={spct.IDSP}&masp={spct.MaSp}&soluong={spct.SoLuong}&gia={spct.GiaBan}&mota={spct.MoTa}&trangthai={spct.status}";
             var obj = JsonConvert.SerializeObject(spct);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
-            HttpResponseMessage httpResponseMessage = await _client.PutAsync(url, content);
+            HttpResponseMessage httpResponseMessage = await _client.PostAsync(urltest, content);
             if (httpResponseMessage.IsSuccessStatusCode)
             {
                 return RedirectToAction("GellAllSanPhamCT", "QuanTri");
             }
             else
             {
-                string urldetail = $"https://localhost:7214/api/SanPhamChiTiet/GetByID?Id={spct.Id}";
-                var respon1 = _client.GetAsync(urldetail).Result;
-                var data1 = respon1.Content.ReadAsStringAsync().Result;
-                SanPhamChiTiet lstsize = JsonConvert.DeserializeObject<SanPhamChiTiet>(data1);
+
                 return View(lstsize);
             }
         }
-        [HttpPut]
+        [HttpGet]
+        [HttpPost]
         public async Task<ActionResult> DeleteSanPhamCT(SanPhamChiTiet spct)
         {
-            string url = $"https://localhost:7214/api/SanPhamChiTiet/Delete/{spct.Id}";
+            string url = $"https://localhost:7214/api/SanPhamChiTiet/DeleteSanPhamChiTiet?Id={spct.Id}";
             var obj = JsonConvert.SerializeObject(spct);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
             HttpResponseMessage httpResponseMessage = await _client.PutAsync(url, content);
+            if (httpResponseMessage.IsSuccessStatusCode)
+            {
+                var Error = await httpResponseMessage.Content.ReadAsStringAsync();
+                if(Error == "true")
+                {
 
-            return RedirectToAction("GellAllSanPhamCT", "QuanTri");
-
+                    TempData["SuccessFull"] = "Sản phẩm đã được thay đổi là hết hàng.";
+                    return RedirectToAction("GellAllSanPhamCT", "QuanTri");
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Xóa thất bại.";
+                    return RedirectToAction("GellAllSanPhamCT", "QuanTri");
+                }
+            }  else
+            {
+                TempData["ErrorMessage"] = "Xóa thất bại.";
+                return RedirectToAction("GellAllSanPhamCT", "QuanTri");
+            }
         }
         [HttpGet]
         public IActionResult UploadImage()
@@ -733,7 +756,7 @@ namespace AppView.Controllers
                 return NotFound();
             }
         }
-        public IActionResult Themsanphamvaogiohang(Guid id )
+        public IActionResult Themsanphamvaogiohang(Guid id)
         {
             string url = $"https://localhost:7214/api/SanPhamChiTiet/ThemSPvaoGioHang?iduser=911a9476-05be-4a4f-8325-2ea61766e2a0&IDspct={id}";
             return View(url);

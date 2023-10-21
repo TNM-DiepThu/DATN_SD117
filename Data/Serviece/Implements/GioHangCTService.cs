@@ -6,6 +6,7 @@ using Bill.Serviece.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -45,8 +46,7 @@ namespace AppData.Serviece.Implements
 
             try
             {
-                var list = _context.gioHangChiTiets.ToList();
-                var obj = list.FirstOrDefault(c => c.Id == id);
+                GioHangChiTiet obj = _context.gioHangChiTiets.FirstOrDefault(c => c.Id == id);
                 _context.gioHangChiTiets.Remove(obj);
                 _context.SaveChangesAsync();
                 return true;
@@ -58,22 +58,27 @@ namespace AppData.Serviece.Implements
             }
         }
 
-        public bool Edit(Guid id, GioHangChiTiet p)
+        public bool EditSoluong(Guid idghct, int soluong)
         {
-            var listobj = _context.gioHangChiTiets.ToList();
-            var obj = listobj.FirstOrDefault(c => c.Id == id);
-            obj.SoLuong = p.SoLuong;
-            obj.DonGia = p.DonGia;
-            obj.IdSanPhamChiTiet = _SP.GetAll().FirstOrDefault(c => c.Id == p.IdSanPhamChiTiet).Id;
-            obj.IdGioHang = _GH.GetAll().FirstOrDefault(c => c.Id == p.IdGioHang).Id;
-            obj.IdComboChiTiet = _CB.GetAll().FirstOrDefault(c => c.Id == p.IdComboChiTiet).Id;
-            _context.gioHangChiTiets.Update(obj);
+            GioHangChiTiet ghct = _context.gioHangChiTiets.FirstOrDefault(c => c.Id == idghct);
+            ghct.SoLuong = soluong;
+            _context.gioHangChiTiets.Update(ghct);
             _context.SaveChangesAsync();
             return true;
         }
-        public List<GioHangChiTiet> GetAll()
+        public List<GioHangChiTiet> GetAllGioHangTheoNguoiDungDangNhap(Guid idnguoidung)
         {
-            return _context.gioHangChiTiets.ToList();
+            var idgh = _GH.GetAll().FirstOrDefault(c => c.IdNguoiDung == idnguoidung).Id ;
+            return _context.gioHangChiTiets.Where(c => c.IdGioHang == idgh).ToList();
+        }
+        public bool Edit(Guid idghct, GioHangChiTiet p)
+        {
+            GioHangChiTiet ghct = _context.gioHangChiTiets.FirstOrDefault(c => c.Id == idghct);
+            if(ghct == null) return false;
+            ghct.SoLuong = p.SoLuong;
+            _context.gioHangChiTiets.Update(ghct);
+            _context.SaveChangesAsync();
+            return true;
         }
     }
 }

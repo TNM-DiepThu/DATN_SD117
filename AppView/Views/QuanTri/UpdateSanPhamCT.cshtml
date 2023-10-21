@@ -4,8 +4,15 @@
     ViewData["Title"] = "UpdateSanPhamCT";
     var dataanh = ViewBag.listanh;
 }
-<script src="~/js/site.js"></script>
+<script type="text/javascript" src="~/js/sanphamchitiet/sanphamchitiet.js"></script>
+<script type="text/javascript" src="~/js/site.js"></script>
 <link href="~/css/site.css" rel="stylesheet" />
+@*<script type="text/javascript" src="~/js/sanphamchitiet/jquery.min.js"></script>
+<script type="text/javascript" src="~/js/sanphamchitiet/select2.full.min.js"></script>
+<script type="text/javascript" src="~/js/sanphamchitiet/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" type="text/javascript" src="~/js/sanphamchitiet/sanphamchitiet.js"></script>
+*@
+@*<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>*@
 
 <h1>UpdateSanPhamCT</h1>
 
@@ -28,12 +35,23 @@
                     <span asp-validation-for="MaSp" class="text-danger"></span>
                 </div>
             </div>
-
+            @*      <div class="form-group row">
+            <label for="IDSP" class="control-label col-3">Tên sản phẩm</label>
+            <div class="col-9">
+            <select id="IDSP" class="select2bs4" multiple="multiple" data-placeholder="Select a State" style="width: 100%;">
+            @foreach (var item in ViewBag.SanPham as IEnumerable<SelectListItem>)
+            {
+            <option value="@item.Value">@item.Text</option>
+            }
+            </select>
+            @Html.ValidationMessageFor(model => model.IDSP, "", new { @class = "text-danger" })
+            </div>
+            </div>*@
             <div class="form-group row">
                 <label for="IDSP" class="control-label col-3">Tên sản phẩm</label>
                 <div class="col-9 ">
                     @Html.DropDownList("IDSP", ViewBag.SanPham as IEnumerable<SelectListItem>, "", new { @class = "form-control" })
-                    @*  @Html.DropDownListFor(m => m.IDSP, (IEnumerable<SelectListItem>)ViewBag.SanPham, new { @class = "form-control" })*@
+                   @* @Html.DropDownListFor(m => m.IDSP, (IEnumerable<SelectListItem>)ViewBag.SanPham, new { @class = "form-control" })*@
                     @Html.ValidationMessageFor(model => model.IDSP, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -140,10 +158,14 @@
                     <span asp-validation-for="MoTa" class="text-danger"></span>
                 </div>
             </div>
-             <div class="form-group">
-            <label asp-for="status" class="control-label"></label>
-            <input asp-for="status" class="form-control" />
-            <span asp-validation-for="status" class="text-danger"></span>
+            <div class="form-group">
+                <select name="SelectedStatus" class="form-control">
+                    <option value="1">Còn hàng</option>
+                    <option value="0">Hết hàng</option>
+                </select>
+                @*<input  name="SelectedStatus" id="selectedStatus" />*@
+                <input asp-for ="status"  name="SelectedStatus" id="selectedStatus" disabled></input>
+                <span asp-validation-for="status" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
@@ -157,5 +179,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

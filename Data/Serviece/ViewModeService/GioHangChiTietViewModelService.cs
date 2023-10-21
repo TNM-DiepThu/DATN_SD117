@@ -30,12 +30,12 @@ namespace AppData.Serviece.ViewModeService
             _sanphamctservice = new SanPhamChiTietServiece();
             _comboctservice = new ComBoChiTietViewModelService();
         }
-        public IEnumerable<GioHangChiTietViewModel> GetAllListGioHang()
+        public IEnumerable<GioHangChiTietViewModel> GetAllListGioHang(Guid idNguoiDung)
         {
             IEnumerable<GioHangChiTietViewModel> lst = new List<GioHangChiTietViewModel>();
-            if (_giohangctservice.GetAll().Any(c => c.IdComboChiTiet == null))
+            if (_giohangctservice.GetAllGioHangTheoNguoiDungDangNhap(idNguoiDung).Any(c => c.IdComboChiTiet == null))
             {
-                     lst = from a in _giohangctservice.GetAll()
+                     lst = from a in _giohangctservice.GetAllGioHangTheoNguoiDungDangNhap(idNguoiDung)
                           join b in _giohangservice.GetAll() on a.IdGioHang equals b.Id
                           join c in _spctviewmodelservice.GetAll() on a.IdSanPhamChiTiet equals c.Id
                           select new GioHangChiTietViewModel
@@ -49,9 +49,9 @@ namespace AppData.Serviece.ViewModeService
                           };
                     lst.ToList();
             }
-            else if (_giohangctservice.GetAll().Any(c => c.IdSanPhamChiTiet == null))
+            else if (_giohangctservice.GetAllGioHangTheoNguoiDungDangNhap(idNguoiDung).Any(c => c.IdSanPhamChiTiet == null))
             {
-                 lst = from a in _giohangctservice.GetAll()
+                 lst = from a in _giohangctservice.GetAllGioHangTheoNguoiDungDangNhap(idNguoiDung)
                           join b in _giohangservice.GetAll() on a.IdGioHang equals b.Id
                           join c in _spctviewmodelservice.GetAll() on a.IdSanPhamChiTiet equals c.Id
                           join d in _comboctservice.GetAllComBoChiTiet() on a.IdComboChiTiet equals d.Id

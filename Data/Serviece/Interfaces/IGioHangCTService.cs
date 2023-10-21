@@ -10,8 +10,9 @@ namespace AppData.Serviece.Interfaces
     public interface IGioHangCTService
     {
         public bool Add(GioHangChiTiet p);
-        public List<GioHangChiTiet> GetAll();
+        public List<GioHangChiTiet> GetAllGioHangTheoNguoiDungDangNhap(Guid idnguoidung);
         public bool Del(Guid id);
-        public bool Edit(Guid id, GioHangChiTiet p);
+        public bool EditSoluong(Guid idghct, int soluong);
+        public bool Edit(Guid idghct, GioHangChiTiet p);
     }
 }

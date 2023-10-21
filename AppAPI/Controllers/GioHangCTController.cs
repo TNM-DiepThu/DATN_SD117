@@ -3,6 +3,7 @@ using AppData.Serviece.Implements;
 using AppData.Serviece.Interfaces;
 using AppData.Serviece.ViewModeService;
 using AppData.ViewModal.GioHangChiTietViewModel;
+using Bill.Serviece.Implements;
 using Bill.Serviece.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,56 +15,85 @@ namespace AppAPI.Controllers
     [ApiController]
     public class GioHangCTController : ControllerBase
     {
-        private readonly IGioHangCTService _GH;
+        private readonly IGioHangCTService _GHCT;
+        private readonly IGioHangService _giohangservice;
         private readonly GioHangChiTietViewModelService _giohangctviewmodelservice;
-        private readonly ISanPhamChiTietServiece _SP;
+        private readonly ISanPhamChiTietServiece _SPCT;
+        private readonly IComboChiTietService _combochiTietservice;
         private readonly IGioHangService _Ga;
         public GioHangCTController()
         {
-            _GH = new GioHangCTService();
+            _GHCT = new GioHangCTService();
+            _SPCT = new SanPhamChiTietServiece();
+            _giohangservice = new GioHangService();
+            _combochiTietservice = new ComBoChiTietService();
             _giohangctviewmodelservice = new GioHangChiTietViewModelService();
         }
 
 
         [HttpGet("[action]")]
-        public IEnumerable<GioHangChiTietViewModel> GetAllFullGioHangChiTiet()
+        public IEnumerable<GioHangChiTietViewModel> GetAllFullGioHangChiTiet(Guid IDnguoiDung)
         {
-            return _giohangctviewmodelservice.GetAllListGioHang();
+            return _giohangctviewmodelservice.GetAllListGioHang(IDnguoiDung);
         }
 
-        [HttpGet("GetAll")]
+        [HttpGet("[action]")]
 
-        public IEnumerable<GioHangChiTiet> GetAllAsync()
+        public IEnumerable<GioHangChiTiet> GetAllTheoLogin(Guid Idnguoidung)
         {
-            return _GH.GetAll();
+            return _GHCT.GetAllGioHangTheoNguoiDungDangNhap(Idnguoidung);
         }
-        [HttpPost("Create")]
-        public bool Create(int SoLuong, decimal DG, Guid IDsp, Guid Gh)
+
+
+        [HttpPost("[action]")]
+
+        public string UpdateSoLuong(Guid idnguoidung, Guid idghct, int soluong)
         {
-            GioHangChiTiet GH = new GioHangChiTiet()
+            GioHangChiTiet ghct = _GHCT.GetAllGioHangTheoNguoiDungDangNhap(idnguoidung).FirstOrDefault(c => c.Id == idghct);
+            if (ghct.IdComboChiTiet == null)
             {
-                Id = Guid.NewGuid(),
-                SoLuong = SoLuong,
-                DonGia = DG,
-                IdGioHang = _Ga.GetAll().FirstOrDefault(c => c.Id == IDsp).Id,
-                IdSanPhamChiTiet = _SP.GetAll().FirstOrDefault(c => c.Id == Gh).Id,
-            };
-            return _GH.Add(GH);
-        }
-        [HttpDelete("Delete/{Id}")]
+                SanPhamChiTiet spct = _SPCT.GetAll().FirstOrDefault(c => c.Id == ghct.IdSanPhamChiTiet);
+                if (soluong > spct.SoLuong)
+                {
+                    return "San pham nay khong du so luong nhu ban yeu cau";
+                }
+                else
+                {
+                    ghct.Id = ghct.Id;
+                    ghct.SoLuong = soluong;
+                    ghct.IdSanPhamChiTiet = spct.Id;
+                    ghct.DonGia = spct.GiaBan;
+                    ghct.IdComboChiTiet = null;
+                    _GHCT.EditSoluong(idghct, soluong);
 
-        public bool DeleteAsync(Guid Id)
-        {
-            var result = _GH.Del(Id);
-            return result;
-        }
+                    return "Cap nhat so luong thanh cong";
+                }
+            }
+            else if (ghct.IdSanPhamChiTiet == null)
+            {
+                ComboChiTiet spct = _combochiTietservice.GetAll().FirstOrDefault(c => c.Id == ghct.IdComboChiTiet);
+                if (soluong > spct.SoLuongSanPham)
+                {
+                    return "San pham nay khong du so luong nhu ban yeu cau";
+                }
+                else
+                {
+                    ghct.Id = ghct.Id;
+                    ghct.SoLuong = soluong;
+                    ghct.IdSanPhamChiTiet = null;
+                    ghct.DonGia = spct.GiaBan;
+                    ghct.IdComboChiTiet = ghct.IdComboChiTiet;
 
-        [HttpPut("Update/{id}")]
+                    _GHCT.EditSoluong(idghct, soluong);
+                    return "Cap nhat so luong thanh cong";
+                }
 
-        public bool UpdateAsync(Guid id, [FromBody] GioHangChiTiet p)
-        {
-            var result = _GH.Edit(id, p);
-            return result;
+            }
+            else
+            {
+                return "Them so luong that bai.";
+            }
+
         }
     }
 }
