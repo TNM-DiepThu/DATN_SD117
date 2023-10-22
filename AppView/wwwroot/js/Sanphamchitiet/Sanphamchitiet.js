@@ -13,4 +13,14 @@ selectElement.addEventListener("change", function () {
     var selectedValue = parseInt(selectElement.value);
 
     // In giá trị đã chuyển đổi vào console để kiểm tra
-document.getElementById("selectedStatus").value = selectedValue;
+    document.getElementById("selectedStatus").value = selectedValue;
+    // lấy id màu bên Sản phẩm chi tiết Detail
+
+    //function changeBackgroundColor(colorName, colorId) {
+    //    // Thay đổi nền thành màu xám
+    //    document.body.style.backgroundColor = 'gray';
+
+    //    // Lấy thẻ input và cập nhật giá trị ID của màu được chọn
+    //    var colorIdTextBox = document.getElementById("colorIdTextBox");
+    //    colorIdTextBox.value = colorId;
+    //};

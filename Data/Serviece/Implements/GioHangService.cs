@@ -1,6 +1,7 @@
 ﻿using AppData.data;
 using AppData.model;
 using AppData.Serviece.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,26 +13,26 @@ namespace AppData.Serviece.Implements
     public class GioHangService : IGioHangService
     {
         private readonly MyDbContext _context;
-        private readonly INguoiDungServiece _ND;
+        private readonly UserManager<NguoiDung> _ND;
         public GioHangService()
         {
             _context = new MyDbContext();
-            //_ND = new NguoiDungServiece();
+            //_ND = new UserManager<NguoiDung>();
         }
 
-        public bool Add(GioHang p)
+        public bool Add(Guid idnguoidung)
         {
             try
             {
 
-                //GioHang GH = new GioHang()
-                //{
-                //    Id = Guid.NewGuid(),
-                //    GhiChu = p.GhiChu,
-                //    IdNguoiDung = _ND.GetAll().FirstOrDefault(c => c.Id == p.IdNguoiDung).Id,
-                //};
-                //_context.gioHangs.Add(GH);
-                //_context.SaveChanges();
+                GioHang GH = new GioHang()
+                {
+                    Id = Guid.NewGuid(),
+                    GhiChu = "Giỏ hàng của" + _context.Users.FirstOrDefault(c => c.Id == idnguoidung).UserName,
+                    IdNguoiDung = _context.Users.FirstOrDefault(c => c.Id == idnguoidung).Id,
+                };
+                _context.gioHangs.Add(GH);
+                _context.SaveChanges();
                 return true;
             }
             catch (Exception)

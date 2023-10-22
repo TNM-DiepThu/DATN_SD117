@@ -8,7 +8,9 @@ using Bill.Serviece.Interfaces;
 
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using System.Drawing;
 using System.Linq;
 
 namespace AppAPI.Controllers
@@ -30,7 +32,7 @@ namespace AppAPI.Controllers
         private readonly IMauSacServiece _auSacServiece;
         private readonly ISizeServiece sizeServiece;
         private readonly ISanPhamServiece sanPhamServiece;
-        public SanPhamChiTietController()
+        public SanPhamChiTietController( )
         {
             _anhMuc = new DanhMucServiece();
             _anhServiece = new AnhServiece();
@@ -80,6 +82,39 @@ namespace AppAPI.Controllers
         public SanPhamChiTiet GetByID(Guid Id)
         {
             return _sanphamCTsv.GetByID(Id);
+        }
+
+        [HttpGet("[action]")]
+        public List<MauSac> GetAllMauSacTheoSanPham(Guid IdSPCT)
+        {
+            List<MauSac> lstmau = new List<MauSac>();
+
+            var SanPhamChiTietVM = _spctViewModel.GetAll().FirstOrDefault(c => c.Id == IdSPCT);
+            var TenSP = SanPhamChiTietVM.TenSP;
+
+            var mau = _spctViewModel.GetAll().Where(c => c.TenSP == TenSP).Select(c => c.MauSac).Distinct().ToList();
+            for (var i = 0; i < mau.Count(); i++)
+            {
+                MauSac sizelist = _auSacServiece.GetAll().FirstOrDefault(c => c.TenMauSac == mau[i]);
+                lstmau.Add(sizelist);
+            }
+            return lstmau.ToList();
+        }
+        [HttpGet("[action]")]
+        public List<AppData.model.Size> GetAllSizeTheoSanPham(Guid IdSPCT)
+        {
+            List<AppData.model.Size> lstsize  = new List<AppData.model.Size>();
+
+            var SanPhamChiTietVM = _spctViewModel.GetAll().FirstOrDefault(c => c.Id == IdSPCT);
+            var TenSP = SanPhamChiTietVM.TenSP;
+
+            var size = _spctViewModel.GetAll().Where(c => c.TenSP == TenSP).Select(c => c.Size).Distinct().ToList();
+            for(var i = 0;  i < size.Count() ; i++)
+            {
+                AppData.model.Size sizelist = sizeServiece.GetAll().FirstOrDefault(c => c.SizeName == size[i]);
+                lstsize.Add(sizelist);
+            }
+            return lstsize.ToList();
         }
 
         [HttpPost("CreateSanPhamChiTiet")]
@@ -217,25 +252,57 @@ namespace AppAPI.Controllers
                 if (soluong <= 0) return "Số lượng của bạn phải lớn hơn 0.";
 
                 var spct = _sanphamCTsv.GetAll().FirstOrDefault(c => c.IdMauSac == IdMau && c.IdSize == IdSize && c.IDSP == idSP);
-                if(spct.status == 0 && spct.SoLuong ==0) return "Sản phẩm đã hết hàng. Mời bạn chọn sản phẩm khác.";
-
+                if (spct == null) return "Không có sản phẩm.";
+                if (spct.status == 0 || spct.SoLuong == 0) return "Sản phẩm đã hết hàng. Mời bạn chọn sản phẩm khác.";
+              
                 if (soluong > 0 && soluong < spct.SoLuong) {
-                    if (spct == null) return "Không có sản phẩm.";
                     GioHangChiTiet ghct = _giohangctservice.GetAllGioHangTheoNguoiDungDangNhap(idnguoidung).FirstOrDefault(c => c.IdSanPhamChiTiet == spct.Id);
-                    if (ghct == null)
+                    if (_giohangservice.GetAll().Any(c => c.IdNguoiDung == idnguoidung))
                     {
-                        GioHangChiTiet newghct = new GioHangChiTiet()
+                        if (ghct == null)
                         {
-                            Id = Guid.NewGuid(),
-                            IdComboChiTiet = null,
-                            IdGioHang = _giohangservice.GetAll().FirstOrDefault(c => c.IdNguoiDung == idnguoidung).Id,
-                            IdSanPhamChiTiet = spct.Id,
-                            SoLuong = soluong,
-                            DonGia = spct.GiaBan
-                        };
-                        _giohangctservice.Add(ghct);
-                        return "Thêm Thành công.";
+                            GioHangChiTiet newghct = new GioHangChiTiet()
+                            {
+                                Id = Guid.NewGuid(),
+                                IdComboChiTiet = null,
+                                IdGioHang = _giohangservice.GetAll().FirstOrDefault(c => c.IdNguoiDung == idnguoidung).Id,
+                                IdSanPhamChiTiet = spct.Id,
+                                SoLuong = soluong,
+                                DonGia = spct.GiaBan
+                            };
+                            _giohangctservice.Add(ghct);
+                            return "Thêm Thành công.";
+                        }
+                        else
+                        {
+                            ghct.SoLuong += 1;
+                            _giohangctservice.Edit(ghct.Id, ghct);
+                        }
+                    } else
+                    {
+                        _giohangservice.Add(idnguoidung);
+                        if (ghct == null)
+                        {
+                            GioHangChiTiet newghct = new GioHangChiTiet()
+                            {
+                                Id = Guid.NewGuid(),
+                                IdComboChiTiet = null,
+                                IdGioHang = _giohangservice.GetAll().FirstOrDefault(c => c.IdNguoiDung == idnguoidung).Id,
+                                IdSanPhamChiTiet = spct.Id,
+                                SoLuong = soluong,
+                                DonGia = spct.GiaBan
+                            };
+                            _giohangctservice.Add(ghct);
+                            return "Thêm Thành công.";
+                        }
+                        else
+                        {
+                            ghct.SoLuong += 1;
+                            _giohangctservice.Edit(ghct.Id, ghct);
+                        }
                     }
+                    
+                  
                 } else
                 {
                     return "Số lượng vượt quá số lượng tổng sản phẩm. Mời bạn nhập lại số lượng.";

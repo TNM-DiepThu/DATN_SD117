@@ -32,6 +32,7 @@ namespace AppView.Controllers
         private readonly ILogger<QuanTriController> _logger;
         HttpClient _client = new HttpClient();
         private readonly MyDbContext _context;
+        private readonly ISanPhamServiece _sanphamservice;
         private readonly SanPhamChiTietViewModelService _spctViewModel;
         private readonly IAnhServiece anhservice;
         private readonly IWebHostEnvironment _hostingEnvironment;
@@ -39,6 +40,7 @@ namespace AppView.Controllers
         {
             _logger = logger;
             _hostingEnvironment = hostingEnvironment;
+            _sanphamservice = new SanPhamServiece();
             _spctViewModel = new SanPhamChiTietViewModelService();
             anhservice = new AnhServiece();
             _context = new MyDbContext();
@@ -567,12 +569,29 @@ namespace AppView.Controllers
         [HttpGet]
         public ActionResult GellByIDSanPhamCT(Guid id)
         {
+
+            var urllstmausac = $"https://localhost:7214/api/SanPhamChiTiet/GetAllMauSacTheoSanPham?IdSPCT={id}";
+            var responmausac = _client.GetAsync(urllstmausac).Result;
+            var datamausac = responmausac.Content.ReadAsStringAsync().Result;
+            List<MauSac>  listmausac = JsonConvert.DeserializeObject<List<MauSac>>(datamausac);
+            ViewBag.lstmausac = listmausac;
+
+
+            var urllstsize = $"https://localhost:7214/api/SanPhamChiTiet/GetAllSizeTheoSanPham?IdSPCT={id}"; 
+            var responsize = _client.GetAsync(urllstsize).Result;
+            var datasize = responsize.Content.ReadAsStringAsync().Result;
+            List<AppData.model.Size> listsize = JsonConvert.DeserializeObject<List<AppData.model.Size>>(datasize);
+            ViewBag.listSize = listsize;
+
             string url = $"https://localhost:7214/api/SanPhamChiTiet/GetByIDSPCTVM?id={id}";
             var respon = _client.GetAsync(url).Result;
             var data = respon.Content.ReadAsStringAsync().Result;
-            SanPhamChiTietViewModel lstsize = JsonConvert.DeserializeObject<SanPhamChiTietViewModel>(data);
+            SanPhamChiTietViewModel lstspctvm = JsonConvert.DeserializeObject<SanPhamChiTietViewModel>(data);
 
-            return View(lstsize);
+            var IDsanpham = _sanphamservice.GetAll().FirstOrDefault(c => c.TenSanPham == lstspctvm.TenSP).Id;
+            ViewBag.IDSP = IDsanpham;
+
+            return View(lstspctvm);
         }
         [HttpGet]
         public ActionResult GellByNameSanPhamCT(string name)
@@ -761,5 +780,28 @@ namespace AppView.Controllers
             string url = $"https://localhost:7214/api/SanPhamChiTiet/ThemSPvaoGioHang?iduser=911a9476-05be-4a4f-8325-2ea61766e2a0&IDspct={id}";
             return View(url);
         }
+        public IActionResult Themsanphamctvaogiohang(Guid IDNguoiDung, Guid IDSP, Guid IDMau, Guid IDSize, int Soluong , GioHangChiTiet ghct)
+        {
+
+            IDNguoiDung = new Guid("911a9476-05be-4a4f-8325-2ea61766e2a0");
+            string url = $"https://localhost:7214/api/SanPhamChiTiet/ThemSPCTVaoGioHang?idnguoidung={IDNguoiDung}&idSP={IDSP}&IdMau={IDMau}&IdSize={IDSize}&soluong={Soluong}";
+            var obj = JsonConvert.SerializeObject(ghct);
+            StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
+            HttpResponseMessage httpResponseMessage = _client.PostAsync(url, content).Result;
+            if (httpResponseMessage.IsSuccessStatusCode)
+            {
+                var result = httpResponseMessage.Content.ReadAsStringAsync().Result;
+                if (result == "Thêm Thành công.")
+                {
+                    return RedirectToAction("");
+                } else if(result == "")
+                {
+
+                }
+            }
+            return View(url);
+        }
+
+        
     }
 }

@@ -16,8 +16,7 @@ namespace AppAPI.Controllers
         public GioHangController()
         {
             _GH = new GioHangService();
-            //_nguoidungservice = new NguoiDungServiece();
-            
+
         }
         [HttpGet("GetAll")]
 
@@ -26,15 +25,16 @@ namespace AppAPI.Controllers
             return _GH.GetAll();
         }
         [HttpPost("Create")]
-        public bool Create(string GhiChu)
+        public bool Create(Guid idnguoidung)
         {
-            GioHang GH = new GioHang()
+            if(_GH.GetAll().Any(c => c.IdNguoiDung == idnguoidung))
             {
-                Id = Guid.NewGuid(),
-                //IdNguoiDung = _
-                GhiChu = GhiChu,
-            };
-            return _GH.Add(GH);
+                return false;
+            }
+            else
+            {
+                return _GH.Add(idnguoidung);
+            }
         }
         [HttpDelete("Delete/{Id}")]
 

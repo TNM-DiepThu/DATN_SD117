@@ -2,96 +2,55 @@
 
 @{
     ViewData["Title"] = "GellByIDSanPhamCT";
+    var listMauSac = ViewBag.lstmausac;
+    var listSize = ViewBag.listSize;
+    var idsp = ViewBag.IDSP;
 }
+<script type="text/javascript" src="~/js/sanphamchitiet/sanphamchitiet.js"></script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript">
+    function changeBackgroundColor(element, colorName, colorId) {
+        // Loại bỏ chọn trước đó nếu có
+        var selectedOption = document.querySelector('input[name="color_option"]:checked');
+        if (selectedOption) {
+            selectedOption.checked = false;
+        }
 
-<h1>GellByIDSanPhamCT</h1>
+        // Chọn màu được chọn
+        element.querySelector('input[name="color_option"]').checked = true;
 
-<div>
-    <h4>SanPhamChiTietViewModel</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Id)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DanhMuc)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DanhMuc)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TenSP)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TenSP)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ChatLieu)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ChatLieu)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MauSac)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MauSac)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Size)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Size)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Anh)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Anh)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MaSp)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MaSp)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SoLuong)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SoLuong)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.GiaBan)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.GiaBan)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.MoTa)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.MoTa)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.QRCode)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.QRCode)
-        </dd>
-       @* <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.status)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.status)
-        </dd>*@
-    </dl>
-</div>
+        // Thay đổi nền thành màu xám
+        document.getElementById("color_option_a1").style.backgroundColor = 'gray';
+
+        // Lấy thẻ input và cập nhật giá trị ID của màu được chọn
+        var colorIdTextBox = document.getElementById("colorIdTextBox");
+        colorIdTextBox.value = colorId;
+        if (colorIdTextBox.value == null || colorIdTextBox.value ="") {
+            alert("Bạn chưa chọn màu. Mời bạn chọn màu.")
+        }
+    };
+    function changeBackgroundSize(element, SizeName, SizeId) {
+        // Loại bỏ chọn trước đó nếu có
+        var selectedOption = document.querySelector('input[name="color_option"]:checked');
+        if (selectedOption) {
+            selectedOption.checked = false;
+        }
+
+        // Chọn màu được chọn
+        element.querySelector('input[name="color_option"]').checked = true;
+
+        // Thay đổi nền thành màu xám
+        document.getElementById("color_option_b1").style.backgroundColor = 'gray';
+
+        // Lấy thẻ input và cập nhật giá trị ID của màu được chọn
+        var SizeIdTextBox = document.getElementById("sizeIdTextBox");
+        SizeIdTextBox.value = SizeId;
+        if (SizeIdTextBox.value == null || SizeIdTextBox.value == ""){
+            alert("Bạn chưa chọn size. Mời bạn chọn size.")
+        }
+    };
+</script>
 <section class="content">
-
     <!-- Default box -->
     <div class="card card-solid">
         <div class="card-body">
@@ -111,78 +70,49 @@
                     </div>
                 </div>
                 <div class="col-12 col-sm-6">
-                    <h3 class="my-3">LOWA Men’s Renegade GTX Mid Hiking Boots Review</h3>
-                    <p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terr.</p>
-
+                    <h3 class="my-3">@Model.TenSP</h3>
+                    <br/>
+                    <label>@idsp</label>
+                    <p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terr.</p> 
                     <hr>
                     <h4>Available Colors</h4>
+                    <!--List màu sắc của sản phẩm-->
                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                        <label class="btn btn-default text-center active">
-                            <input type="radio" name="color_option" id="color_option_a1" autocomplete="off" checked>
-                            Green
-                            <br>
-                            <i class="fas fa-circle fa-2x text-green"></i>
-                        </label>
-                        <label class="btn btn-default text-center">
-                            <input type="radio" name="color_option" id="color_option_a2" autocomplete="off">
-                            Blue
-                            <br>
-                            <i class="fas fa-circle fa-2x text-blue"></i>
-                        </label>
-                        <label class="btn btn-default text-center">
-                            <input type="radio" name="color_option" id="color_option_a3" autocomplete="off">
-                            Purple
-                            <br>
-                            <i class="fas fa-circle fa-2x text-purple"></i>
-                        </label>
-                        <label class="btn btn-default text-center">
-                            <input type="radio" name="color_option" id="color_option_a4" autocomplete="off">
-                            Red
-                            <br>
-                            <i class="fas fa-circle fa-2x text-red"></i>
-                        </label>
-                        <label class="btn btn-default text-center">
-                            <input type="radio" name="color_option" id="color_option_a5" autocomplete="off">
-                            Orange
-                            <br>
-                            <i class="fas fa-circle fa-2x text-orange"></i>
-                        </label>
+                        @foreach (var mausac in listMauSac)
+                        {
+                            <label class="btn btn-default text-center active" id="colorLabel" onclick="changeBackgroundColor(this, '@mausac.TenMauSac', '@mausac.Id')">
+                                <input type="radio" name="color_option" id="color_option_a1" autocomplete="off" checked>
+                                <br />
+                                <span id="colorName">@mausac.TenMauSac</span>
+                                <br>
+                                <i class="fas fa-circle fa-2x text-@mausac.TenMauSac"></i>
+                            </label>
+                        }
                     </div>
-
+                    <br />
+                    <input type="text" id="colorIdTextBox" placeholder="Selected Color ID" readonly>
+                    <!--Kết th-->
+                    <!--List size của một sản phẩm-->
                     <h4 class="mt-3">Size <small>Please select one</small></h4>
                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                        <label class="btn btn-default text-center">
-                            <input type="radio" name="color_option" id="color_option_b1" autocomplete="off">
-                            <span class="text-xl">S</span>
-                            <br>
-                            Small
-                        </label>
-                        <label class="btn btn-default text-center">
-                            <input type="radio" name="color_option" id="color_option_b2" autocomplete="off">
-                            <span class="text-xl">M</span>
-                            <br>
-                            Medium
-                        </label>
-                        <label class="btn btn-default text-center">
-                            <input type="radio" name="color_option" id="color_option_b3" autocomplete="off">
-                            <span class="text-xl">L</span>
-                            <br>
-                            Large
-                        </label>
-                        <label class="btn btn-default text-center">
-                            <input type="radio" name="color_option" id="color_option_b4" autocomplete="off">
-                            <span class="text-xl">XL</span>
-                            <br>
-                            Xtra-Large
-                        </label>
+                        @foreach (var size in listSize)
+                        {
+                            <label class="btn btn-default text-center" id="colorLabel" onclick="changeBackgroundSize(this, '@size.SizeName', '@size.Id')">
+                                <input type="radio" name="color_option" id="color_option_b1" autocomplete="off">
+                                <span id="sizeName" class="text-xl">@size.SizeName</span>
+                            </label>
+                        }
                     </div>
+                    <br />
+                    <input type="text" id="sizeIdTextBox" placeholder="Selected size ID" readonly>
+                    <!--Kết thúc-->
 
                     <div class="bg-gray py-2 px-3 mt-4">
                         <h2 class="mb-0">
-                            $80.00
+                            @Model.GiaBan VND
                         </h2>
                         <h4 class="mt-0">
-                            <small>Ex Tax: $80.00 </small>
+                            <small>Số lượng: @Model.SoLuong </small>
                         </h4>
                     </div>
 
@@ -191,11 +121,11 @@
                             <i class="fas fa-cart-plus fa-lg mr-2"></i>
                             Add to Cart
                         </div>
-
+                        @*
                         <div class="btn btn-default btn-lg btn-flat">
-                            <i class="fas fa-heart fa-lg mr-2"></i>
-                            Add to Wishlist
-                        </div>
+                        <i class="fas fa-heart fa-lg mr-2"></i>
+                        Add to Wishlist
+                        </div>*@
                     </div>
 
                     <div class="mt-4 product-share">
@@ -224,7 +154,7 @@
                     </div>
                 </nav>
                 <div class="tab-content p-3" id="nav-tabContent">
-                    <div class="tab-pane fade show active" id="product-desc" role="tabpanel" aria-labelledby="product-desc-tab"> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi vitae condimentum erat. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Sed posuere, purus at efficitur hendrerit, augue elit lacinia arcu, a eleifend sem elit et nunc. Sed rutrum vestibulum est, sit amet cursus dolor fermentum vel. Suspendisse mi nibh, congue et ante et, commodo mattis lacus. Duis varius finibus purus sed venenatis. Vivamus varius metus quam, id dapibus velit mattis eu. Praesent et semper risus. Vestibulum erat erat, condimentum at elit at, bibendum placerat orci. Nullam gravida velit mauris, in pellentesque urna pellentesque viverra. Nullam non pellentesque justo, et ultricies neque. Praesent vel metus rutrum, tempus erat a, rutrum ante. Quisque interdum efficitur nunc vitae consectetur. Suspendisse venenatis, tortor non convallis interdum, urna mi molestie eros, vel tempor justo lacus ac justo. Fusce id enim a erat fringilla sollicitudin ultrices vel metus. </div>
+                    <div class="tab-pane fade show active" id="product-desc" role="tabpanel" aria-labelledby="product-desc-tab"> @Model.MoTa </div>
                     <div class="tab-pane fade" id="product-comments" role="tabpanel" aria-labelledby="product-comments-tab"> Vivamus rhoncus nisl sed venenatis luctus. Sed condimentum risus ut tortor feugiat laoreet. Suspendisse potenti. Donec et finibus sem, ut commodo lectus. Cras eget neque dignissim, placerat orci interdum, venenatis odio. Nulla turpis elit, consequat eu eros ac, consectetur fringilla urna. Duis gravida ex pulvinar mauris ornare, eget porttitor enim vulputate. Mauris hendrerit, massa nec aliquam cursus, ex elit euismod lorem, vehicula rhoncus nisl dui sit amet eros. Nulla turpis lorem, dignissim a sapien eget, ultrices venenatis dolor. Curabitur vel turpis at magna elementum hendrerit vel id dui. Curabitur a ex ullamcorper, ornare velit vel, tincidunt ipsum. </div>
                     <div class="tab-pane fade" id="product-rating" role="tabpanel" aria-labelledby="product-rating-tab"> Cras ut ipsum ornare, aliquam ipsum non, posuere elit. In hac habitasse platea dictumst. Aenean elementum leo augue, id fermentum risus efficitur vel. Nulla iaculis malesuada scelerisque. Praesent vel ipsum felis. Ut molestie, purus aliquam placerat sollicitudin, mi ligula euismod neque, non bibendum nibh neque et erat. Etiam dignissim aliquam ligula, aliquet feugiat nibh rhoncus ut. Aliquam efficitur lacinia lacinia. Morbi ac molestie lectus, vitae hendrerit nisl. Nullam metus odio, malesuada in vehicula at, consectetur nec justo. Quisque suscipit odio velit, at accumsan urna vestibulum a. Proin dictum, urna ut varius consectetur, sapien justo porta lectus, at mollis nisi orci et nulla. Donec pellentesque tortor vel nisl commodo ullamcorper. Donec varius massa at semper posuere. Integer finibus orci vitae vehicula placerat. </div>
                 </div>
