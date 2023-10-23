@@ -4,6 +4,7 @@ using AppData.Serviece.Implements;
 using AppData.Serviece.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Http.Headers;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -33,8 +34,9 @@ namespace AppAPI.Controllers
 
         // POST api/<HoaDonController>
         [HttpPost("create-hoadon")]
-        public bool CreateHoaDon( string mahd, DateTime ngaytao, int soluong, decimal tongtien, decimal tienvanchuyen, DateTime ngaygiao, DateTime ngaynhan, string nguoinhan, string sdt, string quanhuyen, string tinh, string diachi, DateTime ngaythanhtoan, string ghichu, int trangthai, Guid idnguoidung, Guid idvoucherdetail, Guid idhttt)
+        public bool CreateHoaDon(string mahd, DateTime ngaytao, int soluong, decimal tongtien, decimal tienvanchuyen, DateTime ngaygiao, DateTime ngaynhan, string nguoinhan, string sdt, string quanhuyen, string tinh, string diachi, DateTime ngaythanhtoan, string ghichu, int trangthai, Guid idnguoidung, Guid idvoucherdetail, Guid idhttt)
         {
+
             HoaDon hd = new HoaDon();
             hd.Id = Guid.NewGuid();
             hd.IdNguoiDunh = idnguoidung;
@@ -55,17 +57,18 @@ namespace AppAPI.Controllers
             hd.NgayThanhToan = ngaythanhtoan;
             hd.GhiChu = ghichu;
             hd.status = trangthai;
-           return _hoaDonService.AddItem(hd);
+
+            return _hoaDonService.AddItem(hd);
+            
         }
 
+
         // PUT api/<HoaDonController>/5
-        [HttpPut("{id}")]
+        [HttpPut("update-hoadon")]
         public bool UpdateHoaDon(Guid id, string mahd, DateTime ngaytao, int soluong, decimal tongtien, decimal tienvanchuyen, DateTime ngaygiao, DateTime ngaynhan, string nguoinhan, string sdt, string quanhuyen, string tinh, string diachi, DateTime ngaythanhtoan, string ghichu, int trangthai, Guid idnguoidung, Guid idvoucherdetail, Guid idhttt)
         {
             var hd = _hoaDonService.GetAll().First(c => c.Id == id);
-            hd.IdNguoiDunh = idnguoidung;
-            hd.IdVoucherDetail = idvoucherdetail;
-            hd.IDHTTT = idhttt;
+           
             hd.MaHD = mahd;
             hd.NgayTao = ngaytao;
             hd.SoLuong = soluong;
@@ -81,6 +84,9 @@ namespace AppAPI.Controllers
             hd.NgayThanhToan = ngaythanhtoan;
             hd.GhiChu = ghichu;
             hd.status = trangthai;
+            hd.IdNguoiDunh = idnguoidung;
+            hd.IdVoucherDetail = idvoucherdetail;
+            hd.IDHTTT = idhttt;
             return _hoaDonService.EditItem(hd);
         }
 
