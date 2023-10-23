@@ -37,43 +37,17 @@ namespace AppAPI.Controllers
         [HttpPost("create-hoadonct")]
         public bool CreateHoaDonCT(int soluong, decimal gia, int trangthai, Guid idhd, Guid idcomboct, Guid idspct)
         {
-            var hdct = _hoaDonCTService.GetAll().FirstOrDefault(c => c.IDHD == idhd && c.IdSPCT == idspct);
-            var spct = _dbContext.sanPhamChiTiets.FirstOrDefault(c => c.Id == idspct);
-            if (hdct != null)
-            {
-                var newsl = hdct.SoLuong += soluong;
-                if (newsl > spct.SoLuong)
-                {
-                    return false;
-                }
-                hdct.SoLuong = newsl;
-                hdct.Gia += gia;
-                hdct.status = trangthai;
-                if (_hoaDonCTService.EditItem(hdct))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
+           
                 HoaDonChiTiet hdcts = new HoaDonChiTiet();
                 hdcts.Id = Guid.NewGuid();
                 hdcts.SoLuong = soluong;
                 hdcts.Gia = gia;
                 hdcts.status = trangthai;
                 hdcts.IDHD = idhd;
-                hdcts.IdSPCT = idspct;
                 hdcts.IdCombo = idcomboct;
-                if (_hoaDonCTService.AddItem(hdcts))
-                {
-                    return true;
-                }
-                return false;
-            }
+                hdcts.IdSPCT = idspct;
+            return _hoaDonCTService.AddItem(hdcts);
+            
         }
 
         // PUT api/<HoaDonCTController>/5
