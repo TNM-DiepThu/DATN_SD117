@@ -1,0 +1,97 @@
+﻿@model AppData.model.HoaDonChiTiet
+
+@{
+    ViewData["Title"] = "CreateHoaDonCT";
+}
+<script type="text/javascript" src="~/js/site.js"></script>
+<link href="~/css/site.css" rel="stylesheet" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" rel="stylesheet" />
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
+
+<h4>HoaDonCT</h4>
+<hr />
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+}
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreateHoaDonCT">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+           <!-- <div class="form-group row">
+                <label asp-for="Id" class="control-label col-3"></label>
+                <div>
+                    <input asp-for="Id" class="form-control" />
+                    <span asp-validation-for="Id" class="text-danger"></span>
+                </div>
+
+            </div>!-->
+            <div class="form-group row">
+                <label asp-for="SoLuong" class="control-label col-3"></label>
+                <div>
+                    <input asp-for="SoLuong" class="form-control" />
+                    <span asp-validation-for="SoLuong" class="text-danger"></span>
+                </div>
+
+            </div>
+            <div class="form-group row">
+                <label asp-for="Gia" class="control-label col-3"></label>
+                <div>
+                    <input asp-for="Gia" class="form-control" />
+                    <span asp-validation-for="Gia" class="text-danger"></span>
+                </div>
+
+            </div>
+            <div class="form-group row">
+                <label asp-for="status" class="control-label col-3"></label>
+                <div>
+                    <input asp-for="status" class="form-control" />
+                    <span asp-validation-for="status" class="text-danger"></span>
+                </div>
+
+            </div>
+           
+            <div class="form-group row">
+
+                <label asp-for="HoaDon" class="control-label col-3"></label>
+                <div>
+
+                    @Html.DropDownList("IDHD", ViewBag.HoaDon  as IEnumerable<SelectListItem>, "", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.IDHD, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label asp-for="comboChiTiet" class="control-label col-3"></label>
+                <div>
+                    @Html.DropDownList("IdCombo", ViewBag.ComboChiTiet  as IEnumerable<SelectListItem>, "", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.IdCombo, "", new { @class = "text-danger" })
+                </div>
+
+            </div>
+            <div class="form-group row">
+                <label asp-for="SanPhamChiTiet" class="control-label col-3"></label>
+                <div>
+
+                    @Html.DropDownList("IdSPCT", ViewBag.SanPhamChiTiet  as IEnumerable<SelectListItem>, "", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.IdSPCT, "", new { @class = "text-danger" })
+                </div>
+
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="GetAllHDCT">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+
+    }
+}
