@@ -4,15 +4,12 @@
     ViewData["Title"] = "UpdateSanPhamCT";
     var dataanh = ViewBag.listanh;
 }
+
+<script src="~/library/plugins/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="~/js/sanphamchitiet/sanphamchitiet.js"></script>
 <script type="text/javascript" src="~/js/site.js"></script>
 <link href="~/css/site.css" rel="stylesheet" />
-@*<script type="text/javascript" src="~/js/sanphamchitiet/jquery.min.js"></script>
-<script type="text/javascript" src="~/js/sanphamchitiet/select2.full.min.js"></script>
-<script type="text/javascript" src="~/js/sanphamchitiet/bootstrap.bundle.min.js"></script>
-<script type="text/javascript" type="text/javascript" src="~/js/sanphamchitiet/sanphamchitiet.js"></script>
-*@
-@*<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>*@
+
 
 <h1>UpdateSanPhamCT</h1>
 
@@ -90,8 +87,8 @@
                 <label for="IdAnh" class="control-label col-3">Ảnh sản phẩm</label>
                 <div class="col-9 row">
 
-                    <input type="text" id="imageFilename" name="imageFilename" class="col-4" />
-                    <div>
+                    <input type="text" id="imageFilename" name="imageFilename" class="form-control" />
+                    <div style="display:none;">
                         @Html.TextBoxFor(m => m.IdAnh, new { @class = "form-control", id = "imageId", name ="imageId" })
                     </div>
                     @*<input asp-for="IdAnh" id="imageId" name="imageId" class="col-4" />*@
@@ -159,13 +156,20 @@
                 </div>
             </div>
             <div class="form-group">
-                <select name="SelectedStatus" class="form-control">
-                    <option value="1">Còn hàng</option>
-                    <option value="0">Hết hàng</option>
-                </select>
-                @*<input  name="SelectedStatus" id="selectedStatus" />*@
-                <input asp-for ="status"  name="SelectedStatus" id="selectedStatus" disabled></input>
-                <span asp-validation-for="status" class="text-danger"></span>
+                <div class="control-label col-3">
+                    Trạng thái
+                </div>
+                <div class="form-contrl">
+                    <select name="SelectedStatus" class="form-control" id="statusSelect">
+                        <option value="1">Còn hàng</option>
+                        <option value="0">Hết hàng</option>
+                    </select>
+                    <div style="display:none;">
+                        @Html.TextBoxFor(m => m.status, new { @class = "form-control", @id = "selectedStatus" })
+                    </div>
+                    <span asp-validation-for="status" class="text-danger"></span>
+                </div>
+              
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
@@ -173,7 +177,6 @@
         </form>
     </div>
 </div>
-
 <div>
     <a asp-action="Index">Back to List</a>
 </div>

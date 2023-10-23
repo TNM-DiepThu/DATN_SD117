@@ -5,51 +5,13 @@
     var listMauSac = ViewBag.lstmausac;
     var listSize = ViewBag.listSize;
     var idsp = ViewBag.IDSP;
+    int sl = ViewBag.quatity;
 }
+<<script src="~/library/plugins/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="~/js/sanphamchitiet/sanphamchitiet.js"></script>
-<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script type="text/javascript">
-    function changeBackgroundColor(element, colorName, colorId) {
-        // Loại bỏ chọn trước đó nếu có
-        var selectedOption = document.querySelector('input[name="color_option"]:checked');
-        if (selectedOption) {
-            selectedOption.checked = false;
-        }
 
-        // Chọn màu được chọn
-        element.querySelector('input[name="color_option"]').checked = true;
+<script type ="text/javascript" src="~/js/site.js"></script>
 
-        // Thay đổi nền thành màu xám
-        document.getElementById("color_option_a1").style.backgroundColor = 'gray';
-
-        // Lấy thẻ input và cập nhật giá trị ID của màu được chọn
-        var colorIdTextBox = document.getElementById("colorIdTextBox");
-        colorIdTextBox.value = colorId;
-        if (colorIdTextBox.value == null || colorIdTextBox.value ="") {
-            alert("Bạn chưa chọn màu. Mời bạn chọn màu.")
-        }
-    };
-    function changeBackgroundSize(element, SizeName, SizeId) {
-        // Loại bỏ chọn trước đó nếu có
-        var selectedOption = document.querySelector('input[name="color_option"]:checked');
-        if (selectedOption) {
-            selectedOption.checked = false;
-        }
-
-        // Chọn màu được chọn
-        element.querySelector('input[name="color_option"]').checked = true;
-
-        // Thay đổi nền thành màu xám
-        document.getElementById("color_option_b1").style.backgroundColor = 'gray';
-
-        // Lấy thẻ input và cập nhật giá trị ID của màu được chọn
-        var SizeIdTextBox = document.getElementById("sizeIdTextBox");
-        SizeIdTextBox.value = SizeId;
-        if (SizeIdTextBox.value == null || SizeIdTextBox.value == ""){
-            alert("Bạn chưa chọn size. Mời bạn chọn size.")
-        }
-    };
-</script>
 <section class="content">
     <!-- Default box -->
     <div class="card card-solid">
@@ -72,6 +34,7 @@
                 <div class="col-12 col-sm-6">
                     <h3 class="my-3">@Model.TenSP</h3>
                     <br/>
+                    <!--IDsanpham-->
                     <label>@idsp</label>
                     <p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terr.</p> 
                     <hr>
@@ -90,6 +53,7 @@
                         }
                     </div>
                     <br />
+                    <!--Lấy id color-->
                     <input type="text" id="colorIdTextBox" placeholder="Selected Color ID" readonly>
                     <!--Kết th-->
                     <!--List size của một sản phẩm-->
@@ -104,6 +68,7 @@
                         }
                     </div>
                     <br />
+                    <!--Lấy ID Size-->
                     <input type="text" id="sizeIdTextBox" placeholder="Selected size ID" readonly>
                     <!--Kết thúc-->
 
@@ -115,17 +80,28 @@
                             <small>Số lượng: @Model.SoLuong </small>
                         </h4>
                     </div>
+                  
+                    <form method="post">
+                        <div class="form-group">
+                            <button type="submit" asp-controller="QuanTri" asp-action="DecreaseQuantity" value="decrement">Giảm</button>
+                            <input type="hidden" name="Id" value="@Model.Id" />
+                            @if(sl <= 0 )
+                            {
+                                <input type="number" min="1" id="quantity" name="quantity" value="1" />
+                            }
+                            else
+                            {
+                                <input type="number" min="1" id="quantity" name="quantity" value="@sl" />
+                            }
 
+                            <button type="submit" asp-controller="QuanTri" asp-action="IncreaseQuantity" value="increment">Tăng</button>
+                        </div>
+                    </form>
                     <div class="mt-4">
                         <div class="btn btn-primary btn-lg btn-flat">
                             <i class="fas fa-cart-plus fa-lg mr-2"></i>
                             Add to Cart
-                        </div>
-                        @*
-                        <div class="btn btn-default btn-lg btn-flat">
-                        <i class="fas fa-heart fa-lg mr-2"></i>
-                        Add to Wishlist
-                        </div>*@
+                        </div>  
                     </div>
 
                     <div class="mt-4 product-share">
@@ -165,7 +141,4 @@
     <!-- /.card -->
 
 </section>
-<div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    <a asp-action="Index">Back to List</a>
-</div>
+
