@@ -12,7 +12,7 @@ namespace AppView.Controllers
     public class GioHangController : Controller
     {
         HttpClient _client = new HttpClient();
-        
+
 
         // GET: GioHangController
         public ActionResult Index()
@@ -30,7 +30,7 @@ namespace AppView.Controllers
         // GET: GioHangController/Create
         public async Task<ActionResult> CreateGioHang(GioHang gh)
         {
-            string url = $"https://localhost:7214/api/GioHang/Create";
+            string url = $"https://localhost:7214/api/GioHang/Create?{gh.GhiChu}";
 
 
             var obj = JsonConvert.SerializeObject(gh);
@@ -38,7 +38,7 @@ namespace AppView.Controllers
             HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
             if (httpResponseMessage.IsSuccessStatusCode)
             {
-                return RedirectToAction("GetallGH", "QuanTri");
+                return RedirectToAction("GetallGH");
             }
             else
             {
@@ -108,12 +108,6 @@ namespace AppView.Controllers
             {
                 return View();
             }
-        }
-
-        [HttpGet]
-        public ActionResult GioHangChiTiet()
-        {
-            return View();
         }
     }
 }
