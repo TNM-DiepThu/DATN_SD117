@@ -9,12 +9,16 @@ namespace AppData.model
 {
     public class NguoiDung : IdentityUser<Guid>
     {
+        public string TenNguoiDung { get; set; }
+        public string? Anh {  get; set; }
+        public string CCCD { get; set; }    
         public string SDT { get; set; }
         public string MatKhau { get; set; }
         public string QuanHuyen { get; set; }
         public string ThanhPho { get; set; }
         public string DiaChi { get; set; }
         public DateTime NgaySinh { get; set; }
+        public int GioiTinh { get; set; }
         public int status { get; set; }
         public virtual ICollection<BinhLuan> BinhLuans { get; set;}
         public virtual ICollection<VoucherDetail> voucherDetails { get; set;}
