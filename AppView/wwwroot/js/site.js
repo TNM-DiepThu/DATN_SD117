@@ -21,6 +21,23 @@ selectImageBtn.addEventListener('click', function () {
     }
 });
 
+document.getElementById("statusSelect").addEventListener("change", function () {
+    var selectedValue = this.value; // Lấy giá trị được chọn trong select
+    document.getElementById("selectedStatus").value = selectedValue; // Đặt giá trị vào TextBoxFor
+});
+$(document).ready(function () {
+    $("#myDropdown").select2();
+});
+$(function () {
+    //Initialize Select2 Elements
+    $('.select2').select2()
+
+    //Initialize Select2 Elements
+    $('.select2bs4').select2({
+        theme: 'bootstrap4'
+    })
+});
+
 
 
 

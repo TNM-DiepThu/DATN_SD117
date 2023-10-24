@@ -567,17 +567,17 @@ namespace AppView.Controllers
         // Kết thúc 
 
         [HttpGet]
-        public ActionResult GellByIDSanPhamCT(Guid id)
+        public ActionResult GellByIDSanPhamCT(Guid id , int quantity)
         {
 
             var urllstmausac = $"https://localhost:7214/api/SanPhamChiTiet/GetAllMauSacTheoSanPham?IdSPCT={id}";
             var responmausac = _client.GetAsync(urllstmausac).Result;
             var datamausac = responmausac.Content.ReadAsStringAsync().Result;
-            List<MauSac>  listmausac = JsonConvert.DeserializeObject<List<MauSac>>(datamausac);
+            List<MauSac> listmausac = JsonConvert.DeserializeObject<List<MauSac>>(datamausac);
             ViewBag.lstmausac = listmausac;
 
 
-            var urllstsize = $"https://localhost:7214/api/SanPhamChiTiet/GetAllSizeTheoSanPham?IdSPCT={id}"; 
+            var urllstsize = $"https://localhost:7214/api/SanPhamChiTiet/GetAllSizeTheoSanPham?IdSPCT={id}";
             var responsize = _client.GetAsync(urllstsize).Result;
             var datasize = responsize.Content.ReadAsStringAsync().Result;
             List<AppData.model.Size> listsize = JsonConvert.DeserializeObject<List<AppData.model.Size>>(datasize);
@@ -591,8 +591,28 @@ namespace AppView.Controllers
             var IDsanpham = _sanphamservice.GetAll().FirstOrDefault(c => c.TenSanPham == lstspctvm.TenSP).Id;
             ViewBag.IDSP = IDsanpham;
 
+            int soluong = quantity;
+            ViewBag.quatity = soluong;
+
             return View(lstspctvm);
         }
+
+        [HttpPost]
+        public IActionResult IncreaseQuantity(Guid id, int quantity)
+        {
+            quantity++;
+            return RedirectToAction("GellByIDSanPhamCT", new { id = id , quantity } );
+        }
+
+        [HttpPost]
+        public IActionResult DecreaseQuantity(Guid id, int quantity)
+        {
+            quantity--;
+            return RedirectToAction("GellByIDSanPhamCT", new { id = id  , quantity});
+        }
+
+
+
         [HttpGet]
         public ActionResult GellByNameSanPhamCT(string name)
         {
@@ -670,7 +690,7 @@ namespace AppView.Controllers
             var respon1 = _client.GetAsync(urldetail).Result;
             var data1 = respon1.Content.ReadAsStringAsync().Result;
             SanPhamChiTiet lstsize = JsonConvert.DeserializeObject<SanPhamChiTiet>(data1);
-           
+
             string urlanh = "https://localhost:7214/api/Anh/GetAll";
             var respon = _client.GetAsync(urlanh).Result;
             var data = respon.Content.ReadAsStringAsync().Result;
@@ -704,7 +724,7 @@ namespace AppView.Controllers
             if (httpResponseMessage.IsSuccessStatusCode)
             {
                 var Error = await httpResponseMessage.Content.ReadAsStringAsync();
-                if(Error == "true")
+                if (Error == "true")
                 {
 
                     TempData["SuccessFull"] = "Sản phẩm đã được thay đổi là hết hàng.";
@@ -715,7 +735,8 @@ namespace AppView.Controllers
                     TempData["ErrorMessage"] = "Xóa thất bại.";
                     return RedirectToAction("GellAllSanPhamCT", "QuanTri");
                 }
-            }  else
+            }
+            else
             {
                 TempData["ErrorMessage"] = "Xóa thất bại.";
                 return RedirectToAction("GellAllSanPhamCT", "QuanTri");
@@ -780,7 +801,7 @@ namespace AppView.Controllers
             string url = $"https://localhost:7214/api/SanPhamChiTiet/ThemSPvaoGioHang?iduser=911a9476-05be-4a4f-8325-2ea61766e2a0&IDspct={id}";
             return View(url);
         }
-        public IActionResult Themsanphamctvaogiohang(Guid IDNguoiDung, Guid IDSP, Guid IDMau, Guid IDSize, int Soluong , GioHangChiTiet ghct)
+        public IActionResult Themsanphamctvaogiohang(Guid IDNguoiDung, Guid IDSP, Guid IDMau, Guid IDSize, int Soluong, GioHangChiTiet ghct)
         {
 
             IDNguoiDung = new Guid("911a9476-05be-4a4f-8325-2ea61766e2a0");
@@ -794,7 +815,8 @@ namespace AppView.Controllers
                 if (result == "Thêm Thành công.")
                 {
                     return RedirectToAction("");
-                } else if(result == "")
+                }
+                else if (result == "")
                 {
 
                 }
@@ -802,6 +824,6 @@ namespace AppView.Controllers
             return View(url);
         }
 
-        
+
     }
 }
