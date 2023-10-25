@@ -1,4 +1,5 @@
-﻿$(function () {
+﻿
+$(function () {
     //Initialize Select2 Elements
     $('.select2bs4').select2({
         theme: 'bootstrap4'
@@ -39,45 +40,7 @@ selectElement.addEventListener("change", function () {
         })
     });
 
-     changeBackgroundColor = function(element, colorName, colorId) {
-        // Loại bỏ chọn trước đó nếu có
-        var selectedOption = document.querySelector('input[name="color_option"]:checked');
-        if (selectedOption) {
-            selectedOption.checked = false;
-        }
 
-        // Chọn màu được chọn
-        element.querySelector('input[name="color_option"]').checked = true;
-
-        // Thay đổi nền thành màu xám
-        document.getElementById("color_option_a1").style.backgroundColor = 'gray';
-
-        // Lấy thẻ input và cập nhật giá trị ID của màu được chọn
-        var colorIdTextBox = document.getElementById("colorIdTextBox");
-        colorIdTextBox.value = colorId;
-        if (colorIdTextBox.value == null || colorIdTextBox.value = "") {
-    alert("Bạn chưa chọn màu. Mời bạn chọn màu.")
-}
-};
- changeBackgroundSize = function(element, SizeName, SizeId) {
-    // Loại bỏ chọn trước đó nếu có
-    var selectedOption = document.querySelector('input[name="color_option"]:checked');
-    if (selectedOption) {
-        selectedOption.checked = false;
-    }
-
-    // Chọn màu được chọn
-    element.querySelector('input[name="color_option"]').checked = true;
-
-    // Thay đổi nền thành màu xám
-    document.getElementById("color_option_b1").style.backgroundColor = 'gray';
-
-    // Lấy thẻ input và cập nhật giá trị ID của màu được chọn
-    var SizeIdTextBox = document.getElementById("sizeIdTextBox");
-    SizeIdTextBox.value = SizeId;
-    if (SizeIdTextBox.value == null || SizeIdTextBox.value == "") {
-        alert("Bạn chưa chọn size. Mời bạn chọn size.")
-    }
-};
+ 
 
 

@@ -1,0 +1,109 @@
+﻿@model IEnumerable<AppData.ViewModal.SanPhamChiTietVM.SanPhamChiTietViewModel>
+@{
+
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"] </div>
+}
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            @* <th>
+            @Html.DisplayNameFor(model => model.Id)
+            </th>*@
+            <th>
+                @Html.DisplayNameFor(model => model.MaSp)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TenSP)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DanhMuc)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ChatLieu)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.MauSac)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Size)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Anh)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SoLuong)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.GiaBan)
+            </th>
+            <th>
+                Trạng thái
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                @*<td>
+            @Html.DisplayFor(modelItem => item.Id)
+            </td>*@
+                <td>
+                    @Html.DisplayFor(modelItem => item.MaSp)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TenSP)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DanhMuc)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ChatLieu)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MauSac)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Size)
+                </td>
+                <td>
+                    <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = item.Anh })" alt="Image" width="70%" height="70%" />
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.SoLuong)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.GiaBan)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MoTa)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<button type="submit" class="btn btn-primary" id="addDataToDatabase">Thêm</button>
+@section Scripts {
+    <script>
+        $(function () {
+            $("#addDataToDatabase").click(function () {
+                // Gửi yêu cầu AJAX để thêm dữ liệu vào cơ sở dữ liệu
+                $.ajax({
+                    url: "/QuanTri/AddDataToDatabase",
+                    type: "POST",
+                    success: function () {
+                        alert("Dữ liệu đã được thêm vào cơ sở dữ liệu.");
+                    },
+                    error: function () {
+                        alert("Lỗi khi thêm dữ liệu vào cơ sở dữ liệu.");
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -34,21 +34,61 @@
         <a class="nav-link active" asp-action="GellAllAnh">Ảnh</a>
     </li>
 </ul>
+<script type="text/javascript" src="~/adminlte-3.2.0/plugins/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="~/adminlte-3.2.0/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="~/adminlte-3.2.0/plugins/ekko-lightbox/ekko-lightbox.min.js"></script>
+<script type="text/javascript" src="~/adminlte-3.2.0/plugins/filterizr/jquery.filterizr.min.js"></script>
+<link type="text/css" href="~/adminlte-3.2.0/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
+<link type="text/css" href="~/adminlte-3.2.0/plugins/ekko-lightbox/ekko-lightbox.css" rel="stylesheet" />
+<link type="text/css" href="~/adminlte-3.2.0/dist/css/adminlte.min.css" rel="stylesheet" />
 
 <p>
     <a asp-action="UploadImage" class="btn btn-primary" style="margin:10px;">Tải ảnh</a>
 </p>
 
-<div class="row">
-    @foreach (var item in Model)
-    {
-        <div class="col-4"></div>
-        <div class="card" style="height:250px">
-            <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = item.Connect })" alt="Image"/>
-            <div class="card-body">
-                <h4 class="card-title">John Doe</h4>
+<div>
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card card-primary">
+                        <div class="card-header">
+                            <h4 class="card-title">Kho Ảnh</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                @foreach (var item in Model)
+                                {
+                                    <div class="col-sm-2">
+                                        <a href="@item.Connect" data-toggle="lightbox" data-title="sample 1 - white" data-gallery="gallery">
+                                            <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = item.Connect })"  class="img-fluid mb-2" alt="@item.Connect" />
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    }
+        </div><!-- /.container-fluid -->
+    </section>
 </div>
+@section Scripts {
+    <script>
+        $(function () {
+            $(document).on('click', '[data-toggle="lightbox"]', function (event) {
+                event.preventDefault();
+                $(this).ekkoLightbox({
+                    alwaysShowClose: true
+                });
+            });
+
+            $('.filter-container').filterizr({ gutterPixels: 3 });
+            $('.btn[data-filter]').on('click', function () {
+                $('.btn[data-filter]').removeClass('active');
+                $(this).addClass('active');
+            });
+        })
+    </script>
+}
 

@@ -7,11 +7,12 @@
     var idsp = ViewBag.IDSP;
     int sl = ViewBag.quatity;
 }
-<<script src="~/library/plugins/jquery/jquery.min.js"></script>
+<<script type="text/javascript" src="~/library/plugins/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="~/js/sanphamchitiet/sanphamchitiet.js"></script>
-
-<script type ="text/javascript" src="~/js/site.js"></script>
-
+<link type="text/css" href="~/adminlte-3.2.0/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
+<script type="text/javascript" src="~/js/site.js"></script>
+<script type="text/javascript" src="~/adminlte-3.2.0/plugins/bootstrap/js/bootstrap.bundle.js" ></script>
+<script type="text/javascript" src="~/adminlte-3.2.0/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
 <section class="content">
     <!-- Default box -->
     <div class="card card-solid">
@@ -33,18 +34,18 @@
                 </div>
                 <div class="col-12 col-sm-6">
                     <h3 class="my-3">@Model.TenSP</h3>
-                    <br/>
+                    <br />
                     <!--IDsanpham-->
                     <label>@idsp</label>
-                    <p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terr.</p> 
+                    <p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terr.</p>
                     <hr>
                     <h4>Available Colors</h4>
                     <!--List màu sắc của sản phẩm-->
                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
                         @foreach (var mausac in listMauSac)
                         {
-                            <label class="btn btn-default text-center active" id="colorLabel" onclick="changeBackgroundColor(this, '@mausac.TenMauSac', '@mausac.Id')">
-                                <input type="radio" name="color_option" id="color_option_a1" autocomplete="off" checked>
+                            <label class="btn btn-default text-center" id="colorLabel">
+                                <input type="radio" name="color_option" data-color-id="@mausac.Id" autocomplete="off">
                                 <br />
                                 <span id="colorName">@mausac.TenMauSac</span>
                                 <br>
@@ -53,55 +54,41 @@
                         }
                     </div>
                     <br />
-                    <!--Lấy id color-->
                     <input type="text" id="colorIdTextBox" placeholder="Selected Color ID" readonly>
-                    <!--Kết th-->
-                    <!--List size của một sản phẩm-->
-                    <h4 class="mt-3">Size <small>Please select one</small></h4>
+                    <br />
                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
                         @foreach (var size in listSize)
                         {
-                            <label class="btn btn-default text-center" id="colorLabel" onclick="changeBackgroundSize(this, '@size.SizeName', '@size.Id')">
-                                <input type="radio" name="color_option" id="color_option_b1" autocomplete="off">
+                            <label class="btn btn-default text-center" id="sizeLabel">
+                                <input type="radio" name="size_option" data-size-id="@size.Id" autocomplete="off">
                                 <span id="sizeName" class="text-xl">@size.SizeName</span>
                             </label>
                         }
                     </div>
                     <br />
-                    <!--Lấy ID Size-->
-                    <input type="text" id="sizeIdTextBox" placeholder="Selected size ID" readonly>
-                    <!--Kết thúc-->
+                    <!-- Lấy id color -->
+                   
+                    <!-- Lấy id size -->
+                    <input type="text" id="sizeIdTextBox" placeholder="Selected Size ID" readonly>
+                     <br />
 
                     <div class="bg-gray py-2 px-3 mt-4">
                         <h2 class="mb-0">
                             @Model.GiaBan VND
                         </h2>
                         <h4 class="mt-0">
-                            <small>Số lượng: @Model.SoLuong </small>
+                            <small>Số lượng: @Model.SoLuong</small>
                         </h4>
                     </div>
-                  
-                    <form method="post">
-                        <div class="form-group">
-                            <button type="submit" asp-controller="QuanTri" asp-action="DecreaseQuantity" value="decrement">Giảm</button>
-                            <input type="hidden" name="Id" value="@Model.Id" />
-                            @if(sl <= 0 )
-                            {
-                                <input type="number" min="1" id="quantity" name="quantity" value="1" />
-                            }
-                            else
-                            {
-                                <input type="number" min="1" id="quantity" name="quantity" value="@sl" />
-                            }
-
-                            <button type="submit" asp-controller="QuanTri" asp-action="IncreaseQuantity" value="increment">Tăng</button>
-                        </div>
-                    </form>
+                    <a class="btn" id="decreaseButton"><i class="fas fa-minus-circle" style="color: #538ae9;"></i></a>
+                    <input type="number" id="valueTextBox" min="1" value="1">
+                    <a class="btn" id="increaseButton"><i class="fas fa-plus-circle" style="color: #538ae9;"></i></a>
+                   
                     <div class="mt-4">
                         <div class="btn btn-primary btn-lg btn-flat">
                             <i class="fas fa-cart-plus fa-lg mr-2"></i>
                             Add to Cart
-                        </div>  
+                        </div>
                     </div>
 
                     <div class="mt-4 product-share">
@@ -141,4 +128,48 @@
     <!-- /.card -->
 
 </section>
+
+@section Scripts {
+    <script>
+        var colorButtons = document.querySelectorAll('input[name="color_option"]');
+        var sizeButtons = document.querySelectorAll('input[name="size_option"]');
+        var colorIdTextBox = document.getElementById('colorIdTextBox');
+        var sizeIdTextBox = document.getElementById('sizeIdTextBox');
+
+        colorButtons.forEach(function (radio) {
+            radio.addEventListener('click', function () {
+                var colorId = radio.getAttribute('data-color-id');
+                colorIdTextBox.value = colorId;
+            });
+        });
+
+        sizeButtons.forEach(function (radio) {
+            radio.addEventListener('click', function () {
+                var sizeId = radio.getAttribute('data-size-id');
+                sizeIdTextBox.value = sizeId;
+            });
+        });
+        var valueTextBox = document.getElementById('valueTextBox');
+        var increaseButton = document.getElementById('increaseButton');
+        var decreaseButton = document.getElementById('decreaseButton');
+
+        var value = 1;
+
+        increaseButton.addEventListener('click', function () {
+            value++;
+            updateValue();
+        });
+
+        decreaseButton.addEventListener('click', function () {
+            if(value > 1){
+                value--;
+                updateValue();
+            }
+        });
+
+        function updateValue() {
+            valueTextBox.value = value;
+        }
+    </script>
+}
 
