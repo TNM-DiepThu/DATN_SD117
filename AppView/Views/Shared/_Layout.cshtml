@@ -156,17 +156,33 @@
                                         <p>Quản lý sản phẩm chi tiết</p>
                                     </a>
                                 </li>
+
+                            </ul>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-area="" asp-controller="" asp-action="" class="nav-link">
+                                <i class="nav-icon far fa-envelope"></i>
+                                <p>
+                                    Combo
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a asp-area="" asp-controller="" asp-action="GetlistComBO" class="nav-link">
+                                    <a class="nav-link " asp-area="" asp-controller="ComBo" asp-action="GetlistComBO">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Quản lý Combo</p>
+                                        <p>Quản lý ComBo</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " asp-area="" asp-controller="ComBo" asp-action="GetlistComBOCT">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>ComBo chi tiết</p>
                                     </a>
                                 </li>
                             </ul>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="GioHang" asp-action="GetallGH">GioHang</a>
-                        </li>
+
                         <li class="nav-item">
                             <a asp-area="" asp-controller="" asp-action="" class="nav-link">
                                 <i class="fas fa-user-tie"></i>
