@@ -68,20 +68,46 @@ namespace AppView.Controllers
         }
 
         // POST: GioHangController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EditAsync(Guid id, GioHang gh)
+        [HttpGet]
+        public IActionResult UpdateGH(Guid Id)
         {
-            var roleJson = JsonConvert.SerializeObject(gh);
-            HttpContent content = new StringContent(roleJson, Encoding.UTF8, "application/json");
-            var response = await _client.PutAsync($"https://localhost:7214/api/Gio/Delete/{gh.Id}", content);
-            var roles = await _client.GetFromJsonAsync<List<Combo>>($"https://localhost:7214/api/GioHang/GetAll");
-            ViewBag.Roles = new SelectList(roles, "Name", "Name");
-            if (response.IsSuccessStatusCode)
+            string apiurl = $"https://localhost:7214/api/GioHang/Update/{Id}";
+
+            var respone = _client.GetAsync(apiurl).Result;
+            var data = respone.Content.ReadAsStringAsync().Result;
+            var sp = JsonConvert.DeserializeObject<GioHang>(data);
+
+
+
+
+
+            return View(sp);
+
+        }
+        [HttpPost]
+        public IActionResult UpdateGH(Guid id, GioHang gh)
+        {
+            //string url = $"https://localhost:7214/api/Combo/Update/{cb.Id}";
+            //var obj = JsonConvert.SerializeObject(cb);
+            //StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
+            //HttpResponseMessage httpResponseMessage = await _client.PutAsync(url, content);
+
+            //return RedirectToAction("GetlistComBO");
+            string apiurl = $"https://localhost:7214/api/GioHang/Update/{id}?Ten={gh.GhiChu}";
+
+            var obj = JsonConvert.SerializeObject(gh);
+            StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
+            var respone = _client.PutAsJsonAsync(apiurl, obj).Result;
+            if (respone.IsSuccessStatusCode)
             {
-                return RedirectToAction(nameof(GetallGH));
+                return RedirectToAction("GetlistComBO");
             }
-            return View();
+            else
+            {
+                return RedirectToAction("GetallGH");
+            }
+
+
         }
 
         // GET: GioHangController/Delete/5

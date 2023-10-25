@@ -76,12 +76,13 @@ namespace AppView.Controllers
 
 
         // GET: ComBoController/Delete/5
+
         public async Task<ActionResult> DeleteCBAsync(Combo cb)
         {
             string url = $"https://localhost:7214/api/Combo/Delete/{cb.Id}";
             var obj = JsonConvert.SerializeObject(cb);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
-            HttpResponseMessage httpResponseMessage = await _client.PutAsync(url, content);
+            HttpResponseMessage httpResponseMessage = await _client.DeleteAsync(url);
 
             return RedirectToAction("GetlistComBO");
             //string apiurl = $"https://localhost:7214/api/Combo/Delete/{cb.Id}";
@@ -119,8 +120,8 @@ namespace AppView.Controllers
         public IActionResult UpdateCB(Guid Id)
         {
             string apiurl = $"https://localhost:7214/api/Combo/Update/{Id}";
-            var httpClient = new HttpClient();
-            var respone = httpClient.GetAsync(apiurl).Result;
+
+            var respone = _client.GetAsync(apiurl).Result;
             var data = respone.Content.ReadAsStringAsync().Result;
             var sp = JsonConvert.DeserializeObject<Combo>(data);
 
@@ -140,11 +141,19 @@ namespace AppView.Controllers
             //HttpResponseMessage httpResponseMessage = await _client.PutAsync(url, content);
 
             //return RedirectToAction("GetlistComBO");
-            string apiurl = $"https://localhost:7214/api/Combo/Update?Ten={cb.TenCombo}&mota={cb.MoTaCombo}&giatien={cb.TienGiamGia}";
-            var httpClient = new HttpClient();
-            var respone = httpClient.PutAsJsonAsync(apiurl, cb).Result;
-            respone.EnsureSuccessStatusCode();
-            return RedirectToAction("GetlistComBO");
+            string apiurl = $"https://localhost:7214/api/Combo/Update/{id}?Ten={cb.TenCombo}&mota={cb.MoTaCombo}&giatien={cb.TienGiamGia}";
+
+            var obj = JsonConvert.SerializeObject(cb);
+            StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
+            var respone = _client.PutAsJsonAsync(apiurl, obj).Result;
+            if (respone.IsSuccessStatusCode)
+            {
+                return RedirectToAction("GetlistComBO");
+            }
+            else
+            {
+                return RedirectToAction("UpdateCB");
+            }
 
 
         }
