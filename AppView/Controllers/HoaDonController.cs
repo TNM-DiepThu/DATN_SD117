@@ -69,10 +69,16 @@ namespace AppView.Controllers
         [HttpPost]
         public async Task<ActionResult> UpdateHoaDon(HoaDon hoadon)
         {
+            ViewBag.User = new SelectList(_context.Users.ToList().Where(c => c.status == 1).OrderBy(c => c.UserName), "Id", "UserName");
+            ViewBag.HinhThucTT = new SelectList(_context.hinhThucThanhToans.ToList().Where(c => c.status == 1).OrderBy(c => c.TenHinhThucThanhToan), "Id", "TenHinhThucThanhToan");
+            ViewBag.VoucherDetail = new SelectList(_context.voucherDetail.ToList().Where(c => c.status == 1).OrderBy(c => c.Id), "Id", "Id");
+            string urldetail = $"https://localhost:7214/api/HoaDon/GetByID?id={hoadon.Id}";
+            var respon1 = _client.GetAsync(urldetail).Result;
+            var data1 = respon1.Content.ReadAsStringAsync().Result;
+            HoaDon lstsize = JsonConvert.DeserializeObject<HoaDon>(data1);
 
             string url = $"https://localhost:7214/api/HoaDon/update-hoadon?id={hoadon.Id}&mahd={hoadon.MaHD}&ngaytao={hoadon.NgayTao}&soluong={hoadon.SoLuong}&tongtien={hoadon.TongTien}&tienvanchuyen={hoadon.TienVanChuyen}&ngaygiao={hoadon.NgayGiao}&ngaynhan={hoadon.NgayNhan}&nguoinhan={hoadon.NguoiNhan}&sdt={hoadon.SDT}&quanhuyen={hoadon.QuanHuyen}&tinh={hoadon.Tinh}&diachi={hoadon.DiaChi}&ngaythanhtoan={hoadon.NgayThanhToan}&ghichu={hoadon.GhiChu}&trangthai={hoadon.status}&idnguoidung={hoadon.IdNguoiDunh}&idvoucherdetail={hoadon.IdVoucherDetail}&idhttt={hoadon.IDHTTT}";
-
-
+          
             var obj = JsonConvert.SerializeObject(hoadon);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
             HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
@@ -82,12 +88,10 @@ namespace AppView.Controllers
             }
             else
             {
-                ViewBag.User = new SelectList(_context.Users.ToList().Where(c => c.status == 1).OrderBy(c => c.UserName), "Id", "UserName");
-                ViewBag.HinhThucTT = new SelectList(_context.hinhThucThanhToans.ToList().Where(c => c.status == 1).OrderBy(c => c.TenHinhThucThanhToan), "Id", "TenHinhThucThanhToan");
-                ViewBag.VoucherDetail = new SelectList(_context.voucherDetail.ToList().Where(c => c.status == 1).OrderBy(c => c.Id), "Id", "Id");
+                
 
 
-                return View();
+                return View(lstsize);
 
             }
 
