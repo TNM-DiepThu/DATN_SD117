@@ -182,5 +182,27 @@ namespace AppData.Serviece.Implements
             return loginResponesVm;
         }
 
+        public async Task<IEnumerable<NguoiDungVM>> GetAllNV()
+        {
+            var users = await _userManager.Users.ToListAsync();
+            return users.Select(user => new NguoiDungVM
+            {
+                id = user.Id,
+                TenNguoiDung = user.UserName,
+                Email = user.Email,
+                SDT = user.SDT,
+                MatKhau = user.MatKhau,
+                QuanHuyen = user.QuanHuyen,
+                ThanhPho = user.ThanhPho,
+                DiaChi = user.DiaChi,
+                NgaySinh = user.NgaySinh,
+                status = user.status
+            });
+        }
+
+        public Task<IEnumerable<NguoiDungVM>> GetAllKH()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

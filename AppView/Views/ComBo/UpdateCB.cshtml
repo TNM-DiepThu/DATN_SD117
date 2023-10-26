@@ -2,12 +2,13 @@
 
 @{
     ViewData["Title"] = "UpdateCB";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <h1>UpdateCB</h1>
 
 <h4>Combo</h4>
-<hr />
+
 <div class="row">
     <div class="col-md-4">
         <form asp-action="UpdateCB">
@@ -45,7 +46,46 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="GetlistComBO">Back to List</a>
+</div>
+@*<div class="row">
+    <div class="col-md-4">
+        <form asp-action="UpdateCB" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Id" class="control-label"></label>
+                <input asp-for="Id" class="form-control" />
+                <span asp-validation-for="Id" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TenCombo" class="control-label"></label>
+                <input asp-for="TenCombo" class="form-control" />
+                <span asp-validation-for="TenCombo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MoTaCombo" class="control-label"></label>
+                <input asp-for="MoTaCombo" class="form-control" />
+                <span asp-validation-for="MoTaCombo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TienGiamGia" class="control-label"></label>
+                <input asp-for="TienGiamGia" class="form-control" />
+                <span asp-validation-for="TienGiamGia" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="status" class="control-label"></label>
+                <input asp-for="status" class="form-control" />
+                <span asp-validation-for="status" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>*@
+
+<div>
+    <a asp-action="GetlistComBO">Back to List</a>
 </div>
 
 @section Scripts {
