@@ -24,7 +24,11 @@ namespace AppAPI.Controllers
             HoaDonService<HoaDon> all = new HoaDonService<HoaDon>(_dbContext, hd);
             _hoaDonService = all;
         }
-
+        [HttpGet("GetByID")]
+        public HoaDon GetByID(Guid Id)
+        {
+            return _hoaDonService.GetByID(Id);
+        }
         // GET: api/<HoaDonController>
         [HttpGet("get-hoadon")]
         public IEnumerable<HoaDon> GetAllHoaDon()
