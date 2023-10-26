@@ -1,4 +1,5 @@
 ﻿using AppData.data;
+using AppData.model;
 using AppData.Serviece.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -49,6 +50,11 @@ namespace AppData.Serviece.Implements
         public IEnumerable<T> GetAll()
         {
             return _dbSet.ToList();
+        }
+
+        public LichSuHoaDon GetByID(Guid id)
+        {
+           return _dbContext.lichSuHoas.FirstOrDefault(c => c.Id == id);
         }
 
         public bool RemoveItem(T item)
