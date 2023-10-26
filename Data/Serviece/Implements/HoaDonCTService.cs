@@ -1,4 +1,5 @@
 ﻿using AppData.data;
+using AppData.model;
 using AppData.Serviece.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -52,7 +53,12 @@ namespace AppData.Serviece.Implements
                 return _dbSet.ToList();
             }
 
-            public bool RemoveItem(T item)
+        public HoaDonChiTiet GetByID(Guid id)
+        {
+            return _dbContext.hoaDonChiTiets.FirstOrDefault(c => c.Id == id);
+        }
+
+        public bool RemoveItem(T item)
             {
                 try
                 {

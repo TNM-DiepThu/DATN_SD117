@@ -66,7 +66,10 @@ namespace AppView.Controllers
             ViewBag.ComboChiTiet = new SelectList(_context.comboChiTiets.ToList().OrderBy(c => c.Id), "Id", "Id");
             ViewBag.SanPhamChiTiet = new SelectList(_context.sanPhamChiTiets.ToList().Where(c => c.status == 1).OrderBy(c => c.MaSp), "Id", "MaSp");
 
-
+            string urldetail = $"https://localhost:7214/api/HoaDonChiTiet/GetByID?id={hoadonct.Id}";
+            var respon1 = _client.GetAsync(urldetail).Result;
+            var data1 = respon1.Content.ReadAsStringAsync().Result;
+            HoaDonChiTiet lstsize = JsonConvert.DeserializeObject<HoaDonChiTiet>(data1);
 
             string url = $"https://localhost:7214/api/HoaDonCT/update-hoadonct?id={hoadonct.Id}&soluong={hoadonct.SoLuong}&gia={hoadonct.Gia}&status={hoadonct.status}&idhd={hoadonct.IDHD}&IdCombo={hoadonct.IdCombo}&IdSPCT={hoadonct.IdSPCT}";
 
@@ -81,7 +84,7 @@ namespace AppView.Controllers
             else
             {
                
-                return View();
+                return View(lstsize);
 
             }
 

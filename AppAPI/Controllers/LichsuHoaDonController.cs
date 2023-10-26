@@ -23,7 +23,11 @@ namespace AppAPI.Controllers
             LichsuHoaDonService<LichSuHoaDon> all = new LichsuHoaDonService<LichSuHoaDon>(_dbContext, lshd);
             _lichsuHoaDonService = all;
         }
-
+        [HttpGet("GetByID")]
+        public LichSuHoaDon GetByID(Guid Id)
+        {
+            return _lichsuHoaDonService.GetByID(Id);
+        }
         // GET: api/<LichsuHoaDonController>
         [HttpGet("get-lichsuhoadon")]
         public IEnumerable<LichSuHoaDon> GetLichsuHoaDon()

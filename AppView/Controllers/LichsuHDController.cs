@@ -39,8 +39,6 @@ namespace AppView.Controllers
             ViewBag.User = new SelectList(_context.Users.ToList().Where(c => c.status == 1).OrderBy(c => c.UserName), "Id", "UserName");
             ViewBag.HoaDon = new SelectList(_context.hoaDons.ToList().Where(c => c.status == 1).OrderBy(c => c.MaHD), "Id", "MaHD");
             string url = $"https://localhost:7214/api/LichsuHoaDon/create-lichsuhoadon?ngaytao={lshoadon.NgayTao}&nguoitao={lshoadon.NguoiTao}&ghichu={lshoadon.GhiChu}&idnguoidung={lshoadon.IdNguoiDung}&idvoucherdetail={lshoadon.IdHoaDon}";
-
-
             var obj = JsonConvert.SerializeObject(lshoadon);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
             HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
@@ -63,6 +61,10 @@ namespace AppView.Controllers
         {
             ViewBag.User = new SelectList(_context.Users.ToList().Where(c => c.status == 1).OrderBy(c => c.UserName), "Id", "UserName");
             ViewBag.HoaDon = new SelectList(_context.hoaDons.ToList().Where(c => c.status == 1).OrderBy(c => c.MaHD), "Id", "MaHD");
+            string urldetail = $"https://localhost:7214/api/LichSuHoaDon/GetByID?id={lshoadon.Id}";
+            var respon1 = _client.GetAsync(urldetail).Result;
+            var data1 = respon1.Content.ReadAsStringAsync().Result;
+            LichSuHoaDon lstsize = JsonConvert.DeserializeObject<LichSuHoaDon>(data1);
             string url = $"https://localhost:7214/api/LichsuHoaDon/update-lichsuhoadon?ngaytao={lshoadon.NgayTao}&nguoitao={lshoadon.NguoiTao}&ghichu={lshoadon.GhiChu}&idnguoidung={lshoadon.IdNguoiDung}&idvoucherdetail={lshoadon.IdHoaDon}";
 
 
@@ -76,7 +78,7 @@ namespace AppView.Controllers
             else
             {
                
-                return View();
+                return View(lstsize);
             }
 
         }
