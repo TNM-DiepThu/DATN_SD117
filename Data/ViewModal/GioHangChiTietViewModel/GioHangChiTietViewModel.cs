@@ -12,6 +12,8 @@ namespace AppData.ViewModal.GioHangChiTietViewModel
         public Guid IDGH { get; set; }
         public Guid? IDSanPham { get; set; }
         public string TenSanPham { get; set; }
+        public string Mausac { get; set; }
+        public string Size { get; set; }
         public decimal GiaSanPham { get; set; }
         public int Soluong { get; set; }
     }

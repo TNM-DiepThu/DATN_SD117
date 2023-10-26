@@ -44,6 +44,8 @@ namespace AppData.Serviece.ViewModeService
                               IDGH = b.Id,
                               IDSanPham = _spctviewmodelservice.GetAll().FirstOrDefault(c => c.Id == a.IdSanPhamChiTiet).Id,
                               TenSanPham = _spctviewmodelservice.GetAll().FirstOrDefault(c => c.Id == a.IdSanPhamChiTiet).TenSP,
+                              Mausac = c.MauSac,
+                              Size = c.Size,
                               Soluong = a.SoLuong,
                               GiaSanPham = a.DonGia,
                           };
@@ -61,6 +63,8 @@ namespace AppData.Serviece.ViewModeService
                               IDGH = b.Id,
                               IDSanPham = _comboctservice.GetAllComBoChiTiet().FirstOrDefault(c => c.Id == a.IdComboChiTiet).Id,
                               TenSanPham = _comboctservice.GetAllComBoChiTiet().FirstOrDefault(c => c.Id == a.IdComboChiTiet).TenComBo,
+                              Mausac = c.MauSac,
+                              Size = c.Size,
                               Soluong = a.SoLuong,
                               GiaSanPham = a.DonGia,
                           };

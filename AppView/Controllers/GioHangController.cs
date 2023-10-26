@@ -1,6 +1,7 @@
 ﻿using AppData.model;
 using AppData.Serviece.Implements;
 using AppData.Serviece.Interfaces;
+using AppData.ViewModal.GioHangChiTietViewModel;
 using AppData.ViewModal.Usermodalview;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,15 @@ namespace AppView.Controllers
     public class GioHangController : Controller
     {
         HttpClient _client = new HttpClient();
+        //private readonly INguoiDungServiece _nguoiDungServiece;
 
+        public GioHangController(/*INguoiDungServiece nguoiDungServiece*/)
+        {
+            //_nguoiDungServiece = nguoiDungServiece;
+        }
 
         // GET: GioHangController
-        public ActionResult Index()
+        public ActionResult Index( )
         {
             return View();
            
@@ -32,16 +38,18 @@ namespace AppView.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetGioHangChiTiet(Guid idnguoidung)
+        public async Task<ActionResult> GetGioHangChiTiet()
         {
-            ClaimsPrincipal claimsPrincipal = HttpContext.User;
+            //ClaimsPrincipal claimsPrincipal = HttpContext.User;
 
-            var user = HttpContext.User;
-            var email = user.FindFirstValue(ClaimTypes.Email);
-            //idnguoidung = _nguoiDungServiece.GetAllAsync();
-
-            var url = $"https://localhost:7214/api/GioHangCT/GetAllFullGioHangChiTiet?IDnguoiDung=911a9476-05be-4a4f-8325-2ea61766e2a0";
-            return View();
+            //var userlogin = HttpContext.User;
+            //var email = userlogin.FindFirstValue(ClaimTypes.Email);
+            //NguoiDungVM user = await _nguoiDungServiece.GetByIdAsync(idnguoidung);
+            string url = $"https://localhost:7214/api/GioHangCT/GetAllFullGioHangChiTiet?IDnguoiDung=911a9476-05be-4a4f-8325-2ea61766e2a0";
+            var repos = await _client.GetAsync(url);
+            var data = await repos.Content.ReadAsStringAsync();
+            List<GioHangChiTietViewModel> lstghct = JsonConvert.DeserializeObject<List<GioHangChiTietViewModel>>(data);
+            return View(lstghct);
         }
         // GET: GioHangController/Create
         public async Task<ActionResult> CreateGioHang(GioHang gh)
@@ -151,5 +159,6 @@ namespace AppView.Controllers
                 return View();
             }
         }
+
     }
 }

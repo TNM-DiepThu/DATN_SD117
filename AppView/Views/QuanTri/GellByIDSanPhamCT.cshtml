@@ -5,148 +5,157 @@
     var listMauSac = ViewBag.lstmausac;
     var listSize = ViewBag.listSize;
     var idsp = ViewBag.IDSP;
-    int sl = ViewBag.quatity;
 }
-<<script type="text/javascript" src="~/library/plugins/jquery/jquery.min.js"></script>
+
+<script type="text/javascript" src="~/library/plugins/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="~/js/sanphamchitiet/sanphamchitiet.js"></script>
 <link type="text/css" href="~/adminlte-3.2.0/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
 <script type="text/javascript" src="~/js/site.js"></script>
-<script type="text/javascript" src="~/adminlte-3.2.0/plugins/bootstrap/js/bootstrap.bundle.js" ></script>
+<script type="text/javascript" src="~/adminlte-3.2.0/plugins/bootstrap/js/bootstrap.bundle.js"></script>
 <script type="text/javascript" src="~/adminlte-3.2.0/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<section class="content">
-    <!-- Default box -->
-    <div class="card card-solid">
-        <div class="card-body">
-            <div class="row">
-                <div class="col-12 col-sm-6">
-                    <h3 class="d-inline-block d-sm-none">LOWA Men’s Renegade GTX Mid Hiking Boots Review</h3>
-                    <div class="col-12">
-                        @*<img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = Model.Anh })" class="product-image" alt="Product Image" />*@
-                        <img src="https://pos.nvncdn.net/778773-105877/ps/20230713_WcskjVVYHE.jpeg" class="product-image" alt="Product Image">
-                    </div>
-                    <div class="col-12 product-image-thumbs">
-                        <div class="product-image-thumb active"><img src="../../dist/img/prod-1.jpg" alt="Product Image"></div>
-                        <div class="product-image-thumb"><img src="../../dist/img/prod-2.jpg" alt="Product Image"></div>
-                        <div class="product-image-thumb"><img src="../../dist/img/prod-3.jpg" alt="Product Image"></div>
-                        <div class="product-image-thumb"><img src="../../dist/img/prod-4.jpg" alt="Product Image"></div>
-                        <div class="product-image-thumb"><img src="../../dist/img/prod-5.jpg" alt="Product Image"></div>
-                    </div>
-                </div>
-                <div class="col-12 col-sm-6">
-                    <h3 class="my-3">@Model.TenSP</h3>
-                    <br />
-                    <!--IDsanpham-->
-                    <label>@idsp</label>
-                    <p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terr.</p>
-                    <hr>
-                    <h4>Available Colors</h4>
-                    <!--List màu sắc của sản phẩm-->
-                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                        @foreach (var mausac in listMauSac)
-                        {
-                            <label class="btn btn-default text-center" id="colorLabel">
-                                <input type="radio" name="color_option" data-color-id="@mausac.Id" autocomplete="off">
-                                <br />
-                                <span id="colorName">@mausac.TenMauSac</span>
-                                <br>
-                                <i class="fas fa-circle fa-2x text-@mausac.TenMauSac"></i>
-                            </label>
-                        }
-                    </div>
-                    <br />
-                    <input type="text" id="colorIdTextBox" placeholder="Selected Color ID" readonly>
-                    <br />
-                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                        @foreach (var size in listSize)
-                        {
-                            <label class="btn btn-default text-center" id="sizeLabel">
-                                <input type="radio" name="size_option" data-size-id="@size.Id" autocomplete="off">
-                                <span id="sizeName" class="text-xl">@size.SizeName</span>
-                            </label>
-                        }
-                    </div>
-                    <br />
-                    <!-- Lấy id color -->
-                   
-                    <!-- Lấy id size -->
-                    <input type="text" id="sizeIdTextBox" placeholder="Selected Size ID" readonly>
-                     <br />
-
-                    <div class="bg-gray py-2 px-3 mt-4">
-                        <h2 class="mb-0">
-                            @Model.GiaBan VND
-                        </h2>
-                        <h4 class="mt-0">
-                            <small>Số lượng: @Model.SoLuong</small>
-                        </h4>
-                    </div>
-                    <a class="btn" id="decreaseButton"><i class="fas fa-minus-circle" style="color: #538ae9;"></i></a>
-                    <input type="number" id="valueTextBox" min="1" value="1">
-                    <a class="btn" id="increaseButton"><i class="fas fa-plus-circle" style="color: #538ae9;"></i></a>
-                   
-                    <div class="mt-4">
-                        <div class="btn btn-primary btn-lg btn-flat">
-                            <i class="fas fa-cart-plus fa-lg mr-2"></i>
-                            Add to Cart
+<form  asp-controller="QuanTri" asp-action="Themsanphamctvaogiohang" method="post">
+    <section class="content">
+        <!-- Default box -->
+        <div class="card card-solid">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-sm-6">
+                        <h3 class="d-inline-block d-sm-none">LOWA Men’s Renegade GTX Mid Hiking Boots Review</h3>
+                        <div class="col-12">
+                            @*<img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = Model.Anh })" class="product-image" alt="Product Image" />*@
+                            <img src="https://pos.nvncdn.net/778773-105877/ps/20230713_WcskjVVYHE.jpeg" class="product-image" alt="Product Image">
+                        </div>
+                        <div class="col-12 product-image-thumbs">
+                            <div class="product-image-thumb active"><img src="../../dist/img/prod-1.jpg" alt="Product Image"></div>
+                            <div class="product-image-thumb"><img src="../../dist/img/prod-2.jpg" alt="Product Image"></div>
+                            <div class="product-image-thumb"><img src="../../dist/img/prod-3.jpg" alt="Product Image"></div>
+                            <div class="product-image-thumb"><img src="../../dist/img/prod-4.jpg" alt="Product Image"></div>
+                            <div class="product-image-thumb"><img src="../../dist/img/prod-5.jpg" alt="Product Image"></div>
                         </div>
                     </div>
+                    <div class="col-12 col-sm-6">
+                        <h3 class="my-3">@Model.TenSP</h3>
+                        <input asp-for="TenSP" value="@Model.TenSP"/>
+                        <br />
+                        <!--IDsanpham-->
+                        <label>@idsp</label>
+                        <p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terr.</p>
+                        <hr>
+                        <h4>Available Colors</h4>
+                        <!--List màu sắc của sản phẩm-->
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                            @foreach (var mausac in listMauSac)
+                            {
+                                <label class="btn btn-default text-center" id="colorLabel">
+                                    <input type="radio" name="color_option" data-color-id="@mausac.Id" autocomplete="off">
+                                    <br />
+                                    <span id="colorName">@mausac.TenMauSac</span>
+                                    <br>
+                                    <i class="fas fa-circle fa-2x text-@mausac.TenMauSac"></i>
+                                </label>
+                            }
+                        </div>
+                        <br />
+                        <input asp-for="MauSac" type="text" id="colorNameTextBox" placeholder="Selected Color Name" readonly>
 
-                    <div class="mt-4 product-share">
-                        <a href="#" class="text-gray">
-                            <i class="fab fa-facebook-square fa-2x"></i>
-                        </a>
-                        <a href="#" class="text-gray">
-                            <i class="fab fa-twitter-square fa-2x"></i>
-                        </a>
-                        <a href="#" class="text-gray">
-                            <i class="fas fa-envelope-square fa-2x"></i>
-                        </a>
-                        <a href="#" class="text-gray">
-                            <i class="fas fa-rss-square fa-2x"></i>
-                        </a>
+                     @*   <input type="text" id="colorIdTextBox" placeholder="Selected Color ID" readonly>*@
+                        <br />
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                            @foreach (var size in listSize)
+                            {
+                                <label class="btn btn-default text-center" id="sizeLabel">
+                                    <input type="radio" name="size_option" data-size-id="@size.Id" autocomplete="off">
+                                    <span id="sizeName" class="text-xl">@size.SizeName</span>
+                                </label>
+                            }
+                        </div>
+                        <br />
+                        <!-- Lấy id color -->
+                        <!-- Lấy id size -->
+                        <input asp-for="Size" type="text" id="sizeNameTextBox" placeholder="Selected Size Name" readonly>
+
+                       @* <input type="text" id="sizeIdTextBox" placeholder="Selected Size ID" readonly>*@
+                        <br />
+
+                        <div class="bg-gray py-2 px-3 mt-4">
+                            <h2 class="mb-0">
+                                @Model.GiaBan VND
+                            </h2>
+                            <h4 class="mt-0">
+                                <small>Số lượng: @Model.SoLuong</small>
+                            </h4>
+                        </div>
+                        <a class="btn" id="decreaseButton"><i class="fas fa-minus-circle" style="color: #538ae9;"></i></a>
+                        <input asp-for="SoLuong" type="number" id="valueTextBox" min="1" value="1">
+                        <a class="btn" id="increaseButton"><i class="fas fa-plus-circle" style="color: #538ae9;"></i></a>
+
+                        <div class="mt-4">
+                            <div class="btn btn-primary btn-lg btn-flat">
+                                <i class="fas fa-cart-plus fa-lg mr-2"></i>
+                                <button type="submit" style="color:white">Add to Cart</button>
+                                @*href="@Url.Action("Themsanphamctvaogiohang","QuanTri", new {IDSP = idsp})"*@
+                            </div>
+                        </div>
+
+                        <div class="mt-4 product-share">
+                            <a href="#" class="text-gray">
+                                <i class="fab fa-facebook-square fa-2x"></i>
+                            </a>
+                            <a href="#" class="text-gray">
+                                <i class="fab fa-twitter-square fa-2x"></i>
+                            </a>
+                            <a href="#" class="text-gray">
+                                <i class="fas fa-envelope-square fa-2x"></i>
+                            </a>
+                            <a href="#" class="text-gray">
+                                <i class="fas fa-rss-square fa-2x"></i>
+                            </a>
+                        </div>
+
                     </div>
-
+                </div>
+                <div class="row mt-4">
+                    <nav class="w-100">
+                        <div class="nav nav-tabs" id="product-tab" role="tablist">
+                            <a class="nav-item nav-link active" id="product-desc-tab" data-toggle="tab" href="#product-desc" role="tab" aria-controls="product-desc" aria-selected="true">Description</a>
+                            <a class="nav-item nav-link" id="product-comments-tab" data-toggle="tab" href="#product-comments" role="tab" aria-controls="product-comments" aria-selected="false">Comments</a>
+                            <a class="nav-item nav-link" id="product-rating-tab" data-toggle="tab" href="#product-rating" role="tab" aria-controls="product-rating" aria-selected="false">Rating</a>
+                        </div>
+                    </nav>
+                    <div class="tab-content p-3" id="nav-tabContent">
+                        <div class="tab-pane fade show active" id="product-desc" role="tabpanel" aria-labelledby="product-desc-tab"> @Model.MoTa </div>
+                        <div class="tab-pane fade" id="product-comments" role="tabpanel" aria-labelledby="product-comments-tab"> Vivamus rhoncus nisl sed venenatis luctus. Sed condimentum risus ut tortor feugiat laoreet. Suspendisse potenti. Donec et finibus sem, ut commodo lectus. Cras eget neque dignissim, placerat orci interdum, venenatis odio. Nulla turpis elit, consequat eu eros ac, consectetur fringilla urna. Duis gravida ex pulvinar mauris ornare, eget porttitor enim vulputate. Mauris hendrerit, massa nec aliquam cursus, ex elit euismod lorem, vehicula rhoncus nisl dui sit amet eros. Nulla turpis lorem, dignissim a sapien eget, ultrices venenatis dolor. Curabitur vel turpis at magna elementum hendrerit vel id dui. Curabitur a ex ullamcorper, ornare velit vel, tincidunt ipsum. </div>
+                        <div class="tab-pane fade" id="product-rating" role="tabpanel" aria-labelledby="product-rating-tab"> Cras ut ipsum ornare, aliquam ipsum non, posuere elit. In hac habitasse platea dictumst. Aenean elementum leo augue, id fermentum risus efficitur vel. Nulla iaculis malesuada scelerisque. Praesent vel ipsum felis. Ut molestie, purus aliquam placerat sollicitudin, mi ligula euismod neque, non bibendum nibh neque et erat. Etiam dignissim aliquam ligula, aliquet feugiat nibh rhoncus ut. Aliquam efficitur lacinia lacinia. Morbi ac molestie lectus, vitae hendrerit nisl. Nullam metus odio, malesuada in vehicula at, consectetur nec justo. Quisque suscipit odio velit, at accumsan urna vestibulum a. Proin dictum, urna ut varius consectetur, sapien justo porta lectus, at mollis nisi orci et nulla. Donec pellentesque tortor vel nisl commodo ullamcorper. Donec varius massa at semper posuere. Integer finibus orci vitae vehicula placerat. </div>
+                    </div>
                 </div>
             </div>
-            <div class="row mt-4">
-                <nav class="w-100">
-                    <div class="nav nav-tabs" id="product-tab" role="tablist">
-                        <a class="nav-item nav-link active" id="product-desc-tab" data-toggle="tab" href="#product-desc" role="tab" aria-controls="product-desc" aria-selected="true">Description</a>
-                        <a class="nav-item nav-link" id="product-comments-tab" data-toggle="tab" href="#product-comments" role="tab" aria-controls="product-comments" aria-selected="false">Comments</a>
-                        <a class="nav-item nav-link" id="product-rating-tab" data-toggle="tab" href="#product-rating" role="tab" aria-controls="product-rating" aria-selected="false">Rating</a>
-                    </div>
-                </nav>
-                <div class="tab-content p-3" id="nav-tabContent">
-                    <div class="tab-pane fade show active" id="product-desc" role="tabpanel" aria-labelledby="product-desc-tab"> @Model.MoTa </div>
-                    <div class="tab-pane fade" id="product-comments" role="tabpanel" aria-labelledby="product-comments-tab"> Vivamus rhoncus nisl sed venenatis luctus. Sed condimentum risus ut tortor feugiat laoreet. Suspendisse potenti. Donec et finibus sem, ut commodo lectus. Cras eget neque dignissim, placerat orci interdum, venenatis odio. Nulla turpis elit, consequat eu eros ac, consectetur fringilla urna. Duis gravida ex pulvinar mauris ornare, eget porttitor enim vulputate. Mauris hendrerit, massa nec aliquam cursus, ex elit euismod lorem, vehicula rhoncus nisl dui sit amet eros. Nulla turpis lorem, dignissim a sapien eget, ultrices venenatis dolor. Curabitur vel turpis at magna elementum hendrerit vel id dui. Curabitur a ex ullamcorper, ornare velit vel, tincidunt ipsum. </div>
-                    <div class="tab-pane fade" id="product-rating" role="tabpanel" aria-labelledby="product-rating-tab"> Cras ut ipsum ornare, aliquam ipsum non, posuere elit. In hac habitasse platea dictumst. Aenean elementum leo augue, id fermentum risus efficitur vel. Nulla iaculis malesuada scelerisque. Praesent vel ipsum felis. Ut molestie, purus aliquam placerat sollicitudin, mi ligula euismod neque, non bibendum nibh neque et erat. Etiam dignissim aliquam ligula, aliquet feugiat nibh rhoncus ut. Aliquam efficitur lacinia lacinia. Morbi ac molestie lectus, vitae hendrerit nisl. Nullam metus odio, malesuada in vehicula at, consectetur nec justo. Quisque suscipit odio velit, at accumsan urna vestibulum a. Proin dictum, urna ut varius consectetur, sapien justo porta lectus, at mollis nisi orci et nulla. Donec pellentesque tortor vel nisl commodo ullamcorper. Donec varius massa at semper posuere. Integer finibus orci vitae vehicula placerat. </div>
-                </div>
-            </div>
+            <!-- /.card-body -->
         </div>
-        <!-- /.card-body -->
-    </div>
-    <!-- /.card -->
+        <!-- /.card -->
+    </section>
 
-</section>
+</form>
 
 @section Scripts {
     <script>
-        var colorButtons = document.querySelectorAll('input[name="color_option"]');
-        var sizeButtons = document.querySelectorAll('input[name="size_option"]');
-        var colorIdTextBox = document.getElementById('colorIdTextBox');
-        var sizeIdTextBox = document.getElementById('sizeIdTextBox');
+        $(document).ready(function () {
+            // Attach a click event handler to the radio buttons with name "color_option"
+            $('input[name="color_option"]').click(function () {
+                // Get the data-color-id attribute value of the selected radio button
+                var selectedColorName = $(this).siblings('#colorName').text();
 
-        colorButtons.forEach(function (radio) {
-            radio.addEventListener('click', function () {
-                var colorId = radio.getAttribute('data-color-id');
-                colorIdTextBox.value = colorId;
+                // Update the value of the input field with the selected color name
+                $('#colorNameTextBox').val(selectedColorName);
             });
         });
+        $(document).ready(function () {
+            // Attach a click event handler to the radio buttons with name "size_option"
+            $('input[name="size_option"]').click(function () {
+                // Get the data-size-id attribute value of the selected radio button
+                var selectedSizeName = $(this).siblings('#sizeName').text();
 
-        sizeButtons.forEach(function (radio) {
-            radio.addEventListener('click', function () {
-                var sizeId = radio.getAttribute('data-size-id');
-                sizeIdTextBox.value = sizeId;
+                // Update the value of the input field with the selected size name
+                $('#sizeNameTextBox').val(selectedSizeName);
             });
         });
         var valueTextBox = document.getElementById('valueTextBox');
@@ -161,7 +170,7 @@
         });
 
         decreaseButton.addEventListener('click', function () {
-            if(value > 1){
+            if (value > 1) {
                 value--;
                 updateValue();
             }
@@ -169,6 +178,7 @@
 
         function updateValue() {
             valueTextBox.value = value;
+            //soluong = value;
         }
     </script>
 }

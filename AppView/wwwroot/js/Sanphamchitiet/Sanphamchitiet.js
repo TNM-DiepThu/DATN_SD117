@@ -40,7 +40,6 @@ selectElement.addEventListener("change", function () {
         })
     });
 
-
  
 
 

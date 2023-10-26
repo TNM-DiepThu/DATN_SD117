@@ -804,11 +804,22 @@ namespace AppView.Controllers
             string url = $"https://localhost:7214/api/SanPhamChiTiet/ThemSPvaoGioHang?iduser=911a9476-05be-4a4f-8325-2ea61766e2a0&IDspct={id}";
             return View(url);
         }
-        public IActionResult Themsanphamctvaogiohang(Guid IDNguoiDung, Guid IDSP, Guid IDMau, Guid IDSize, int Soluong, GioHangChiTiet ghct)
+        public IActionResult Themsanphamctvaogiohang(SanPhamChiTietViewModel spctvm)
         {
-
-            IDNguoiDung = new Guid("911a9476-05be-4a4f-8325-2ea61766e2a0");
-            string url = $"https://localhost:7214/api/SanPhamChiTiet/ThemSPCTVaoGioHang?idnguoidung={IDNguoiDung}&idSP={IDSP}&IdMau={IDMau}&IdSize={IDSize}&soluong={Soluong}";
+            var spct = _spctViewModel.GetAll().FirstOrDefault(C => C.TenSP == spctvm.TenSP && C.MauSac == spctvm.MauSac && C.Size == spctvm.Size);
+            var IDMau = _mausacservice.GetAll().FirstOrDefault(c => c.TenMauSac == spctvm.MauSac).Id;
+            var IDSize = sizeServiece.GetAll().FirstOrDefault(c => c.SizeName == spctvm.Size).Id;
+            var IDSP = _sanphamservice.GetAll().FirstOrDefault(c => c.TenSanPham == spctvm.TenSP).Id;
+            var soluong = spctvm.SoLuong;
+            Guid IDNguoiDung = new Guid("911a9476-05be-4a4f-8325-2ea61766e2a0");
+            string url = $"https://localhost:7214/api/SanPhamChiTiet/ThemSPCTVaoGioHang?idnguoidung={IDNguoiDung}&idSP={IDSP}&IdMau={IDMau}&IdSize={IDSize}&soluong={soluong}";
+            GioHangChiTiet ghct = new GioHangChiTiet()
+            {
+                IdSanPhamChiTiet = spct.Id ,
+                DonGia = spct.GiaBan,
+                IdComboChiTiet = null,
+                SoLuong = soluong
+            };
             var obj = JsonConvert.SerializeObject(ghct);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
             HttpResponseMessage httpResponseMessage = _client.PostAsync(url, content).Result;
@@ -817,14 +828,26 @@ namespace AppView.Controllers
                 var result = httpResponseMessage.Content.ReadAsStringAsync().Result;
                 if (result == "Thêm Thành công.")
                 {
-                    return RedirectToAction("");
-                }
-                else if (result == "")
+                    return RedirectToAction("GetGioHangChiTiet","GioHang");
+                } else if (result == "Thêm Thành công.")
                 {
+                    return RedirectToAction("GetGioHangChiTiet", "GioHang");
+                }
+                else if(result == "Thêm Thành công.")
+                {
+                    return RedirectToAction("GetGioHangChiTiet", "GioHang");
+                }
+                else
+                {
+                    return RedirectToAction("GetGioHangChiTiet", "GioHang");
 
                 }
             }
-            return View(url);
+            else
+            {
+                return RedirectToAction("GellByIDSanPhamCT", new { id = spct.Id });
+            }
+           
         }
         [HttpPost]
         public async Task<IActionResult> UploadExcelFile(IFormFile excelFile)
