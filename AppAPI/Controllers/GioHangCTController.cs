@@ -45,6 +45,7 @@ namespace AppAPI.Controllers
         }
 
 
+
         [HttpPost("[action]")]
 
         public string UpdateSoLuong(Guid idnguoidung, Guid idghct, int soluong)
@@ -94,6 +95,11 @@ namespace AppAPI.Controllers
                 return "Them so luong that bai.";
             }
 
+        }
+        [HttpDelete("[action]")]
+        public bool XoaSanPham(Guid id)
+        {
+            return _GHCT.Del(id);
         }
     }
 }
