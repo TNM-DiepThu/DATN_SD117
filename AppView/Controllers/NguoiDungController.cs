@@ -68,8 +68,8 @@ namespace AppView.Controllers
         public async Task<IActionResult> CreateNV(NguoiDungVM Create)
         {
             var jsonObj = JsonConvert.SerializeObject(Create);
-            HttpContent content = new StringContent(jsonObj, Encoding.UTF8, "application/json");
-            var respones = await _httpClient.PostAsync("https://localhost:7214/api/NguoiDung/CreateNV", content);
+            StringContent content = new StringContent(jsonObj, Encoding.UTF8, "application/json");
+            HttpResponseMessage respones = await _httpClient.PostAsJsonAsync("https://localhost:7214/api/NguoiDung/CreateNV", content);
             if (respones.IsSuccessStatusCode)
             {
                 return RedirectToAction(nameof(NguoiDungView));
