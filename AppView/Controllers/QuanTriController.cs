@@ -19,6 +19,7 @@ using ZXing;
 using iTextSharp.text.pdf.codec;
 using QRCoder;
 using ZXing.QrCode;
+using ZXing.Common;
 using Bill.Serviece.Interfaces;
 using Bill.Serviece.Implements;
 using System.Collections.Generic;
@@ -28,6 +29,7 @@ using iTextSharp.text;
 using static QRCoder.PayloadGenerator.SwissQrCode;
 using System.ComponentModel;
 using LicenseContext = OfficeOpenXml.LicenseContext;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 
 namespace AppView.Controllers
 {
@@ -493,7 +495,7 @@ namespace AppView.Controllers
                 var respon = _client.GetAsync(url).Result;
                 var datalist = respon.Content.ReadAsStringAsync().Result;
                 List<SanPhamChiTietViewModel> list = JsonConvert.DeserializeObject<List<SanPhamChiTietViewModel>>(datalist);
-                //foreach (var product in lstsize)
+                //foreach (var product in list)
                 //{
                 //    product.QRCode = GenerateQRCode(product.Id);
                 //}
@@ -545,9 +547,10 @@ namespace AppView.Controllers
         //{
         //    // Truy xuất thông tin đối tượng dựa trên ID
         //    SanPhamChiTietViewModel spct = _spctViewModel.GetById(id);
-        //    var infor = $"Mã Sản phẩm: {spct.MaSp} Tên: {spct.TenSP} Màu sắc : {spct.MauSac} Chất liệu: {spct.ChatLieu} Size : {spct.Size}";
+
         //    if (spct != null)
         //    {
+        //        string infor = "Mã Sản phẩm :" + spct.MaSp+ " Tên: " + spct.TenSP + " Màu sắc :" + spct.MauSac + "Chất liệu: " + spct.ChatLieu + " Size :" + spct.Size;
         //        // Tạo mã QR từ thông tin đối tượng
         //        BarcodeWriter<Bitmap> qrCodeWriter = new BarcodeWriter<Bitmap>();
         //        qrCodeWriter.Format = BarcodeFormat.QR_CODE;
@@ -568,11 +571,13 @@ namespace AppView.Controllers
         //            var base64String = Convert.ToBase64String(byteArray);
 
         //            // Trả về mã QR dưới dạng hình ảnh hoặc sử dụng nó trong giao diện
-        //            return$"<img src='data:image/png;base64,{base64String}' />";
+        //            return $"<img src='data:image/png;base64,{base64String}' />";
         //        }
         //    }
-
-        //    return "Không tìm thấy đối tượng.";
+        //    else
+        //    {
+        //        return "Không tìm thấy đối tượng.";
+        //    }
         //}
         //private byte[] BitmapToByteArray(Bitmap bitmap)
         //{
@@ -615,7 +620,7 @@ namespace AppView.Controllers
             return View(lstspctvm);
         }
 
-    
+
         [HttpGet]
         public ActionResult GellByNameSanPhamCT(string name)
         {
@@ -666,7 +671,7 @@ namespace AppView.Controllers
                 }
                 else if (error == "Sản phẩm đã tồn tại")
                 {
-                    TempData["ErrorMessage"] = "Sản phẩm bạn nhập "+ _sanphamservice.GetAll().Where(c => c.Id == spct.IDSP).Select(c => c.TenSanPham) + " đã có trong danh sách sản phẩm.";
+                    TempData["ErrorMessage"] = "Sản phẩm bạn nhập " + _sanphamservice.GetAll().Where(c => c.Id == spct.IDSP).Select(c => c.TenSanPham) + " đã có trong danh sách sản phẩm.";
                     return RedirectToAction("CreateSanPhamCT", "QuanTri");
                 }
                 else
@@ -815,7 +820,8 @@ namespace AppView.Controllers
             string url = $"https://localhost:7214/api/SanPhamChiTiet/ThemSPCTVaoGioHang?idnguoidung={IDNguoiDung}&idSP={IDSP}&IdMau={IDMau}&IdSize={IDSize}&soluong={soluong}";
             GioHangChiTiet ghct = new GioHangChiTiet()
             {
-                IdSanPhamChiTiet = spct.Id ,
+                IdGioHang = new Guid("911a9476-05be-4a4f-8325-2ea61766e2a0"),
+                IdSanPhamChiTiet = spct.Id,
                 DonGia = spct.GiaBan,
                 IdComboChiTiet = null,
                 SoLuong = soluong
@@ -828,14 +834,22 @@ namespace AppView.Controllers
                 var result = httpResponseMessage.Content.ReadAsStringAsync().Result;
                 if (result == "Thêm Thành công.")
                 {
-                    return RedirectToAction("GetGioHangChiTiet","GioHang");
-                } else if (result == "Thêm Thành công.")
-                {
                     return RedirectToAction("GetGioHangChiTiet", "GioHang");
                 }
-                else if(result == "Thêm Thành công.")
+                else if (result == "Sản phẩm đã hết hàng. Mời bạn chọn sản phẩm khác.")
                 {
-                    return RedirectToAction("GetGioHangChiTiet", "GioHang");
+                     TempData["ErrorMessage"] = "Sản phẩm này đang hết hàng. Mời bạn chọn sản phẩm khác.";
+                    return RedirectToAction("GellByIDSanPhamCT", new { id = spct.Id });
+                }
+                else if (result == "Bạn chưa chọn màu. Mời bạn chọn màu.")
+                {
+                    TempData["ErrorMessage"] = "Bạn chưa chọn màu. Mời bạn chọn màu.";
+                    return RedirectToAction("GellByIDSanPhamCT", new { id = spct.Id });
+                }
+                else if (result == "Bạn chưa chọn size. Mời bạn chọn size.")
+                {
+                    TempData["ErrorMessage"] = "Bạn chưa chọn size. Mời bạn chọn size.";
+                    return RedirectToAction("GellByIDSanPhamCT", new { id = spct.Id });
                 }
                 else
                 {
@@ -847,7 +861,7 @@ namespace AppView.Controllers
             {
                 return RedirectToAction("GellByIDSanPhamCT", new { id = spct.Id });
             }
-           
+
         }
         [HttpPost]
         public async Task<IActionResult> UploadExcelFile(IFormFile excelFile)
@@ -905,11 +919,11 @@ namespace AppView.Controllers
                         }
 
                         string productListJson = JsonConvert.SerializeObject(products);
-                   
+
                         _tempProducts = lstspct;
                         _temspctvm = products;
                         TempData["Products"] = productListJson;
-                      
+
 
 
                         // Ở đây, bạn có danh sách "products" chứa dữ liệu từ tệp Excel
@@ -933,32 +947,40 @@ namespace AppView.Controllers
         [HttpPost]
         public IActionResult AddDataToDatabase()
         {
-            if (_tempProducts != null && _tempProducts.Count() > 0)
+            try
             {
-                for (int i = 0; i < _tempProducts.Count(); i++)
+                if (_tempProducts != null && _tempProducts.Count() > 0)
                 {
-                    string url2 = $"https://localhost:7214/api/SanPhamChiTiet/CreateSanPhamChiTiet?iddm={_tempProducts[i].IdDanhMuc}&idcl={_tempProducts[i].IdChatLieu}&idms={_tempProducts[i].IdMauSac}&idsize={_tempProducts[i].IdSize}&idanh={_tempProducts[i].IdAnh}&idsp={_tempProducts[i].IDSP}&masp={"SP" + Convert.ToString(_sanphamchitietservice.GetAll().Count() + 1)}&soluong={_tempProducts[i].SoLuong}&gia={_tempProducts[i].GiaBan}&mota={_tempProducts[i].MoTa}";
-                    var obj = JsonConvert.SerializeObject(_tempProducts[i]);
-                    StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
-                    HttpResponseMessage httpResponseMessage = _client.PostAsync(url2, content).Result;
-                    if (httpResponseMessage.IsSuccessStatusCode)
+                    for (int i = 0; i < _tempProducts.Count(); i++)
                     {
-                        var error =  httpResponseMessage.Content.ReadAsStringAsync().Result;
-                        if (error == "Sản phẩm bị trùng mã")
+                        string url2 = $"https://localhost:7214/api/SanPhamChiTiet/CreateSanPhamChiTiet?iddm={_tempProducts[i].IdDanhMuc}&idcl={_tempProducts[i].IdChatLieu}&idms={_tempProducts[i].IdMauSac}&idsize={_tempProducts[i].IdSize}&idanh={_tempProducts[i].IdAnh}&idsp={_tempProducts[i].IDSP}&masp={"SP" + Convert.ToString(_sanphamchitietservice.GetAll().Count() + 1)}&soluong={_tempProducts[i].SoLuong}&gia={_tempProducts[i].GiaBan}&mota={_tempProducts[i].MoTa}";
+                        var obj = JsonConvert.SerializeObject(_tempProducts[i]);
+                        StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
+                        HttpResponseMessage httpResponseMessage = _client.PostAsync(url2, content).Result;
+                        if (httpResponseMessage.IsSuccessStatusCode)
                         {
-                            TempData["ErrorMessage"] = "Sản phẩm bị trùng mã. Mời bạn nhập mã khác";
+                            var error = httpResponseMessage.Content.ReadAsStringAsync().Result;
+                            if (error == "Sản phẩm bị trùng mã")
+                            {
+                                TempData["ErrorMessage"] = "Sản phẩm bị trùng mã. Mời bạn nhập mã khác";
+                            }
+                            else if (error == "Sản phẩm đã tồn tại")
+                            {
+                                TempData["ErrorMessage"] = "Sản phẩm bạn nhập " + _sanphamservice.GetAll().Where(c => c.Id == _tempProducts[i].IDSP).Select(c => c.TenSanPham) + " đã có trong danh sách sản phẩm.";
+                            }
                         }
-                        else if (error == "Sản phẩm đã tồn tại")
-                        {
-                            TempData["ErrorMessage"] = "Sản phẩm bạn nhập " + _sanphamservice.GetAll().Where(c => c.Id == _tempProducts[i].IDSP).Select(c => c.TenSanPham) + " đã có trong danh sách sản phẩm.";
-                        }
+                        _tempProducts.Remove(_tempProducts[i]);
                     }
-                    _tempProducts.Remove(_tempProducts[i]);
+                    return RedirectToAction("GellAllSanPhamCT", "QuanTri");
                 }
-                return RedirectToAction("GellAllSanPhamCT", "QuanTri");
+                else
+                {
+                    return RedirectToAction("DisplayData", "QuanTri");
+                }
             }
-            else
+            catch (Exception ex) { }
             {
+                TempData["ErrorMessage"] = "Bạn xem lại dữ liệu nhập vào không trùng khớp. Mời bạn xem lại.";
                 return RedirectToAction("DisplayData", "QuanTri");
             }
         }

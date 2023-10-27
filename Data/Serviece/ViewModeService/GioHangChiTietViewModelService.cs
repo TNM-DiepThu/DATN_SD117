@@ -46,8 +46,10 @@ namespace AppData.Serviece.ViewModeService
                               TenSanPham = _spctviewmodelservice.GetAll().FirstOrDefault(c => c.Id == a.IdSanPhamChiTiet).TenSP,
                               Mausac = c.MauSac,
                               Size = c.Size,
+                              anh = c.Anh,
                               Soluong = a.SoLuong,
                               GiaSanPham = a.DonGia,
+                              TienGiamGia = 0,
                           };
                     lst.ToList();
             }
@@ -67,6 +69,7 @@ namespace AppData.Serviece.ViewModeService
                               Size = c.Size,
                               Soluong = a.SoLuong,
                               GiaSanPham = a.DonGia,
+                              TienGiamGia = 0,
                           };
                 lst.ToList();
             }

@@ -16,18 +16,20 @@ namespace AppView.Controllers
     public class GioHangController : Controller
     {
         HttpClient _client = new HttpClient();
+        private readonly IGioHangCTService ghctservice;
         //private readonly INguoiDungServiece _nguoiDungServiece;
 
         public GioHangController(/*INguoiDungServiece nguoiDungServiece*/)
         {
             //_nguoiDungServiece = nguoiDungServiece;
+            ghctservice = new GioHangCTService();
         }
 
         // GET: GioHangController
-        public ActionResult Index( )
+        public ActionResult Index()
         {
             return View();
-           
+
         }
 
         // GET: GioHangController/Details/5
@@ -40,11 +42,11 @@ namespace AppView.Controllers
         [HttpGet]
         public async Task<ActionResult> GetGioHangChiTiet()
         {
-            //ClaimsPrincipal claimsPrincipal = HttpContext.User;
+            ClaimsPrincipal claimsPrincipal = HttpContext.User;
 
-            //var userlogin = HttpContext.User;
-            //var email = userlogin.FindFirstValue(ClaimTypes.Email);
-            //NguoiDungVM user = await _nguoiDungServiece.GetByIdAsync(idnguoidung);
+            var userlogin = HttpContext.User;
+            var email = userlogin.FindFirstValue(ClaimTypes.Email);
+            //NguoiDungVM user = await _nguoiDungServiece.GetAllAsync().;
             string url = $"https://localhost:7214/api/GioHangCT/GetAllFullGioHangChiTiet?IDnguoiDung=911a9476-05be-4a4f-8325-2ea61766e2a0";
             var repos = await _client.GetAsync(url);
             var data = await repos.Content.ReadAsStringAsync();
@@ -160,5 +162,51 @@ namespace AppView.Controllers
             }
         }
 
+        public async Task<ActionResult> XoaSanPhamKhoiGioHang(Guid id)
+        {
+            string url = $"https://localhost:7214/api/GioHangCT/XoaSanPham?id={id}";
+            var reposs = await _client.GetAsync(url);
+            HttpResponseMessage Xoa = await _client.DeleteAsync(url);
+            if (Xoa.IsSuccessStatusCode)
+            {
+                // Xóa thành công
+                TempData["success"] = "Xóa thành công.";
+                return RedirectToAction("GetGioHangChiTiet");
+            }
+            else
+            {
+                // Xử lý lỗi, ví dụ: hiển thị thông báo lỗi
+                TempData["Error"] = "Xóa không thành công.";
+                return RedirectToAction("GetGioHangChiTiet");
+            }
+        }
+        [HttpGet]
+        [HttpPost]
+        public ActionResult DecreaseButton(Guid id , int soluong)
+        {
+            var idnguoidung = Guid.Parse("911a9476-05be-4a4f-8325-2ea61766e2a0");
+            GioHangChiTiet ghct = ghctservice.GetAllGioHangTheoNguoiDungDangNhap(idnguoidung).FirstOrDefault(c => c.Id == id);
+            soluong --;
+            if (ghct != null)
+            {
+                ghct.SoLuong = soluong;
+            }
+            ghctservice.EditSoluong(id , soluong);
+            return RedirectToAction("GetGioHangChiTiet");
+        }
+        [HttpGet]
+        [HttpPost]
+        public ActionResult IncreaseButton(Guid id, int soluong)
+        {
+            var idnguoidung = Guid.Parse("911a9476-05be-4a4f-8325-2ea61766e2a0");
+            GioHangChiTiet ghct = ghctservice.GetAllGioHangTheoNguoiDungDangNhap(idnguoidung).FirstOrDefault(c => c.Id == id);
+            soluong++;
+            if (ghct != null)
+            {
+                ghct.SoLuong = soluong;
+            }
+            ghctservice.EditSoluong(id, soluong);
+            return RedirectToAction("GetGioHangChiTiet");
+        }
     }
 }

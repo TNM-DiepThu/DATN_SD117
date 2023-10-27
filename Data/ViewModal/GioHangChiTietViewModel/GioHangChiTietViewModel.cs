@@ -14,7 +14,9 @@ namespace AppData.ViewModal.GioHangChiTietViewModel
         public string TenSanPham { get; set; }
         public string Mausac { get; set; }
         public string Size { get; set; }
+        public string anh { get; set; }
         public decimal GiaSanPham { get; set; }
+        public decimal TienGiamGia { get; set; }
         public int Soluong { get; set; }
     }
 }

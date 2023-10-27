@@ -270,7 +270,7 @@ namespace AppAPI.Controllers
                                 SoLuong = soluong,
                                 DonGia = spct.GiaBan
                             };
-                            _giohangctservice.Add(ghct);
+                            _giohangctservice.Add(newghct);
                             return "Thêm Thành công.";
                         }
                         else
