@@ -43,6 +43,28 @@ namespace AppView.Controllers
                 return BadRequest();
             }
         }
+
+        [HttpGet]
+        public ActionResult CreateNV()
+        {
+            return View();
+        }
+        [HttpPost]
+
+        public async Task<IActionResult> CreateNV(NguoiDungVM Create)
+        {
+            var jsonObj = JsonConvert.SerializeObject(Create);
+            HttpContent content = new StringContent(jsonObj, Encoding.UTF8, "application/json");
+            var respones = await _httpClient.PostAsync("https://localhost:7214/api/NguoiDung/CreateNV", content);
+            if (respones.IsSuccessStatusCode)
+            {
+                return RedirectToAction(nameof(NguoiDungView));
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
         [HttpGet]
         public async Task<IActionResult> EditNguoiDung(Guid Id)
         {

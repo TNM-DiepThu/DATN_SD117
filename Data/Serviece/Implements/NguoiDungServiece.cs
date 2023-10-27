@@ -20,6 +20,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
+using System.Data;
 
 namespace AppData.Serviece.Implements
 {
@@ -31,12 +32,13 @@ namespace AppData.Serviece.Implements
         private readonly IConfiguration _configuration;
         MyDbContext _dbContext;
 
-        public NguoiDungServiece(Microsoft.AspNetCore.Identity.UserManager<NguoiDung> userManager, SignInManager<NguoiDung> signInManager, IConfiguration configuration)
+        public NguoiDungServiece(Microsoft.AspNetCore.Identity.UserManager<NguoiDung> userManager, SignInManager<NguoiDung> signInManager, IConfiguration configuration, Microsoft.AspNetCore.Identity.RoleManager<Quyen> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
             _dbContext = new MyDbContext();
+            _roleManager = roleManager;
         }
 
 
@@ -46,9 +48,9 @@ namespace AppData.Serviece.Implements
             return users.Select(user => new NguoiDungVM
             {
                 id = user.Id,
-                TenNguoiDung = user.TenNguoiDung,
-                username = user.UserName,
                 Anh = user.Anh,
+                TenNguoiDung = user.TenNguoiDung,
+                username = user.UserName,             
                 CCCD = user.CCCD,
                 Email = user.Email,
                 SDT = user.SDT,
@@ -92,10 +94,11 @@ namespace AppData.Serviece.Implements
             var user = new NguoiDung
             {
                 Id = Guid.NewGuid(),
-                TenNguoiDung = nguoiDung.TenNguoiDung,
                 UserName = nguoiDung.username,
-                Anh = nguoiDung.Anh,
+                TenNguoiDung = nguoiDung.TenNguoiDung,
                 CCCD = nguoiDung.CCCD,
+                Anh = nguoiDung.Anh,
+                GioiTinh = nguoiDung.GioiTinh,
                 Email = nguoiDung.Email,
                 SDT = nguoiDung.SDT,
                 MatKhau = nguoiDung.MatKhau,
@@ -103,15 +106,77 @@ namespace AppData.Serviece.Implements
                 ThanhPho = nguoiDung.ThanhPho,
                 DiaChi = nguoiDung.DiaChi,
                 NgaySinh = nguoiDung.NgaySinh,
-                GioiTinh = nguoiDung.GioiTinh,
                 status = 1
             };
 
             var result = await _userManager.CreateAsync(user, nguoiDung.MatKhau);
             if (result.Succeeded)
-            {               
-                await _dbContext.SaveChangesAsync();
-                return user.Id;
+            {
+                if (!await _roleManager.RoleExistsAsync("khachhang"))
+                {
+                    var role = new Quyen { Name = "khachhang" };
+                    await _roleManager.CreateAsync(role);
+                }
+                var addToRoleResult = await _userManager.AddToRoleAsync(user, "khachhang");
+
+                if (addToRoleResult.Succeeded)
+                {
+                    await _dbContext.SaveChangesAsync();
+                    return user.Id;
+                }
+                else
+                {
+                    var errors = addToRoleResult.Errors.Select(error => error.Description).ToArray();
+                    throw new Exception($"Failed to add user to role: {string.Join(", ", errors)}");
+                }
+            }
+            else
+            {
+                var errors = result.Errors.Select(error => error.Description).ToArray();
+                throw new Exception($"Failed to create user: {string.Join(", ", errors)}");
+            }
+        }
+
+        public async Task<Guid> CreateNVAsync(NguoiDungVM nguoiDung)
+        {
+            var user = new NguoiDung
+            {
+                Id = Guid.NewGuid(),
+                UserName = nguoiDung.username,
+                TenNguoiDung = nguoiDung.TenNguoiDung,
+                CCCD = nguoiDung.CCCD,
+                Anh = nguoiDung.Anh,
+                GioiTinh = nguoiDung.GioiTinh,
+                Email = nguoiDung.Email,
+                SDT = nguoiDung.SDT,
+                MatKhau = nguoiDung.MatKhau,
+                QuanHuyen = nguoiDung.QuanHuyen,
+                ThanhPho = nguoiDung.ThanhPho,
+                DiaChi = nguoiDung.DiaChi,
+                NgaySinh = nguoiDung.NgaySinh,
+                status = 1
+            };
+
+            var result = await _userManager.CreateAsync(user, nguoiDung.MatKhau);
+            if (result.Succeeded)
+            {
+                if (!await _roleManager.RoleExistsAsync("nhanvien"))
+                {
+                    var role = new Quyen { Name = "khachhang" };
+                    await _roleManager.CreateAsync(role);
+                }
+                var addToRoleResult = await _userManager.AddToRoleAsync(user, "nhanvien");
+
+                if (addToRoleResult.Succeeded)
+                {
+                    await _dbContext.SaveChangesAsync();
+                    return user.Id;
+                }
+                else
+                {
+                    var errors = addToRoleResult.Errors.Select(error => error.Description).ToArray();
+                    throw new Exception($"Failed to add user to role: {string.Join(", ", errors)}");
+                }
             }
             else
             {

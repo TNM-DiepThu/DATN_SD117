@@ -60,6 +60,16 @@ namespace AppAPI.Controllers
             }, id);
         }
 
+        [HttpPost("CreateNV")]
+        public async Task<ActionResult<Guid>> PostNV([FromBody] NguoiDungVM nguoiDung)
+        {
+            var id = await _nguoiDungService.CreateNVAsync(nguoiDung);
+            return CreatedAtAction(nameof(Get), new
+            {
+                id
+            }, id);
+        }
+
         [HttpPut("Edit/{id}")]
         public async Task<ActionResult> Put(Guid id, [FromBody] NguoiDungVM nguoiDung)
         {

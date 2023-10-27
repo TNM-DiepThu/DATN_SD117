@@ -14,6 +14,7 @@ namespace AppData.Serviece.Interfaces
         Task<IEnumerable<NguoiDungVM>> GetAllAsync();
         Task<NguoiDungVM> GetByIdAsync(Guid id);
         Task<Guid> CreateAsync(NguoiDungVM nguoiDung);
+        Task<Guid> CreateNVAsync(NguoiDungVM nguoiDung);
         Task UpdateAsync(Guid id, NguoiDungVM nguoiDung);
         Task<bool>  DeleteAsync(Guid id);
         public Task<LoginResponesVM> LoginWithJWT(LoginRequestVM loginRequest);
