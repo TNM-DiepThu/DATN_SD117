@@ -11,9 +11,9 @@ namespace AppView.Controllers
     public class NguoiDungController : Controller
     {
         private readonly HttpClient _httpClient;
-        public NguoiDungController(HttpClient httpClient)
+        public NguoiDungController()
         {
-            _httpClient = httpClient;
+            _httpClient = new HttpClient();
         }
         [HttpGet]
         public async Task<IActionResult> NguoiDungView()
