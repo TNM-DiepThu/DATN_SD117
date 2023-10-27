@@ -2,7 +2,7 @@
 @model NguoiDungVM;
 
 @{
-    ViewData["Title"] = "CreateNguoiDung";
+    ViewData["Title"] = "Thêm nhân viên ";
 }
 
 <h1>Create</h1>
@@ -10,7 +10,7 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="CreateNguoiDung">
+        <form asp-action="CreateNV">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="Anh" class="control-label"></label>
@@ -27,8 +27,8 @@
                 <label asp-for="username" class="control-label"></label>
                 <input asp-for="username" class="form-control" />
                 <span asp-validation-for="username" class="text-danger"></span>
-            </div> 
-             
+            </div>
+
             <div class="form-group">
                 <label asp-for="CCCD" class="control-label"></label>
                 <input asp-for="CCCD" class="form-control" />
@@ -79,7 +79,7 @@
                 <input asp-for="status" class="form-control" id="ngaySinhInput" />
                 <span asp-validation-for="status" class="text-danger"></span>
             </div>
-            
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

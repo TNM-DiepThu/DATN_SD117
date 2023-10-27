@@ -18,9 +18,24 @@ namespace AppView.Controllers
         [HttpGet]
         public async Task<IActionResult> NguoiDungView()
         {
-            var response = await _httpClient.GetFromJsonAsync<List<NguoiDungVM>>($"https://localhost:7214/api/NguoiDung/GetAll");
+            var response = await _httpClient.GetFromJsonAsync<List<NguoiDungVM>>($"https://localhost:7214/api/NguoiDung/GetAllKH");
             return View(response);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllNV()
+        {
+            var response = await _httpClient.GetFromJsonAsync<List<NguoiDungVM>>($"https://localhost:7214/api/NguoiDung/GetAllNV");
+            return View(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllKH()
+        {
+            var response = await _httpClient.GetFromJsonAsync<List<NguoiDungVM>>($"https://localhost:7214/api/NguoiDung/GetAllKH");
+            return View(response);
+        }
+
         [HttpGet]
         public ActionResult CreateNguoiDung()
         {
@@ -33,6 +48,28 @@ namespace AppView.Controllers
             var jsonObj = JsonConvert.SerializeObject(Create);
             HttpContent content = new StringContent(jsonObj, Encoding.UTF8, "application/json");
             var respones = await _httpClient.PostAsync("https://localhost:7214/api/NguoiDung/Create", content);
+            if (respones.IsSuccessStatusCode)
+            {
+                return RedirectToAction(nameof(NguoiDungView));
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet]
+        public ActionResult CreateNV()
+        {
+            return View();
+        }
+        [HttpPost]
+
+        public async Task<IActionResult> CreateNV(NguoiDungVM Create)
+        {
+            var jsonObj = JsonConvert.SerializeObject(Create);
+            HttpContent content = new StringContent(jsonObj, Encoding.UTF8, "application/json");
+            var respones = await _httpClient.PostAsync("https://localhost:7214/api/NguoiDung/CreateNV", content);
             if (respones.IsSuccessStatusCode)
             {
                 return RedirectToAction(nameof(NguoiDungView));
@@ -61,7 +98,7 @@ namespace AppView.Controllers
             ViewBag.Roles = new SelectList(roles, "Name", "Name");
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction(nameof(NguoiDungView));
+                return RedirectToAction("CreateNguoiDung","NguoiDung");
             }
             return View();
 

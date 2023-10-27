@@ -20,8 +20,9 @@
         font-size: 16px;
     }
 </style>
-<button type="button" class="btn btn-outline-primary"> <a asp-action="CreateNguoiDung">Create New</a></button>
+<button type="button" class="btn btn-outline-primary"> <a asp-action="CreateNV">Thêm nhân viên</a></button>
 <br />
+
 <table class="table table-bordered">
     <thead>
         <tr>
@@ -71,8 +72,8 @@
         @foreach (var item in Model)
         {
             <tr>
-               <td>
-                    <img src="@item.Anh" alt="Hình ảnh" />
+                <td>
+                    @Html.DisplayFor(modelItem => item.Anh)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.username)
@@ -117,17 +118,15 @@
                     @statusText
                 </td>
                 <td>
-
                     <a href="@Url.Action("EditNguoiDung","NguoiDung",new { id = item.id})">
                         <i class="fas fa-pen" style="color: #007bff;"></i>
-                    
+                    </a>
                     <form method="post" action="@Url.Action("Delete", "NguoiDung", new { id = item.id })">
                         @Html.AntiForgeryToken()
                         <button type="submit" onclick="return confirm('Bạn có chắc muốn xóa người dùng này?');">
                             <i class="fas fa-trash" style="color: #ff0000;"></i>
                         </button>
                     </form>
-                    
                 </td                
             </tr>
         }

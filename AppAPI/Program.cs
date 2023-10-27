@@ -8,6 +8,7 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -34,7 +35,6 @@ builder.Services.AddTransient<IVoucherDetailServices, VoucherDetailServices>();
 builder.Services.AddTransient<IHinhThucThanhToanServices, HinhThucThanhToanServiece>();
 builder.Services.AddTransient<INguoiDungServiece, NguoiDungServiece>();
 builder.Services.AddTransient<IQuyenService, QuyenService>();
-
 builder.Services.AddDbContext<MyDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("MyCS"));
@@ -77,6 +77,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads")),
+    RequestPath = "/uploads"
+});
 
 app.UseHttpsRedirection();
 

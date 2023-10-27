@@ -3,37 +3,34 @@ using AppData.model;
 using AppData.Serviece.Interfaces;
 using AppData.ViewModal.Login;
 using AppData.ViewModal.Usermodalview;
-using Microsoft.AspNet.Identity.Owin;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
+using System.Data;
+using Microsoft.AspNetCore.Hosting;
+
 
 namespace AppData.Serviece.Implements
 {
     public class NguoiDungServiece : INguoiDungServiece
     {
         private readonly SignInManager<NguoiDung> _signInManager;
-        private readonly UserManager<NguoiDung> _userManager;
+        private readonly Microsoft.AspNetCore.Identity.UserManager<NguoiDung> _userManager;
+        private readonly Microsoft.AspNetCore.Identity.RoleManager<Quyen> _roleManager;
         private readonly IConfiguration _configuration;
         MyDbContext _dbContext;
 
-        public NguoiDungServiece(UserManager<NguoiDung> userManager, SignInManager<NguoiDung> signInManager, IConfiguration configuration)
+        public NguoiDungServiece(Microsoft.AspNetCore.Identity.UserManager<NguoiDung> userManager, SignInManager<NguoiDung> signInManager, IConfiguration configuration, Microsoft.AspNetCore.Identity.RoleManager<Quyen> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
             _dbContext = new MyDbContext();
+            _roleManager = roleManager;
         }
 
 
@@ -43,13 +40,17 @@ namespace AppData.Serviece.Implements
             return users.Select(user => new NguoiDungVM
             {
                 id = user.Id,
-                TenNguoiDung = user.UserName,
+                Anh = user.Anh,
+                TenNguoiDung = user.TenNguoiDung,
+                username = user.UserName,             
+                CCCD = user.CCCD,
                 Email = user.Email,
                 SDT = user.SDT,
                 MatKhau = user.MatKhau,
                 QuanHuyen = user.QuanHuyen,
                 ThanhPho = user.ThanhPho,
                 DiaChi = user.DiaChi,
+                GioiTinh = user.GioiTinh,
                 NgaySinh = user.NgaySinh,
                 status = user.status
             });
@@ -64,24 +65,33 @@ namespace AppData.Serviece.Implements
             return new NguoiDungVM
             {
                 id = user.Id,
+                username = user.UserName,
+                TenNguoiDung = user.TenNguoiDung,
+                Anh = user.Anh,
+                CCCD = user.CCCD,
                 Email = user.Email,
                 SDT = user.SDT,
-                TenNguoiDung = user.UserName,
                 MatKhau = user.MatKhau,
                 QuanHuyen = user.QuanHuyen,
                 ThanhPho = user.ThanhPho,
                 DiaChi = user.DiaChi,
+                GioiTinh = user.GioiTinh,
                 NgaySinh = user.NgaySinh,
                 status = user.status
             };
         }
-
+      
         public async Task<Guid> CreateAsync(NguoiDungVM nguoiDung)
         {
+            
             var user = new NguoiDung
             {
                 Id = Guid.NewGuid(),
-                UserName = nguoiDung.TenNguoiDung,
+                UserName = nguoiDung.username,
+                TenNguoiDung = nguoiDung.TenNguoiDung,
+                CCCD = nguoiDung.CCCD,
+                Anh = nguoiDung.Anh,
+                GioiTinh = nguoiDung.GioiTinh,
                 Email = nguoiDung.Email,
                 SDT = nguoiDung.SDT,
                 MatKhau = nguoiDung.MatKhau,
@@ -89,14 +99,77 @@ namespace AppData.Serviece.Implements
                 ThanhPho = nguoiDung.ThanhPho,
                 DiaChi = nguoiDung.DiaChi,
                 NgaySinh = nguoiDung.NgaySinh,
-                status = 0
+                status = 1
             };
 
             var result = await _userManager.CreateAsync(user, nguoiDung.MatKhau);
             if (result.Succeeded)
             {
-                await _dbContext.SaveChangesAsync();
-                return user.Id;
+                if (!await _roleManager.RoleExistsAsync("khachhang"))
+                {
+                    var role = new Quyen { Name = "khachhang" };
+                    await _roleManager.CreateAsync(role);
+                }
+                var addToRoleResult = await _userManager.AddToRoleAsync(user, "khachhang");
+
+                if (addToRoleResult.Succeeded)
+                {
+                    await _dbContext.SaveChangesAsync();
+                    return user.Id;
+                }
+                else
+                {
+                    var errors = addToRoleResult.Errors.Select(error => error.Description).ToArray();
+                    throw new Exception($"Failed to add user to role: {string.Join(", ", errors)}");
+                }
+            }
+            else
+            {
+                var errors = result.Errors.Select(error => error.Description).ToArray();
+                throw new Exception($"Failed to create user: {string.Join(", ", errors)}");
+            }
+        }
+
+        public async Task<Guid> CreateNVAsync(NguoiDungVM nguoiDung)
+        {
+            var user = new NguoiDung
+            {
+                Id = Guid.NewGuid(),
+                UserName = nguoiDung.username,
+                TenNguoiDung = nguoiDung.TenNguoiDung,
+                CCCD = nguoiDung.CCCD,
+                Anh = nguoiDung.Anh,
+                GioiTinh = nguoiDung.GioiTinh,
+                Email = nguoiDung.Email,
+                SDT = nguoiDung.SDT,
+                MatKhau = nguoiDung.MatKhau,
+                QuanHuyen = nguoiDung.QuanHuyen,
+                ThanhPho = nguoiDung.ThanhPho,
+                DiaChi = nguoiDung.DiaChi,
+                NgaySinh = nguoiDung.NgaySinh,
+                status = 1
+            };
+
+            var result = await _userManager.CreateAsync(user, nguoiDung.MatKhau);
+            if (result.Succeeded)
+            {
+                if (!await _roleManager.RoleExistsAsync("nhanvien"))
+                {
+                    var role = new Quyen { Name = "nhanvien" };
+                    await _roleManager.CreateAsync(role);
+                }
+                var addToRoleResult = await _userManager.AddToRoleAsync(user, "nhanvien");
+
+                if (addToRoleResult.Succeeded)
+                {
+                    await _dbContext.SaveChangesAsync();
+                    return user.Id;
+                }
+                else
+                {
+                    var errors = addToRoleResult.Errors.Select(error => error.Description).ToArray();
+                    throw new Exception($"Failed to add user to role: {string.Join(", ", errors)}");
+                }
             }
             else
             {
@@ -110,7 +183,11 @@ namespace AppData.Serviece.Implements
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)
                 return;
-            user.UserName = nguoiDung.TenNguoiDung;
+            user.UserName = nguoiDung.username; 
+            user.TenNguoiDung = nguoiDung.TenNguoiDung;
+            user.CCCD = nguoiDung.CCCD;
+            user.Anh = nguoiDung.Anh;
+            user.GioiTinh = nguoiDung.GioiTinh;
             user.Email = nguoiDung.Email;
             user.SDT = nguoiDung.SDT;
             user.MatKhau = nguoiDung.MatKhau;
@@ -138,7 +215,8 @@ namespace AppData.Serviece.Implements
 
         public async Task<LoginResponesVM> LoginWithJWT(LoginRequestVM loginRequest)
         {
-            var user = await _userManager.FindByEmailAsync(loginRequest.Email);
+            var user = await _userManager.FindByEmailAsync(loginRequest.Email) ?? await _userManager.FindByNameAsync(loginRequest.Username); 
+            
             if (user == null) return new LoginResponesVM
             {
                 Successful = false,
@@ -184,25 +262,46 @@ namespace AppData.Serviece.Implements
 
         public async Task<IEnumerable<NguoiDungVM>> GetAllNV()
         {
-            var users = await _userManager.Users.ToListAsync();
+            var users = await _userManager.GetUsersInRoleAsync("NhanVien");
             return users.Select(user => new NguoiDungVM
             {
                 id = user.Id,
-                TenNguoiDung = user.UserName,
+                username = user.UserName,
+                TenNguoiDung = user.TenNguoiDung,
+                Anh = user.Anh,
+                CCCD = user.CCCD,
                 Email = user.Email,
                 SDT = user.SDT,
                 MatKhau = user.MatKhau,
                 QuanHuyen = user.QuanHuyen,
                 ThanhPho = user.ThanhPho,
                 DiaChi = user.DiaChi,
+                GioiTinh = user.GioiTinh,
                 NgaySinh = user.NgaySinh,
                 status = user.status
             });
         }
 
-        public Task<IEnumerable<NguoiDungVM>> GetAllKH()
+        public async Task<IEnumerable<NguoiDungVM>> GetAllKH()
         {
-            throw new NotImplementedException();
+            var users = await _userManager.GetUsersInRoleAsync("KhachHang");
+            return users.Select(user => new NguoiDungVM
+            {
+                id = user.Id,
+                username = user.UserName,
+                TenNguoiDung = user.TenNguoiDung,
+                Anh = user.Anh,
+                CCCD = user.CCCD,
+                Email = user.Email,
+                SDT = user.SDT,
+                MatKhau = user.MatKhau,
+                QuanHuyen = user.QuanHuyen,
+                ThanhPho = user.ThanhPho,
+                DiaChi = user.DiaChi,
+                GioiTinh = user.GioiTinh,
+                NgaySinh = user.NgaySinh,
+                status = user.status
+            });
         }
     }
 }

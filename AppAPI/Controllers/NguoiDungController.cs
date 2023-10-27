@@ -26,6 +26,20 @@ namespace AppAPI.Controllers
             return Ok(nguoiDungs);
         }
 
+        [HttpGet("GetAllKH")]
+        public async Task<ActionResult<IEnumerable<NguoiDungVM>>> GetAllKH()
+        {
+            var nguoiDungs = await _nguoiDungService.GetAllKH();
+            return Ok(nguoiDungs);
+        }
+
+        [HttpGet("GetAllNV")]
+        public async Task<ActionResult<IEnumerable<NguoiDungVM>>> GetAllNV()
+        {
+            var nguoiDungs = await _nguoiDungService.GetAllNV();
+            return Ok(nguoiDungs);
+        }
+
         [HttpGet("GetById/{id}")]
         public async Task<ActionResult<NguoiDungVM>> Get(Guid id)
         {
@@ -40,6 +54,16 @@ namespace AppAPI.Controllers
         public async Task<ActionResult<Guid>> Post([FromBody] NguoiDungVM nguoiDung)
         {
             var id = await _nguoiDungService.CreateAsync(nguoiDung);
+            return CreatedAtAction(nameof(Get), new
+            {
+                id
+            }, id);
+        }
+
+        [HttpPost("CreateNV")]
+        public async Task<ActionResult<Guid>> PostNV([FromBody] NguoiDungVM nguoiDung)
+        {
+            var id = await _nguoiDungService.CreateNVAsync(nguoiDung);
             return CreatedAtAction(nameof(Get), new
             {
                 id
