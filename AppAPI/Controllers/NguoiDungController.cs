@@ -83,6 +83,14 @@ namespace AppAPI.Controllers
             await _nguoiDungService.DeleteAsync(id);
             return NoContent();
         }
+
+
+        [HttpDelete("DeleteNV/{id}")]
+        public async Task<ActionResult> DeleteNV(Guid id)
+        {
+            await _nguoiDungService.DeleteAsync(id);
+            return NoContent();
+        }
         [HttpPost("Login")]
         public async Task<IActionResult> LoginWithJWT(LoginRequestVM loginRequest)
         {

@@ -37,7 +37,7 @@ namespace AppView.Controllers
         }
 
         [HttpGet]
-        public ActionResult CreateNguoiDung()
+        public  ActionResult CreateNguoiDung()
         {
             return View();
         }
@@ -114,6 +114,23 @@ namespace AppView.Controllers
             {
 
                 return RedirectToAction(nameof(NguoiDungView));
+            }
+            else
+            {
+                return BadRequest("sai roi");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteNV(Guid Id)
+        {
+            var obj = await _httpClient.DeleteAsync($"https://localhost:7214/api/NguoiDung/DeleteNV/{Id}");
+
+
+            if (obj.IsSuccessStatusCode)
+            {
+
+                return RedirectToAction(nameof(GetAllNV));
             }
             else
             {

@@ -38,11 +38,6 @@
                     <span asp-validation-for="TenNguoiDung" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <label asp-for="Anh" class="control-label"></label>
-                    <input asp-for="Anh" class="form-control" />
-                    <span asp-validation-for="Anh" class="text-danger"></span>
-                </div>
-                <div class="form-group">
                     <label asp-for="CCCD" class="control-label"></label>
                     <input asp-for="CCCD" class="form-control" />
                     <span asp-validation-for="CCCD" class="text-danger"></span>
@@ -86,16 +81,6 @@
                     <label asp-for="status" class="control-label"></label>
                     <input asp-for="status" class="form-control" />
                     <span asp-validation-for="status" class="text-danger"></span>
-                </div>
-               
-                <div class="form-group">
-                    <label asp-for="roleNames" class="control-label"></label>
-                    @Html.ListBoxFor(m=>m.roleNames,rolesList,new{
-                    id = "id_selectrole",
-                    @class = "form-control"
-                    })
-
-
                 </div>
                 <div class="form-group">
                     <input type="submit" value="Edit" class="btn btn-primary" />
