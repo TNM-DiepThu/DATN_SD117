@@ -26,6 +26,20 @@ namespace AppAPI.Controllers
             return Ok(nguoiDungs);
         }
 
+        [HttpGet("GetAllKH")]
+        public async Task<ActionResult<IEnumerable<NguoiDungVM>>> GetAllKH()
+        {
+            var nguoiDungs = await _nguoiDungService.GetAllKH();
+            return Ok(nguoiDungs);
+        }
+
+        [HttpGet("GetAllNV")]
+        public async Task<ActionResult<IEnumerable<NguoiDungVM>>> GetAllNV()
+        {
+            var nguoiDungs = await _nguoiDungService.GetAllNV();
+            return Ok(nguoiDungs);
+        }
+
         [HttpGet("GetById/{id}")]
         public async Task<ActionResult<NguoiDungVM>> Get(Guid id)
         {

@@ -21,6 +21,7 @@ namespace AppView.Controllers
             var response = await _httpClient.GetFromJsonAsync<List<NguoiDungVM>>($"https://localhost:7214/api/NguoiDung/GetAll");
             return View(response);
         }
+
         [HttpGet]
         public ActionResult CreateNguoiDung()
         {
@@ -61,7 +62,7 @@ namespace AppView.Controllers
             ViewBag.Roles = new SelectList(roles, "Name", "Name");
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction(nameof(NguoiDungView));
+                return RedirectToAction("CreateNguoiDung","NguoiDung");
             }
             return View();
 

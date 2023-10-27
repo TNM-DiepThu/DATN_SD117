@@ -3,6 +3,7 @@ using AppData.model;
 using AppData.Serviece.Interfaces;
 using AppData.ViewModal.Login;
 using AppData.ViewModal.Usermodalview;
+using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Azure.Cosmos;
@@ -18,17 +19,19 @@ using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNet.Identity;
 
 namespace AppData.Serviece.Implements
 {
     public class NguoiDungServiece : INguoiDungServiece
     {
         private readonly SignInManager<NguoiDung> _signInManager;
-        private readonly UserManager<NguoiDung> _userManager;
+        private readonly Microsoft.AspNetCore.Identity.UserManager<NguoiDung> _userManager;
+        private readonly Microsoft.AspNetCore.Identity.RoleManager<Quyen> _roleManager;
         private readonly IConfiguration _configuration;
         MyDbContext _dbContext;
 
-        public NguoiDungServiece(UserManager<NguoiDung> userManager, SignInManager<NguoiDung> signInManager, IConfiguration configuration)
+        public NguoiDungServiece(Microsoft.AspNetCore.Identity.UserManager<NguoiDung> userManager, SignInManager<NguoiDung> signInManager, IConfiguration configuration)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -43,13 +46,17 @@ namespace AppData.Serviece.Implements
             return users.Select(user => new NguoiDungVM
             {
                 id = user.Id,
-                TenNguoiDung = user.UserName,
+                TenNguoiDung = user.TenNguoiDung,
+                username = user.UserName,
+                Anh = user.Anh,
+                CCCD = user.CCCD,
                 Email = user.Email,
                 SDT = user.SDT,
                 MatKhau = user.MatKhau,
                 QuanHuyen = user.QuanHuyen,
                 ThanhPho = user.ThanhPho,
                 DiaChi = user.DiaChi,
+                GioiTinh = user.GioiTinh,
                 NgaySinh = user.NgaySinh,
                 status = user.status
             });
@@ -64,24 +71,31 @@ namespace AppData.Serviece.Implements
             return new NguoiDungVM
             {
                 id = user.Id,
+                username = user.UserName,
+                TenNguoiDung = user.TenNguoiDung,
+                Anh = user.Anh,
+                CCCD = user.CCCD,
                 Email = user.Email,
                 SDT = user.SDT,
-                TenNguoiDung = user.UserName,
                 MatKhau = user.MatKhau,
                 QuanHuyen = user.QuanHuyen,
                 ThanhPho = user.ThanhPho,
                 DiaChi = user.DiaChi,
+                GioiTinh = user.GioiTinh,
                 NgaySinh = user.NgaySinh,
                 status = user.status
             };
         }
-
+      
         public async Task<Guid> CreateAsync(NguoiDungVM nguoiDung)
         {
             var user = new NguoiDung
             {
                 Id = Guid.NewGuid(),
-                UserName = nguoiDung.TenNguoiDung,
+                TenNguoiDung = nguoiDung.TenNguoiDung,
+                UserName = nguoiDung.username,
+                Anh = nguoiDung.Anh,
+                CCCD = nguoiDung.CCCD,
                 Email = nguoiDung.Email,
                 SDT = nguoiDung.SDT,
                 MatKhau = nguoiDung.MatKhau,
@@ -89,12 +103,13 @@ namespace AppData.Serviece.Implements
                 ThanhPho = nguoiDung.ThanhPho,
                 DiaChi = nguoiDung.DiaChi,
                 NgaySinh = nguoiDung.NgaySinh,
-                status = 0
+                GioiTinh = nguoiDung.GioiTinh,
+                status = 1
             };
 
             var result = await _userManager.CreateAsync(user, nguoiDung.MatKhau);
             if (result.Succeeded)
-            {
+            {               
                 await _dbContext.SaveChangesAsync();
                 return user.Id;
             }
@@ -110,7 +125,11 @@ namespace AppData.Serviece.Implements
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)
                 return;
-            user.UserName = nguoiDung.TenNguoiDung;
+            user.UserName = nguoiDung.username; 
+            user.TenNguoiDung = nguoiDung.TenNguoiDung;
+            user.CCCD = nguoiDung.CCCD;
+            user.Anh = nguoiDung.Anh;
+            user.GioiTinh = nguoiDung.GioiTinh;
             user.Email = nguoiDung.Email;
             user.SDT = nguoiDung.SDT;
             user.MatKhau = nguoiDung.MatKhau;
@@ -138,7 +157,8 @@ namespace AppData.Serviece.Implements
 
         public async Task<LoginResponesVM> LoginWithJWT(LoginRequestVM loginRequest)
         {
-            var user = await _userManager.FindByEmailAsync(loginRequest.Email);
+            var user = await _userManager.FindByEmailAsync(loginRequest.Email) ?? await _userManager.FindByNameAsync(loginRequest.Username); 
+            
             if (user == null) return new LoginResponesVM
             {
                 Successful = false,
@@ -184,25 +204,46 @@ namespace AppData.Serviece.Implements
 
         public async Task<IEnumerable<NguoiDungVM>> GetAllNV()
         {
-            var users = await _userManager.Users.ToListAsync();
+            var users = await _userManager.GetUsersInRoleAsync("NhanVien");
             return users.Select(user => new NguoiDungVM
             {
                 id = user.Id,
-                TenNguoiDung = user.UserName,
+                username = user.UserName,
+                TenNguoiDung = user.TenNguoiDung,
+                Anh = user.Anh,
+                CCCD = user.CCCD,
                 Email = user.Email,
                 SDT = user.SDT,
                 MatKhau = user.MatKhau,
                 QuanHuyen = user.QuanHuyen,
                 ThanhPho = user.ThanhPho,
                 DiaChi = user.DiaChi,
+                GioiTinh = user.GioiTinh,
                 NgaySinh = user.NgaySinh,
                 status = user.status
             });
         }
 
-        public Task<IEnumerable<NguoiDungVM>> GetAllKH()
+        public async Task<IEnumerable<NguoiDungVM>> GetAllKH()
         {
-            throw new NotImplementedException();
+            var users = await _userManager.GetUsersInRoleAsync("KhachHang");
+            return users.Select(user => new NguoiDungVM
+            {
+                id = user.Id,
+                username = user.UserName,
+                TenNguoiDung = user.TenNguoiDung,
+                Anh = user.Anh,
+                CCCD = user.CCCD,
+                Email = user.Email,
+                SDT = user.SDT,
+                MatKhau = user.MatKhau,
+                QuanHuyen = user.QuanHuyen,
+                ThanhPho = user.ThanhPho,
+                DiaChi = user.DiaChi,
+                GioiTinh = user.GioiTinh,
+                NgaySinh = user.NgaySinh,
+                status = user.status
+            });
         }
     }
 }
