@@ -10,6 +10,7 @@ using AppData.model;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +30,8 @@ builder.Services.AddIdentity<NguoiDung, Quyen>()
                 .AddEntityFrameworkStores<MyDbContext>()
     .AddSignInManager<SignInManager<NguoiDung>>();
 
-builder.Services.Configure<IdentityOptions>(options => {
+builder.Services.Configure<IdentityOptions>(options =>
+{
     // Thiết lập về Password
     options.Password.RequireDigit = false; // Không bắt phải có số
     options.Password.RequireLowercase = false; // Không bắt phải có chữ thường
@@ -120,6 +122,12 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads")),
+    RequestPath = "/uploads"
+});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

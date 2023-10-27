@@ -1,0 +1,101 @@
+﻿@using AppData.ViewModal.Usermodalview;
+@model NguoiDungVM;
+
+@{
+    ViewData["Title"] = "Thêm nhân viên ";
+}
+
+<h1>Create</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="CreateNV">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Anh" class="control-label"></label>
+                <input asp-for="Anh" type="file" class="form-control" />
+                <span asp-validation-for="Anh" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TenNguoiDung" class="control-label"></label>
+                <input asp-for="TenNguoiDung" class="form-control" />
+                <span asp-validation-for="TenNguoiDung" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="username" class="control-label"></label>
+                <input asp-for="username" class="form-control" />
+                <span asp-validation-for="username" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CCCD" class="control-label"></label>
+                <input asp-for="CCCD" class="form-control" />
+                <span asp-validation-for="CCCD" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SDT" class="control-label"></label>
+                <input asp-for="SDT" class="form-control" />
+                <span asp-validation-for="SDT" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MatKhau" class="control-label"></label>
+                <input asp-for="MatKhau" class="form-control" />
+                <span asp-validation-for="MatKhau" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QuanHuyen" class="control-label"></label>
+                <input asp-for="QuanHuyen" class="form-control" />
+                <span asp-validation-for="QuanHuyen" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ThanhPho" class="control-label"></label>
+                <input asp-for="ThanhPho" class="form-control" />
+                <span asp-validation-for="ThanhPho" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DiaChi" class="control-label"></label>
+                <input asp-for="DiaChi" class="form-control" />
+                <span asp-validation-for="DiaChi" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="GioiTinh" class="control-label"></label>
+                <input asp-for="GioiTinh" class="form-control" />
+                <span asp-validation-for="GioiTinh" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NgaySinh" class="control-label"></label>
+                <input asp-for="NgaySinh" type="datetime" class="form-control" />
+                <span asp-validation-for="NgaySinh" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="status" class="control-label"></label>
+                <input asp-for="status" class="form-control" id="ngaySinhInput" />
+                <span asp-validation-for="status" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="NguoiDungView">Back to List</a>
+</div>
+<script>
+    // Thiết lập mã JavaScript để định dạng ngày tháng
+    $(document).ready(function () {
+        $('#ngaySinhInput').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true
+        });
+    });
+</script>

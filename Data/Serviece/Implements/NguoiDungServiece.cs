@@ -3,24 +3,16 @@ using AppData.model;
 using AppData.Serviece.Interfaces;
 using AppData.ViewModal.Login;
 using AppData.ViewModal.Usermodalview;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Azure.Cosmos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Identity;
 using System.Data;
+using Microsoft.AspNetCore.Hosting;
+
 
 namespace AppData.Serviece.Implements
 {
@@ -91,6 +83,7 @@ namespace AppData.Serviece.Implements
       
         public async Task<Guid> CreateAsync(NguoiDungVM nguoiDung)
         {
+            
             var user = new NguoiDung
             {
                 Id = Guid.NewGuid(),
@@ -162,7 +155,7 @@ namespace AppData.Serviece.Implements
             {
                 if (!await _roleManager.RoleExistsAsync("nhanvien"))
                 {
-                    var role = new Quyen { Name = "khachhang" };
+                    var role = new Quyen { Name = "nhanvien" };
                     await _roleManager.CreateAsync(role);
                 }
                 var addToRoleResult = await _userManager.AddToRoleAsync(user, "nhanvien");

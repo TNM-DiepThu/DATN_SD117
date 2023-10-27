@@ -18,7 +18,21 @@ namespace AppView.Controllers
         [HttpGet]
         public async Task<IActionResult> NguoiDungView()
         {
-            var response = await _httpClient.GetFromJsonAsync<List<NguoiDungVM>>($"https://localhost:7214/api/NguoiDung/GetAll");
+            var response = await _httpClient.GetFromJsonAsync<List<NguoiDungVM>>($"https://localhost:7214/api/NguoiDung/GetAllKH");
+            return View(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllNV()
+        {
+            var response = await _httpClient.GetFromJsonAsync<List<NguoiDungVM>>($"https://localhost:7214/api/NguoiDung/GetAllNV");
+            return View(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllKH()
+        {
+            var response = await _httpClient.GetFromJsonAsync<List<NguoiDungVM>>($"https://localhost:7214/api/NguoiDung/GetAllKH");
             return View(response);
         }
 
