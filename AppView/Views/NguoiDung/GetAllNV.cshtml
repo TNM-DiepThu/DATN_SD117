@@ -73,8 +73,8 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Anh)
-                </td>
+                    <img src="@item.Anh" alt="Hình ảnh" />
+                </td
                 <td>
                     @Html.DisplayFor(modelItem => item.username)
                 </td>
@@ -121,7 +121,7 @@
                     <a href="@Url.Action("EditNguoiDung","NguoiDung",new { id = item.id})">
                         <i class="fas fa-pen" style="color: #007bff;"></i>
                     </a>
-                    <form method="post" action="@Url.Action("Delete", "NguoiDung", new { id = item.id })">
+                    <form method="post" action="@Url.Action("DeleteNV", "NguoiDung", new { id = item.id })">
                         @Html.AntiForgeryToken()
                         <button type="submit" onclick="return confirm('Bạn có chắc muốn xóa người dùng này?');">
                             <i class="fas fa-trash" style="color: #ff0000;"></i>

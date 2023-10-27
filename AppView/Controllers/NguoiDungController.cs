@@ -11,9 +11,9 @@ namespace AppView.Controllers
     public class NguoiDungController : Controller
     {
         private readonly HttpClient _httpClient;
-        public NguoiDungController(HttpClient httpClient)
+        public NguoiDungController()
         {
-            _httpClient = httpClient;
+            _httpClient = new HttpClient();
         }
         [HttpGet]
         public async Task<IActionResult> NguoiDungView()
@@ -37,7 +37,7 @@ namespace AppView.Controllers
         }
 
         [HttpGet]
-        public ActionResult CreateNguoiDung()
+        public  ActionResult CreateNguoiDung()
         {
             return View();
         }
@@ -68,8 +68,8 @@ namespace AppView.Controllers
         public async Task<IActionResult> CreateNV(NguoiDungVM Create)
         {
             var jsonObj = JsonConvert.SerializeObject(Create);
-            HttpContent content = new StringContent(jsonObj, Encoding.UTF8, "application/json");
-            var respones = await _httpClient.PostAsync("https://localhost:7214/api/NguoiDung/CreateNV", content);
+            StringContent content = new StringContent(jsonObj, Encoding.UTF8, "application/json");
+            HttpResponseMessage respones = await _httpClient.PostAsJsonAsync("https://localhost:7214/api/NguoiDung/CreateNV", content);
             if (respones.IsSuccessStatusCode)
             {
                 return RedirectToAction(nameof(NguoiDungView));
@@ -114,6 +114,23 @@ namespace AppView.Controllers
             {
 
                 return RedirectToAction(nameof(NguoiDungView));
+            }
+            else
+            {
+                return BadRequest("sai roi");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteNV(Guid Id)
+        {
+            var obj = await _httpClient.DeleteAsync($"https://localhost:7214/api/NguoiDung/DeleteNV/{Id}");
+
+
+            if (obj.IsSuccessStatusCode)
+            {
+
+                return RedirectToAction(nameof(GetAllNV));
             }
             else
             {
