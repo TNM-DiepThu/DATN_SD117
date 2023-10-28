@@ -45,9 +45,11 @@ namespace AppView.Controllers
         private readonly IDanhMucServiece _danhmucservice;
         private readonly IMauSacServiece _mausacservice;
         private readonly ISizeServiece sizeServiece;
+        private readonly IThuongHieuServiece _thuonghieuservice;
         private readonly IChatLieuServiece _chatlieuservice;
         private readonly SanPhamChiTietViewModelService _spctViewModel;
         private readonly IAnhServiece anhservice;
+        private readonly SanPhamViewModelService sanphanviewmodel;
         private readonly IWebHostEnvironment _hostingEnvironment;
         private static List<SanPhamChiTiet> _tempProducts;
         public static List<SanPhamChiTietViewModel> _temspctvm;
@@ -58,8 +60,10 @@ namespace AppView.Controllers
             _sanphamchitietservice = new SanPhamChiTietServiece();
             _mausacservice = new MauSacServiece();
             sizeServiece = new SizeServiece();
+            sanphanviewmodel = new SanPhamViewModelService();
             _chatlieuservice = new ChatLieuServiece();
             _danhmucservice = new DanhMucServiece();
+            _thuonghieuservice = new ThuongHieuServiece();
             _sanphamservice = new SanPhamServiece();
             _spctViewModel = new SanPhamChiTietViewModelService();
             anhservice = new AnhServiece();
@@ -487,18 +491,141 @@ namespace AppView.Controllers
         // san pham chi tiet
 
         [HttpGet]
-        public ActionResult GellAllSanPhamCT(string name)
-        {
-            if (name == null || name == "")
+        public ActionResult GellAllSanPhamCT(string name, string danhMucFilter, string chatLieuFilter, string ThuongHieuFilter)
+        {   // list danh sach
+
+
+            
+            string url = "https://localhost:7214/api/SanPhamChiTiet/GetAllSanphamchitietViewModel";
+            var respon = _client.GetAsync(url).Result;
+            var datalist = respon.Content.ReadAsStringAsync().Result;
+            List<SanPhamChiTietViewModel> list = JsonConvert.DeserializeObject<List<SanPhamChiTietViewModel>>(datalist);
+
+            // lọc theo danh muc
+            List<string> tendanhmuc = new List<string>();
+            foreach (var item in _context.danhMucs.ToList())
             {
-                string url = "https://localhost:7214/api/SanPhamChiTiet/GetAllSanphamchitietViewModel";
-                var respon = _client.GetAsync(url).Result;
-                var datalist = respon.Content.ReadAsStringAsync().Result;
-                List<SanPhamChiTietViewModel> list = JsonConvert.DeserializeObject<List<SanPhamChiTietViewModel>>(datalist);
-                //foreach (var product in list)
-                //{
-                //    product.QRCode = GenerateQRCode(product.Id);
-                //}
+                tendanhmuc.Add(item.TenDanhMuc.ToString());
+            }
+            var danhmuclist = tendanhmuc;
+            ViewBag.DanhMucList = new SelectList(danhmuclist);
+
+            // lọc theo Chất liệu
+
+            List<string> tenchatlieu = new List<string>();
+            foreach (var chatlieu in _context.chatLieus.ToList())
+            {
+                tenchatlieu.Add(chatlieu.TenChatLieu);
+            }
+            var chatlieulist = tenchatlieu;
+            ViewBag.ChatlieuList = new SelectList(chatlieulist);
+
+            //Lọc theo thương hiệu
+
+            List<string> tenthuonghieu = new List<string>();
+            foreach (var thuonghieu in _context.thuongHieus.ToList())
+            {
+                tenthuonghieu.Add(thuonghieu.TenThuongHieu);
+            }
+            var thuonghieulist = tenthuonghieu;
+            ViewBag.ThuongHieuList = new SelectList(thuonghieulist);
+            List<string> sanphammangthuonghieu = new List<string>();
+            List<SanPhamChiTietViewModel> sanphamchitiet = new List<SanPhamChiTietViewModel>();
+            if (!string.IsNullOrEmpty(ThuongHieuFilter))
+            {
+                var sanpham = sanphanviewmodel.GetAllSanPham().Where(c => c.ThuongHieu == ThuongHieuFilter).ToList();
+                foreach (var sp in sanpham)
+                {
+                    sanphammangthuonghieu.Add(sp.TenSanPham);
+                }
+                if (!string.IsNullOrEmpty(chatLieuFilter) && !string.IsNullOrEmpty(danhMucFilter))
+                {
+                    foreach (var spct in sanphammangthuonghieu)
+                    {
+                        var spct1 = _spctViewModel.GetAll().FirstOrDefault(c => c.TenSP == spct && c.DanhMuc == danhMucFilter && c.ChatLieu == chatLieuFilter);
+                        if (spct1 == null)
+                        {
+                            //var spctvm = _spctViewModel.GetAll().FirstOrDefault(c => c.ChatLieu == chatLieuFilter && c.DanhMuc == danhMucFilter);
+                            //var products = productQuery.ToList();
+                            //if (products.Count == 0)
+                            //{
+                            foreach (var spct2 in sanphammangthuonghieu)
+                            {
+                                var spct3 = _spctViewModel.GetAll().FirstOrDefault(c => c.TenSP == spct && c.DanhMuc == danhMucFilter);
+                                sanphamchitiet.Add(spct3);
+                            }
+                            foreach (var spct4 in sanphammangthuonghieu)
+                            {
+                                var spct5 = _spctViewModel.GetAll().FirstOrDefault(c => c.TenSP == spct && c.ChatLieu == chatLieuFilter);
+                                sanphamchitiet.Add(spct5);
+                            }
+                            var botrungsp = sanphamchitiet.Where(c => c.DanhMuc == danhMucFilter && c.ChatLieu == chatLieuFilter).Distinct().ToList();
+                            return View(botrungsp);
+                            //}
+                            //return View(products);
+                        }
+                        else
+                        {
+                            sanphamchitiet.Add(spct1);
+                        }
+                    }
+                }
+                else if (!string.IsNullOrEmpty(danhMucFilter))
+                {
+                    foreach (var spct in sanphammangthuonghieu)
+                    {
+                        var spct1 = _spctViewModel.GetAll().FirstOrDefault(c => c.TenSP == spct && c.DanhMuc == danhMucFilter);
+                        sanphamchitiet.Add(spct1);
+                    }
+                }
+                else if (!string.IsNullOrEmpty(chatLieuFilter))
+                {
+                    foreach (var spct in sanphammangthuonghieu)
+                    {
+                        var spct1 = _spctViewModel.GetAll().FirstOrDefault(c => c.TenSP == spct && c.ChatLieu == chatLieuFilter);
+                        sanphamchitiet.Add(spct1);
+                    }
+                }
+                else
+                {
+                    foreach (var spct in sanphammangthuonghieu)
+                    {
+                        var spct1 = _spctViewModel.GetAll().FirstOrDefault(c => c.TenSP == spct);
+                        sanphamchitiet.Add(spct1);
+                    }
+                }
+                //productQuery = productQuery.Where(c => c.ChatLieu == chatLieuFilter).ToList();
+                //var products = productQuery.ToList();
+                return View(sanphamchitiet);
+            } // else tiếp 
+            else if (!string.IsNullOrEmpty(chatLieuFilter) && !string.IsNullOrEmpty(danhMucFilter))
+            {
+                var item = _spctViewModel.GetAll().Where(c => c.ChatLieu == chatLieuFilter && c.DanhMuc == danhMucFilter).ToList();
+                return View(item);
+            }
+            else if (!string.IsNullOrEmpty(danhMucFilter))
+            {
+                var spct1 = _spctViewModel.GetAll().Where(c => c.DanhMuc == danhMucFilter).ToList();
+                return View(spct1);
+            }
+            else if (!string.IsNullOrEmpty(chatLieuFilter))
+            {
+                var spct1 = _spctViewModel.GetAll().Where(c => c.ChatLieu == chatLieuFilter).ToList();
+                return View(spct1);
+            }
+            //else if()
+            //{
+            //    foreach (var spct in sanphammangthuonghieu)
+            //    {
+            //        var spct1 = _spctViewModel.GetAll().FirstOrDefault(c => c.TenSP == spct);
+            //        sanphamchitiet.Add(spct1);
+            //    }
+            //    return View(sanphamchitiet);
+
+            //}
+            else if (name == null || name == "")
+            {
+
                 return View(list);
             }
             else
@@ -655,7 +782,8 @@ namespace AppView.Controllers
             ViewBag.listanh = album;
 
             //string url = $"https://localhost:7214/api/SanPhamChiTiet/CreateSanPhamChiTiet?iddm={spct.IdDanhMuc}&idcl={spct.ChatLieu}&idms={spct.IdMauSac}&idsize={spct.IdSize}&idanh={spct.IdAnh}&idsp={spct.IDSP}&masp={spct.MaSp}&soluong={spct.SoLuong}&gia={spct.GiaBan}&mota={spct.MoTa}";
-            string url2 = $"https://localhost:7214/api/SanPhamChiTiet/CreateSanPhamChiTiet?iddm={spct.IdDanhMuc}&idcl={spct.IdChatLieu}&idms={spct.IdMauSac}&idsize={spct.IdSize}&idanh={spct.IdAnh}&idsp={spct.IDSP}&masp={spct.MaSp}&soluong={spct.SoLuong}&gia={spct.GiaBan}&mota={spct.MoTa}";
+            string url2 = $"https://localhost:7214/api/SanPhamChiTiet/CreateSanPhamChiTiet?iddm={spct.IdDanhMuc}&idcl={spct.IdChatLieu}&idms={spct.IdMauSac}&idsize={spct.IdSize}&idanh={spct.IdAnh}&idsp={spct.IDSP}&soluong={spct.SoLuong}&gia={spct.GiaBan}&mota={spct.MoTa}";
+            //string url2 = "";
             var obj = JsonConvert.SerializeObject(spct);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
             HttpResponseMessage httpResponseMessage = _client.PostAsync(url2, content).Result;
@@ -708,6 +836,7 @@ namespace AppView.Controllers
             ViewBag.listanh = album;
 
             string urltest = $"https://localhost:7214/api/SanPhamChiTiet/UpdateSanPhamChiTiet?id={spct.Id}&iddm={spct.IdDanhMuc}&idcl={spct.IdChatLieu}&idms={spct.IdMauSac}&idsize={spct.IdSize}&idanh={spct.IdAnh}&idsp={spct.IDSP}&masp={spct.MaSp}&soluong={spct.SoLuong}&gia={spct.GiaBan}&mota={spct.MoTa}&trangthai={spct.status}";
+            //string urltest = "";
             var obj = JsonConvert.SerializeObject(spct);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
             HttpResponseMessage httpResponseMessage = await _client.PostAsync(urltest, content);
@@ -751,45 +880,48 @@ namespace AppView.Controllers
             }
         }
         [HttpGet]
-        public IActionResult UploadImage()
-        {
-            return View();
-        }
-
         [HttpPost]
-        public async Task<IActionResult> UploadImage(ImageUploadModel model)
+        public async Task<IActionResult> UploadImages(List<IFormFile> imageFiles)
         {
-            if (model.ImageFile != null)
+            if (imageFiles != null && imageFiles.Count > 0)
             {
-                // Xử lý tệp ảnh ở đây
-                if (model.ImageFile.Length > 0)
+                var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
+
+                foreach (var imageFile in imageFiles)
                 {
-                    var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
-                    var uniqueFileName = model.ImageFile.FileName;
-
-                    string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    if (imageFile.Length > 0)
                     {
-                        await model.ImageFile.CopyToAsync(fileStream);
+                        // Kiểm tra định dạng tệp
+                        if (imageFile.ContentType != "image/jpeg" && imageFile.ContentType != "image/png")
+                        {
+                            ModelState.AddModelError("ImageFiles", "Chỉ cho phép tải lên tệp .jpg và .png");
+                            return View();
+                        }
+
+                        var uniqueFileName = imageFile.FileName;
+                        string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await imageFile.CopyToAsync(fileStream);
+                        }
+
+                        // Lưu đường dẫn vào thuộc tính Path của đối tượng Anh
+                        var anh = new Anh
+                        {
+                            Id = Guid.NewGuid(),
+                            Connect = filePath,
+                            status = 1 // Có thể đặt trạng thái khác tùy ý
+                        };
+
+                        anhservice.Add(anh);
                     }
-
-                    // Lưu đường dẫn vào thuộc tính Path của đối tượng Anh
-                    var anh = new Anh
-                    {
-                        Id = Guid.NewGuid(),
-                        Connect = filePath,
-                        status = 1 // Có thể đặt trạng thái khác tùy ý
-                    };
-
-
-                    anhservice.Add(anh);
-
-                    return RedirectToAction("UploadImage");
                 }
+                return RedirectToAction("GellAllAnh");
             }
             return View();
         }
+
         public IActionResult DisplayImage(string imagePath)
         {
             // Kiểm tra xem đường dẫn có tồn tại không
@@ -838,7 +970,7 @@ namespace AppView.Controllers
                 }
                 else if (result == "Sản phẩm đã hết hàng. Mời bạn chọn sản phẩm khác.")
                 {
-                     TempData["ErrorMessage"] = "Sản phẩm này đang hết hàng. Mời bạn chọn sản phẩm khác.";
+                    TempData["ErrorMessage"] = "Sản phẩm này đang hết hàng. Mời bạn chọn sản phẩm khác.";
                     return RedirectToAction("GellByIDSanPhamCT", new { id = spct.Id });
                 }
                 else if (result == "Bạn chưa chọn màu. Mời bạn chọn màu.")
@@ -954,6 +1086,7 @@ namespace AppView.Controllers
                     for (int i = 0; i < _tempProducts.Count(); i++)
                     {
                         string url2 = $"https://localhost:7214/api/SanPhamChiTiet/CreateSanPhamChiTiet?iddm={_tempProducts[i].IdDanhMuc}&idcl={_tempProducts[i].IdChatLieu}&idms={_tempProducts[i].IdMauSac}&idsize={_tempProducts[i].IdSize}&idanh={_tempProducts[i].IdAnh}&idsp={_tempProducts[i].IDSP}&masp={"SP" + Convert.ToString(_sanphamchitietservice.GetAll().Count() + 1)}&soluong={_tempProducts[i].SoLuong}&gia={_tempProducts[i].GiaBan}&mota={_tempProducts[i].MoTa}";
+                      
                         var obj = JsonConvert.SerializeObject(_tempProducts[i]);
                         StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
                         HttpResponseMessage httpResponseMessage = _client.PostAsync(url2, content).Result;
@@ -969,8 +1102,8 @@ namespace AppView.Controllers
                                 TempData["ErrorMessage"] = "Sản phẩm bạn nhập " + _sanphamservice.GetAll().Where(c => c.Id == _tempProducts[i].IDSP).Select(c => c.TenSanPham) + " đã có trong danh sách sản phẩm.";
                             }
                         }
-                        _tempProducts.Remove(_tempProducts[i]);
                     }
+
                     return RedirectToAction("GellAllSanPhamCT", "QuanTri");
                 }
                 else

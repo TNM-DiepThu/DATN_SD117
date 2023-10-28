@@ -47,16 +47,33 @@ else
             <a asp-action="CreateSanPhamCT" class="btn btn-primary">Thêm mới</a>
         </div>
         <div class="col-9">
+            @*Tim kiếm *@
             <input type="text" list="datalistOptions" id="name" name="name" placeholder="Tên sản phẩm" style="height : 40px; width: 90%; border-radius:10px" />
             <button type="submit" class="btn btn-primary" style="border-radius:5px; margin-left: 5px;">Search</button>
-
-            <datalist id="datalistOptions">
-                <option value="Ví" />
-                <option value="Quần" />
-                <option value="Áo phao" />
-                <option value="Quần tây" />
-                <option value="áo sơ mi" />
-            </datalist>
+            @*Lọc theo sanh mục*@
+            <div class="row">
+                <div class="col-3">
+                    <label for="danhMucFilter" class="control-label">Danh mục: </label>
+                    <select id="danhMucFilter" name="danhMucFilter" class="form-control" asp-items="ViewBag.DanhMucList">
+                        <option value="">All</option>
+                    </select>
+                </div>
+                <div class="col-3">
+                    <label for="chatLieuFilter" class="control-label">Chất liệu: </label>
+                    <select id="chatLieuFilter" name="chatLieuFilter" class="form-control" asp-items="ViewBag.ChatlieuList">
+                        <option value="">All</option>
+                    </select>
+                </div>
+                <div class="col-3">
+                    <label for="ThuongHieuFilter" class="control-label">Thương hiệu: </label>
+                    <select id="ThuongHieuFilter" name="ThuongHieuFilter" class="form-control" asp-items="ViewBag.ThuongHieuList">
+                        <option value="">All</option>
+                    </select>
+                </div>
+                <div class="col-2" style="margin-top: 31px;">
+                    <input type="submit" value="Filter" class="btn btn-primary" />
+                </div>
+            </div>
         </div>
     </div>
 
@@ -128,7 +145,7 @@ else
                         @Html.DisplayFor(modelItem => item.Size)
                     </td>
                     <td>
-                        <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = item.Anh })" alt="Image" width="70%" height="70%" />
+                        <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = item.Anh })" alt="Image" width="50%" height="50%" />
                     </td>
 
                     <td>

@@ -37,25 +37,24 @@ namespace Bill.Serviece.Implements
         {
             try
             {
-                SanPhamChiTiet spct = new SanPhamChiTiet()
-                {
-                    Id = Guid.NewGuid(),
-                    IdAnh = anhservice.GetAll().FirstOrDefault(c => c.Id == p.IdAnh).Id,
-                    IdChatLieu = chatLieuServiece.GetAll().FirstOrDefault(c => c.Id == p.IdChatLieu).Id,
-                    IdDanhMuc = danhmucservice.GetAll().FirstOrDefault(c => c.Id == p.IdDanhMuc).Id,
-                    IdMauSac = mausacservice.GetAll().FirstOrDefault(c => c.Id == p.IdMauSac).Id,
-                    IdSize = sizeservice.GetAll().FirstOrDefault(c => c.Id == p.IdSize).Id,
-                    IDSP = sanphamservice.GetAll().FirstOrDefault(c => c.Id == p.IDSP).Id,
-                    GiaBan = p.GiaBan,
-                    SoLuong = p.SoLuong,
-                    status = 1,
-                    MaSp = p.MaSp,
-                    MoTa = p.MoTa
-                };
+                SanPhamChiTiet spct = new SanPhamChiTiet();
+                spct.Id = Guid.NewGuid();
+                spct.IdAnh = anhservice.GetAll().FirstOrDefault(c => c.Id == p.IdAnh).Id;
+                spct.IdChatLieu = chatLieuServiece.GetAll().FirstOrDefault(c => c.Id == p.IdChatLieu).Id;
+                spct.IdDanhMuc = danhmucservice.GetAll().FirstOrDefault(c => c.Id == p.IdDanhMuc).Id;
+                spct.IdMauSac = mausacservice.GetAll().FirstOrDefault(c => c.Id == p.IdMauSac).Id;
+                spct.IdSize = sizeservice.GetAll().FirstOrDefault(c => c.Id == p.IdSize).Id;
+                spct.IDSP = sanphamservice.GetAll().FirstOrDefault(c => c.Id == p.IDSP).Id;
+                spct.GiaBan = p.GiaBan;
+                spct.SoLuong = p.SoLuong;
+                spct.status = 1;
+                spct.MaSp = p.MaSp;
+                spct.MoTa = p.MoTa;
                 _context.sanPhamChiTiets.Add(p);
                 _context.SaveChanges();
                 return "Them thanh cong";
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 return "Them that bai";
             }
@@ -65,12 +64,12 @@ namespace Bill.Serviece.Implements
         {
             try
             {
-                SanPhamChiTiet spct =  _context.sanPhamChiTiets.FirstOrDefault(c => c.Id == id);
-                if (spct != null) 
+                SanPhamChiTiet spct = _context.sanPhamChiTiets.FirstOrDefault(c => c.Id == id);
+                if (spct != null)
                 {
 
                     spct.status = 0;
-   
+
                 };
                 _context.sanPhamChiTiets.Update(spct);
                 _context.SaveChanges();
@@ -87,10 +86,10 @@ namespace Bill.Serviece.Implements
             try
             {
                 SanPhamChiTiet spct = _context.sanPhamChiTiets.FirstOrDefault(c => c.Id == id);
-                if (spct != null) 
+                if (spct != null)
                 {
-
                     spct.IdAnh = anhservice.GetAll().FirstOrDefault(c => c.Id == p.IdAnh).Id;
+                
                     spct.IdChatLieu = chatLieuServiece.GetAll().FirstOrDefault(c => c.Id == p.IdChatLieu).Id;
                     spct.IdDanhMuc = danhmucservice.GetAll().FirstOrDefault(c => c.Id == p.IdDanhMuc).Id;
                     spct.IdMauSac = mausacservice.GetAll().FirstOrDefault(c => c.Id == p.IdMauSac).Id;

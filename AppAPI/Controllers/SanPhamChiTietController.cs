@@ -56,7 +56,7 @@ namespace AppAPI.Controllers
         [HttpGet("[action]")]
         public IEnumerable<SanPhamChiTietViewModel> GetAllSanphamchitietViewModel()
         {
-            return _spctViewModel.GetAll();
+            return _spctViewModel.GetAll().OrderByDescending(c => c.MaSp);
         }
         [HttpGet("[action]")]
         public IEnumerable<SanPhamViewModel> GetAllSanPhamViewModel()
@@ -118,7 +118,7 @@ namespace AppAPI.Controllers
         }
 
         [HttpPost("CreateSanPhamChiTiet")]
-        public string CreateSanPhamChiTiet(Guid iddm, Guid idcl, Guid idms, Guid idsize, Guid idanh, Guid idsp, string masp, int soluong, decimal gia, string? mota)
+        public string CreateSanPhamChiTiet(Guid iddm, Guid idcl, Guid idms, Guid idsize, Guid idanh, Guid idsp, int soluong, decimal gia, string? mota)
         {
             SanPhamChiTiet spct = new SanPhamChiTiet()
             {
@@ -129,16 +129,12 @@ namespace AppAPI.Controllers
                 IdMauSac = _auSacServiece.GetAll().FirstOrDefault(c => c.Id == idms).Id,
                 IdSize = sizeServiece.GetAll().FirstOrDefault(c => c.Id == idsize).Id,
                 IDSP = sanPhamServiece.GetAll().FirstOrDefault(c => c.Id == idsp).Id,
-                MaSp = masp,
+                MaSp = "SP" + Convert.ToString(_sanphamCTsv.GetAll().Count() + 1),
                 SoLuong = soluong,
                 GiaBan = gia,
                 MoTa = mota,
                 status = 1,
             };
-            if (_sanphamCTsv.GetAll().Any(c => c.MaSp == masp))
-            {
-                return "Sản phẩm bị trùng mã";
-            }
             if (_sanphamCTsv.GetAll().Any(c => c.IdAnh == idanh && c.IdChatLieu == idcl && c.IdDanhMuc == iddm && c.IdMauSac == idms && c.IDSP == idsp && c.IdSize == idsize))
             {
                 return "Sản phẩm đã tồn tại";

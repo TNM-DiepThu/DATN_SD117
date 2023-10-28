@@ -185,10 +185,13 @@ namespace AppView.Controllers
         public ActionResult DecreaseButton(Guid id , int soluong)
         {
             var idnguoidung = Guid.Parse("911a9476-05be-4a4f-8325-2ea61766e2a0");
-            GioHangChiTiet ghct = ghctservice.GetAllGioHangTheoNguoiDungDangNhap(idnguoidung).FirstOrDefault(c => c.Id == id);
-            soluong --;
+            GioHangChiTiet ghct = ghctservice.GetAllGioHangTheoNguoiDungDangNhap(idnguoidung).FirstOrDefault(c => c.Id == id); 
             if (ghct != null)
             {
+                if(soluong > 0)
+                {
+                    soluong--;
+                }
                 ghct.SoLuong = soluong;
             }
             ghctservice.EditSoluong(id , soluong);
