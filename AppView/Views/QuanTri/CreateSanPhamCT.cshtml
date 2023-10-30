@@ -96,18 +96,18 @@
                 </div>
             </div>
 
-            <div class="form-group row">
+            @*<div class="form-group row">
                 <label for="IdAnh" class="control-label col-3">Ảnh sản phẩm</label>
                 <div class="col-9 row">
 
                     <input type="text" id="imageFilename" name="imageFilename" class="form-control" />
                     <div style="display:none;">
                         @Html.TextBoxFor(m => m.IdAnh, new { @class = "form-control", id = "imageId", name ="imageId" })
-                    </div>
+                    </div>*@
                     @*<input asp-for="IdAnh" id="imageId" name="imageId" class="col-4" />*@
 
                     @*Mở form anh*@
-                    <button type="button" class="col-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+                   @* <button type="button" class="col-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
                         Chọn ảnh
                     </button>
                     <!-- The Modal -->
@@ -129,7 +129,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer">
+                        <div class="modal-footer">*@
                             @*@using (Html.BeginForm("UploadImage", "QuanTri", FormMethod.Post, new { enctype = "multipart/form-data" }))
                             {
                             <div class="form-group">
@@ -137,12 +137,12 @@
                             </div>
                             <button type="submit" class="btn btn-primary">Upload</button>
                             }*@
-                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="selectImageBtn">Select</button>
+                           @* <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="selectImageBtn">Select</button>
                             <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>*@
 
             @* Kêt thúc form anh*@
             <div class="form-group row">

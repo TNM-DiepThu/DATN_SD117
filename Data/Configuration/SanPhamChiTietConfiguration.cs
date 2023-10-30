@@ -21,7 +21,7 @@ namespace AppData.Configuration
             builder.Property(x => x.MoTa).HasColumnType("nvarchar(100)");
             builder.Property(x => x.status).HasColumnType("int");
             builder.HasOne(x => x.SanPham).WithMany(x => x.SanPhamChiTiets).HasForeignKey(x => x.IDSP);
-            builder.HasOne(x => x.Anh).WithMany(x => x.sanPhamChiTiets).HasForeignKey(x => x.IdAnh);
+            //builder.HasOne(x => x.Anh).WithMany(x => x.sanPhamChiTiets).HasForeignKey(x => x.IdAnh);
             builder.HasOne(x => x.MauSac).WithMany(x => x.phamChiTiet).HasForeignKey(x => x.IdMauSac);
             builder.HasOne(x => x.Size).WithMany(x => x.sanPhamChiTiets).HasForeignKey(x => x.IdSize);
             builder.HasOne(x => x.ChatLieu).WithMany(x => x.sanPhamChiTiets).HasForeignKey(x => x.IdChatLieu);

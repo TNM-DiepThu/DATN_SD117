@@ -39,7 +39,7 @@ namespace Bill.Serviece.Implements
             {
                 SanPhamChiTiet spct = new SanPhamChiTiet();
                 spct.Id = Guid.NewGuid();
-                spct.IdAnh = anhservice.GetAll().FirstOrDefault(c => c.Id == p.IdAnh).Id;
+                //spct.IdAnh = anhservice.GetAll().FirstOrDefault(c => c.Id == p.IdAnh).Id;
                 spct.IdChatLieu = chatLieuServiece.GetAll().FirstOrDefault(c => c.Id == p.IdChatLieu).Id;
                 spct.IdDanhMuc = danhmucservice.GetAll().FirstOrDefault(c => c.Id == p.IdDanhMuc).Id;
                 spct.IdMauSac = mausacservice.GetAll().FirstOrDefault(c => c.Id == p.IdMauSac).Id;
@@ -88,7 +88,7 @@ namespace Bill.Serviece.Implements
                 SanPhamChiTiet spct = _context.sanPhamChiTiets.FirstOrDefault(c => c.Id == id);
                 if (spct != null)
                 {
-                    spct.IdAnh = anhservice.GetAll().FirstOrDefault(c => c.Id == p.IdAnh).Id;
+                    //spct.IdAnh = anhservice.GetAll().FirstOrDefault(c => c.Id == p.IdAnh).Id;
                 
                     spct.IdChatLieu = chatLieuServiece.GetAll().FirstOrDefault(c => c.Id == p.IdChatLieu).Id;
                     spct.IdDanhMuc = danhmucservice.GetAll().FirstOrDefault(c => c.Id == p.IdDanhMuc).Id;

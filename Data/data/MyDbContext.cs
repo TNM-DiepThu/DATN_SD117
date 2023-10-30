@@ -21,6 +21,7 @@ namespace AppData.data
         {
         }
         public DbSet<Anh> anhs { get; set; }
+        public DbSet<AnhSanPham> anhSanPhams { get;set; }
         public DbSet<BinhLuan> binhLuans { get; set; }
         public DbSet<ChatLieu> chatLieus { get; set; }
         public DbSet<Combo> combos { get; set; }

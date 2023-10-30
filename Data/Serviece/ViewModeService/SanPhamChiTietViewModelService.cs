@@ -35,7 +35,7 @@ namespace AppData.Serviece.ViewModeService
                        join c in _mausac.GetAll() on a.IdMauSac equals c.Id
                        join d in _danhmuc.GetAll() on a.IdDanhMuc equals d.Id
                        join e in _size.GetAll() on a.IdSize equals e.Id
-                       join f in _anh.GetAll() on a.IdAnh equals f.Id
+                       //join f in _anh.GetAll() on a.IdAnh equals f.Id
                        join h in _chatlieu.GetAll() on a.IdChatLieu equals h.Id
                        select new SanPhamChiTietViewModel
                        {
@@ -45,7 +45,7 @@ namespace AppData.Serviece.ViewModeService
                            ChatLieu = h.TenChatLieu,
                            MauSac = c.TenMauSac,
                            Size = e.SizeName,
-                           Anh = f.Connect,
+                           //Anh = f.Connect,
                            MaSp = a.MaSp,
                            SoLuong = a.SoLuong,
                            GiaBan = a.GiaBan,
@@ -62,7 +62,7 @@ namespace AppData.Serviece.ViewModeService
                        join c in _mausac.GetAll() on a.IdMauSac equals c.Id
                        join d in _danhmuc.GetAll() on a.IdDanhMuc equals d.Id
                        join e in _size.GetAll() on a.IdSize equals e.Id
-                       join f in _anh.GetAll() on a.IdAnh equals f.Id
+                       //join f in _anh.GetAll() on a.IdAnh equals f.Id
                        join h in _chatlieu.GetAll() on a.IdChatLieu equals h.Id
                        select new SanPhamChiTietViewModel
                        {
@@ -72,7 +72,7 @@ namespace AppData.Serviece.ViewModeService
                            ChatLieu = h.TenChatLieu,
                            MauSac = c.TenMauSac,
                            Size = e.SizeName,
-                           Anh = f.Connect,
+                           //Anh = f.Connect,
                            MaSp = a.MaSp,
                            SoLuong = a.SoLuong,
                            GiaBan = a.GiaBan,
@@ -89,7 +89,7 @@ namespace AppData.Serviece.ViewModeService
                        join c in _mausac.GetAll() on a.IdMauSac equals c.Id
                        join d in _danhmuc.GetAll() on a.IdDanhMuc equals d.Id
                        join e in _size.GetAll() on a.IdSize equals e.Id
-                       join f in _anh.GetAll() on a.IdAnh equals f.Id
+                       //join f in _anh.GetAll() on a.IdAnh equals f.Id
                        join h in _chatlieu.GetAll() on a.IdChatLieu equals h.Id
                        select new SanPhamChiTietViewModel
                        {
@@ -99,7 +99,7 @@ namespace AppData.Serviece.ViewModeService
                            ChatLieu = h.TenChatLieu,
                            MauSac = c.TenMauSac,
                            Size = e.SizeName,
-                           Anh = f.Connect,
+                           //Anh = f.Connect,
                            MaSp = a.MaSp,
                            SoLuong = a.SoLuong,
                            GiaBan = a.GiaBan,
