@@ -1,19 +1,23 @@
 ﻿using AppData.model;
 using AppData.ViewModal.Usermodalview;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
 using System.Text;
+using Microsoft.AspNetCore.Hosting;
 
 namespace AppView.Controllers
 {
     public class NguoiDungController : Controller
     {
         private readonly HttpClient _httpClient;
-        public NguoiDungController()
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public NguoiDungController(IWebHostEnvironment webHostEnvironment)
         {
             _httpClient = new HttpClient();
+            _webHostEnvironment = webHostEnvironment;
         }
         [HttpGet]
         public async Task<IActionResult> NguoiDungView()
@@ -37,7 +41,7 @@ namespace AppView.Controllers
         }
 
         [HttpGet]
-        public  ActionResult CreateNguoiDung()
+        public ActionResult CreateNguoiDung()
         {
             return View();
         }
@@ -45,6 +49,7 @@ namespace AppView.Controllers
 
         public async Task<IActionResult> CreateNguoiDung(NguoiDungVM Create)
         {
+
             var jsonObj = JsonConvert.SerializeObject(Create);
             HttpContent content = new StringContent(jsonObj, Encoding.UTF8, "application/json");
             var respones = await _httpClient.PostAsync("https://localhost:7214/api/NguoiDung/Create", content);
@@ -67,17 +72,21 @@ namespace AppView.Controllers
 
         public async Task<IActionResult> CreateNV(NguoiDungVM Create)
         {
-            var jsonObj = JsonConvert.SerializeObject(Create);
-            StringContent content = new StringContent(jsonObj, Encoding.UTF8, "application/json");
-            HttpResponseMessage respones = await _httpClient.PostAsJsonAsync("https://localhost:7214/api/NguoiDung/CreateNV", content);
-            if (respones.IsSuccessStatusCode)
-            {
-                return RedirectToAction(nameof(NguoiDungView));
-            }
-            else
-            {
-                return BadRequest();
-            }
+           
+               
+
+                var jsonObj = JsonConvert.SerializeObject(Create);
+                StringContent content = new StringContent(jsonObj, Encoding.UTF8, "application/json");
+                HttpResponseMessage respones = await _httpClient.PostAsync("https://localhost:7214/api/NguoiDung/CreateNV", content);
+                if (respones.IsSuccessStatusCode)
+                {
+                    return RedirectToAction(nameof(NguoiDungView));
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            return View(Create);
         }
         [HttpGet]
         public async Task<IActionResult> EditNguoiDung(Guid Id)
@@ -98,7 +107,7 @@ namespace AppView.Controllers
             ViewBag.Roles = new SelectList(roles, "Name", "Name");
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction("CreateNguoiDung","NguoiDung");
+                return RedirectToAction("CreateNguoiDung", "NguoiDung");
             }
             return View();
 
