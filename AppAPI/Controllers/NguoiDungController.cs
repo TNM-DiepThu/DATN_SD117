@@ -51,7 +51,7 @@ namespace AppAPI.Controllers
         }
 
         [HttpPost("Create")]
-        public async Task<ActionResult<Guid>> Post([FromForm] NguoiDungVM nguoiDung)
+        public async Task<ActionResult<Guid>> Post([FromBody] NguoiDungVM nguoiDung)
         {
             var id = await _nguoiDungService.CreateAsync(nguoiDung);
             return CreatedAtAction(nameof(Get), new

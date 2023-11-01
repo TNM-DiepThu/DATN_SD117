@@ -51,7 +51,7 @@ namespace AppView.Controllers
         {
 
             var jsonObj = JsonConvert.SerializeObject(Create);
-            HttpContent content = new StringContent(jsonObj, Encoding.UTF8, "application/json");
+            StringContent content = new StringContent(jsonObj, Encoding.UTF8, "application/json");
             var respones = await _httpClient.PostAsync("https://localhost:7214/api/NguoiDung/Create", content);
             if (respones.IsSuccessStatusCode)
             {
