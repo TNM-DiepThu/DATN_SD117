@@ -28,8 +28,7 @@
             <div class=" row form-group">
                 <label asp-for="MaSp" class=" col-3 control-label">Mã SP</label>
                 <div class="col-9">
-                    <input asp-for="MaSp" class="form-control" />
-                    <span asp-validation-for="MaSp" class="text-danger"></span>
+                    <input asp-for="MaSp" class="form-control" readonly />
                 </div>
             </div>
             @*      <div class="form-group row">
@@ -155,12 +154,12 @@
                     <span asp-validation-for="MoTa" class="text-danger"></span>
                 </div>
             </div>
-            <div class="form-group">
+            <div class="form-group row">
                 <div class="control-label col-3">
                     Trạng thái
                 </div>
-                <div class="form-contrl">
-                    <select name="SelectedStatus" class="form-control" id="statusSelect">
+                <div class="col-9">
+                    <select name="SelectedStatus" class="form-control" id="statusSelect" >
                         <option value="1">Còn hàng</option>
                         <option value="0">Hết hàng</option>
                     </select>
@@ -168,8 +167,7 @@
                         @Html.TextBoxFor(m => m.status, new { @class = "form-control", @id = "selectedStatus" })
                     </div>
                     <span asp-validation-for="status" class="text-danger"></span>
-                </div>
-              
+                </div>          
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
@@ -182,7 +180,10 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script>
+        document.getElementById("statusSelect").addEventListener("change", function () {
+            var selectedValue = this.value; // Lấy giá trị được chọn trong select
+            document.getElementById("selectedStatus").value = selectedValue; // Đặt giá trị vào TextBoxFor
+        });
+    </script>
 }

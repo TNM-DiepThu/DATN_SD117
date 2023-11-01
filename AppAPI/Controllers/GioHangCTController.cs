@@ -44,8 +44,6 @@ namespace AppAPI.Controllers
             return _GHCT.GetAllGioHangTheoNguoiDungDangNhap(Idnguoidung);
         }
 
-
-
         [HttpPost("[action]")]
 
         public string UpdateSoLuong(Guid idnguoidung, Guid idghct, int soluong)

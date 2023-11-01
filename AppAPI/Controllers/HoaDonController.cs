@@ -66,7 +66,6 @@ namespace AppAPI.Controllers
             
         }
 
-
         // PUT api/<HoaDonController>/5
         [HttpPut("update-hoadon")]
         public bool UpdateHoaDon(Guid id, string mahd, DateTime ngaytao, int soluong, decimal tongtien, decimal tienvanchuyen, DateTime ngaygiao, DateTime ngaynhan, string nguoinhan, string sdt, string quanhuyen, string tinh, string diachi, DateTime ngaythanhtoan, string ghichu, int trangthai, Guid idnguoidung, Guid idvoucherdetail, Guid idhttt)

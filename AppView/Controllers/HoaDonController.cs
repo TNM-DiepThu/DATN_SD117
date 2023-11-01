@@ -24,9 +24,6 @@ namespace AppView.Controllers
             _context = new MyDbContext();
            
         }
-       
-       
-        
         [HttpGet]
         public async Task<ActionResult> GetAllHD()
         {
@@ -48,7 +45,6 @@ namespace AppView.Controllers
             ViewBag.VoucherDetail = new SelectList(_context.voucherDetail.ToList().Where(c => c.status == 1).OrderBy(c => c.Id), "Id", "Id");
             string url = $"https://localhost:7214/api/HoaDon/create-hoadon?mahd={hoadon.MaHD}&ngaytao={hoadon.NgayTao}&soluong={hoadon.SoLuong}&tongtien={hoadon.TongTien}&tienvanchuyen={hoadon.TienVanChuyen}&ngaygiao={hoadon.NgayGiao}&ngaynhan={hoadon.NgayNhan}&nguoinhan={hoadon.NguoiNhan}&sdt={hoadon.SDT}&quanhuyen={hoadon.QuanHuyen}&tinh={hoadon.Tinh}&diachi={hoadon.DiaChi}&ngaythanhtoan={hoadon.NgayThanhToan}&ghichu={hoadon.GhiChu}&trangthai={hoadon.status}&idnguoidung={hoadon.IdNguoiDunh}&idvoucherdetail={hoadon.IdVoucherDetail}&idhttt={hoadon.IDHTTT}";
 
-
             var obj = JsonConvert.SerializeObject(hoadon);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
             HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
@@ -57,12 +53,10 @@ namespace AppView.Controllers
                 return RedirectToAction("GetAllHD", "HoaDon");
             }
             else
-            {
-               
+            {    
                 return View();
 
             }
-
         }
 
         [HttpGet]
@@ -88,13 +82,8 @@ namespace AppView.Controllers
             }
             else
             {
-                
-
-
                 return View(lstsize);
-
             }
-
         }
         public async Task<ActionResult> Delete(Guid id)
         {
@@ -109,6 +98,13 @@ namespace AppView.Controllers
             string apiUrl = $"https://localhost:7214/api/HoaDon/delete-hoadon?id={id}";
             var response = await httpClient.DeleteAsync(apiUrl);
             return RedirectToAction("GetAllHD","HoaDon");
+        }
+
+        //Tính tiền ship
+        public decimal TinhTienShip(Guid IdHd , string Quan_Huyen , string Tinh_Thanhpho)
+        {
+
+            return 0;
         }
     }
 }

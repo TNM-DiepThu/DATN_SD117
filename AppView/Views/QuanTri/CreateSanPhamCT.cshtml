@@ -18,7 +18,31 @@
 
 <link href="~/library/dist/css/adminlte.min.css" rel="stylesheet" />
 
+<style>
+    .image-row {
+        display: flex;
+        flex-wrap: wrap;
+    }
 
+    .image-item {
+        margin: 5px;
+        flex-basis: calc(16.666% - 10px); /* Điều chỉnh độ rộng tùy ý để hiển thị 6 ảnh trên một dòng */
+    }
+
+    .selectable-image {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .image-checkbox {
+        margin-right: 5px;
+    }
+
+    .selectable-image {
+        max-width: 50%; /* Thiết lập chiều rộng ảnh là 50% so với ảnh gốc */
+        height: auto;
+    }
+</style>
 <hr />
 <h4>SanPhamChiTiet</h4>
 @*@if (TempData["ErrorMessage"] != null)
@@ -31,7 +55,7 @@
             <input type="file" name="excelFile" />
             <input type="submit" value="Tải lên" />
         </form>
-        <form asp-action="CreateSanPhamCT" method="post" enctype="multipart/form-data">
+        <form asp-action="CreateSanPhamCT" asp-controller="QuanTri" method="post" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             @*<div class="form-group">
             <label asp-for="Id" class="control-label"></label>
@@ -39,12 +63,12 @@
             <span asp-validation-for="Id" class="text-danger"></span>
             </div>*@
 
-           @* <div class=" row form-group">
-                <label asp-for="MaSp" class=" col-3 control-label">Mã SP</label>
-                <div class="col-9">
-                    <input asp-for="MaSp" class="form-control" />
-                    <span asp-validation-for="MaSp" class="text-danger"></span>
-                </div>
+            @* <div class=" row form-group">
+            <label asp-for="MaSp" class=" col-3 control-label">Mã SP</label>
+            <div class="col-9">
+            <input asp-for="MaSp" class="form-control" />
+            <span asp-validation-for="MaSp" class="text-danger"></span>
+            </div>
             </div>*@
             <div class="form-group row">
                 <label for="IDSP" class="control-label col-3">Tên sản phẩm</label>
@@ -60,18 +84,18 @@
                     @Html.ValidationMessageFor(model => model.IdDanhMuc, "", new { @class = "text-danger" })
                 </div>
             </div>
-           @* <div class="form-group row">
-                <label class="control-label col-3">Chất liệu</label>
-                <div class="col-9">
-                    <select asp-for="IdChatLieu" class="select2 form-control" multiple="multiple">
+            @* <div class="form-group row">
+            <label class="control-label col-3">Chất liệu</label>
+            <div class="col-9">
+            <select asp-for="IdChatLieu" class="select2 form-control" multiple="multiple">
 
-                        @foreach (var item in ViewBag.ChatLieu as IEnumerable<SelectListItem>)
-                        {
-                            <option value="@item.Value">@item.Text</option>
-                        }
+            @foreach (var item in ViewBag.ChatLieu as IEnumerable<SelectListItem>)
+            {
+            <option value="@item.Value">@item.Text</option>
+            }
 
-                    </select>
-                </div>
+            </select>
+            </div>
             </div>*@
             <div class="form-group row">
                 <label for="IdChatLieu" class="control-label col-3">Chất liệu</label>
@@ -95,56 +119,49 @@
                     @Html.ValidationMessageFor(model => model.IdSize, "", new { @class = "text-danger" })
                 </div>
             </div>
-
-            @*<div class="form-group row">
+            @*bắt đầu *@
+            <div class="form-group row">
                 <label for="IdAnh" class="control-label col-3">Ảnh sản phẩm</label>
                 <div class="col-9 row">
-
                     <input type="text" id="imageFilename" name="imageFilename" class="form-control" />
-                    <div style="display:none;">
-                        @Html.TextBoxFor(m => m.IdAnh, new { @class = "form-control", id = "imageId", name ="imageId" })
-                    </div>*@
-                    @*<input asp-for="IdAnh" id="imageId" name="imageId" class="col-4" />*@
-
-                    @*Mở form anh*@
-                   @* <button type="button" class="col-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+                    <button type="button" class="col-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
                         Chọn ảnh
                     </button>
-                    <!-- The Modal -->
-                    <div class="modal" id="myModal">
-                        <div class="modal-dialog custom-modal">
-                            <div class="modal-content">
-                                <!-- Modal Header -->
-                                <div class="modal-header">
-                                    <h4 class="modal-title">Kho ảnh</h4>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
+                </div>
+            </div>
 
-                                <!-- Modal body -->
-                                <div class="modal-body">
-                                    @foreach (var image in dataanh)
-                                    {
-                                        <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = image.Connect })" alt="Image" class="selectable-image" data-image-id="@image.Id" data-image-filename="@image.Connect" />
-                                    }
-                                </div>
-                            </div>
+            <!-- The Modal -->
+            <div class="modal" id="myModal">
+                <div class="modal-dialog custom-modal">
+                    <div class="modal-content">
+                        <!-- Modal Header -->
+                        <div class="modal-header">
+                            <h4 class="modal-title">Kho ảnh</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                         </div>
-                        <div class="modal-footer">*@
-                            @*@using (Html.BeginForm("UploadImage", "QuanTri", FormMethod.Post, new { enctype = "multipart/form-data" }))
-                            {
-                            <div class="form-group">
-                            <input asp-for="imageUploadModel.ImageFile" type="file" class="form-control" />
+
+                        <!-- Modal body -->
+                        <div class="modal-body">
+                            <div class="image-row">
+                                @foreach (var image in dataanh)
+                                {
+                                    <div class="image-item">
+                                        <input type="checkbox" class="image-checkbox" data-image-filename="@image.Connect" />
+                                        <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = image.Connect })" alt="Image" class="selectable-image" data-image-id="@image.Id" data-image-filename="@image.Connect" />
+                                    </div>
+                                }
                             </div>
-                            <button type="submit" class="btn btn-primary">Upload</button>
-                            }*@
-                           @* <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="selectImageBtn">Select</button>
-                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
-            </div>*@
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="selectImageBtn">Select</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
 
-            @* Kêt thúc form anh*@
+            @*kết thúc*@
+
             <div class="form-group row">
                 <label asp-for="SoLuong" class=" col-3 control-label"></label>
                 <div class="col-9">
@@ -170,7 +187,7 @@
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" onclick="return confirm('Bạn có chắc muốn Thêm sản phẩm này không ?');" />
-            </div>
+            </div>@*id="Idbtn"*@
         </form>
     </div>
 </div>
@@ -179,8 +196,79 @@
     <a asp-action="Index">Back to List</a>
 </div>
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    <script>
+        $(document).ready(function () {
+            var selectedImages = [];
+            // Lắng nghe sự kiện click trên checkbox để chọn hoặc bỏ chọn
+            $(".image-checkbox").on("click", function () {
+                var imageId = $(this).data("image-id");
+                var imageFilename = $(this).data("image-filename");
+                if ($(this).prop("checked")) {
+                    // Nếu checkbox được chọn, thêm ảnh vào danh sách đã chọn
+                    selectedImages.push({ Id: imageId, Connect: imageFilename });
+                } else {
+                    // Nếu checkbox bị bỏ chọn, loại bỏ ảnh khỏi danh sách đã chọn
+                    selectedImages = selectedImages.filter(function (image) {
+                        return image.Id !== imageId;
+                    });
+                }
+            });
+
+            // Lắng nghe sự kiện click vào nút mở modal
+            $("#selectImageBtn").on("click", function () {
+                // Rút gọn và hiển thị tên ảnh đã chọn trong trường nhập
+                $("#imageFilename").val(selectedImages.map(function (image) {
+                    var lastIndex = image.Connect.lastIndexOf("\\");
+                    if (lastIndex !== -1) {
+                        return "...\\" + image.Connect.substring(lastIndex + 1);
+                    } else {
+                        return image.Connect;
+                    }
+                }).join(", "));
+
+
+                var selectedFilenames = selectedImages.map(function (image) {
+                    return image.Connect;
+                });
+
+                // Gửi danh sách tên ảnh lên controller thông qua AJAX
+                $.ajax({
+                    type: "POST", // Sử dụng phương thức POST
+                    url: "/QuanTri/CreateSanPhamCT", // Thay thế ControllerName và ActionName bằng tên thực của controller và action của bạn
+                    contentType: "application/json; charset=utf-8", // Chỉ định loại dữ liệu gửi lên là JSON
+                    data: JSON.stringify(selectedFilenames), // Dữ liệu gửi lên controller dưới dạng JSON
+                    success: function (data) {
+                        // Xử lý phản hồi từ controller nếu cần
+                    },
+                    error: function () {
+                        // Xử lý lỗi nếu có
+                    }
+                });
+            });
+            //$("#Idbtn").on("click", function (e) {
+            //    e.preventDefault();  //Ngăn chặn hành động mặc định của nút "Create" (không gửi form đi)
+
+            //    var selectedFilenames = selectedImages.map(function (image) {
+            //        return image.Connect;
+            //    });
+
+            //     //Gửi danh sách tên ảnh lên controller thông qua AJAX
+            //    $.ajax({
+            //        type: "POST",  //Sử dụng phương thức POST
+            //        url: "/QuanTri/CreateSanPhamCT",  //Thay thế ControllerName và ActionName bằng tên thực của controller và action của bạn
+            //        contentType: "application/json; charset=utf-8",  //Chỉ định loại dữ liệu gửi lên là JSON
+            //        data: JSON.stringify(selectedFilenames),  //Dữ liệu gửi lên controller dưới dạng JSON
+            //        success: function (data) {
+            //             //Xử lý phản hồi từ controller nếu cần
+            //        },
+            //        error: function () {
+            //             //Xử lý lỗi nếu có
+            //        }
+            //    });
+            //});
+
+        });
+
+    </script>
 }
 

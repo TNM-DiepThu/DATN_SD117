@@ -101,7 +101,7 @@ namespace AppView.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("GellAllChatLieu", "QuanTri");
+                    return RedirectToAction("GellAllChatLieu");
                 }
 
             }
@@ -330,7 +330,6 @@ namespace AppView.Controllers
             var respon = _client.GetAsync(url).Result;
             var data = respon.Content.ReadAsStringAsync().Result;
             List<ThuongHieu> lstsize = JsonConvert.DeserializeObject<List<ThuongHieu>>(data);
-
             return View(lstsize);
         }
 
@@ -354,7 +353,7 @@ namespace AppView.Controllers
                 }
                 else
                 {
-                    return RedirectToAction(" GellAllThuongHieu", "QuanTri");
+                    return RedirectToAction("GellAllThuongHieu");
                 }
 
             }
@@ -378,37 +377,35 @@ namespace AppView.Controllers
         // Xuat xu 
 
         [HttpGet]
-        public ActionResult GellAllXuatXu()
+        public ActionResult GellAllXuatsu()
         {
             string url = "https://localhost:7214/api/XuatSu/GetAll";
             var respon = _client.GetAsync(url).Result;
             var data = respon.Content.ReadAsStringAsync().Result;
             List<XuatSu> lstsize = JsonConvert.DeserializeObject<List<XuatSu>>(data);
-
             return View(lstsize);
         }
 
         [HttpGet]
         [HttpPost]
-        public async Task<ActionResult> CreateXuatXu(XuatSu xx)
+        public ActionResult CreateXuatsu(XuatSu xs)
         {
-            string url = $"https://localhost:7214/api/XuatSu/Create?name={xx.TenXuatSu}";
+            string url = $"https://localhost:7214/api/XuatSu/Create?name={xs.TenXuatSu}";
 
-
-            var obj = JsonConvert.SerializeObject(xx);
+            var obj = JsonConvert.SerializeObject(xs);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
-            HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
+            HttpResponseMessage httpResponseMessage = _client.PostAsync(url, content).Result;
             if (httpResponseMessage.IsSuccessStatusCode)
             {
-                var apiresponse = await httpResponseMessage.Content.ReadAsStringAsync();
+                var apiresponse = httpResponseMessage.Content.ReadAsStringAsync().Result;
                 if (apiresponse == "false")
                 {
                     TempData["ErrorMessage"] = "Xuất sứ bị trùng. Vui lòng chọn xuất sứ khác.";
-                    return RedirectToAction("CreateXuatXu");
+                    return View();
                 }
                 else
                 {
-                    return RedirectToAction("GellAllXuatXu", "QuanTri");
+                    return RedirectToAction("GellAllXuatsu", "QuanTri");
                 }
             }
             else
@@ -418,14 +415,14 @@ namespace AppView.Controllers
 
         }
         [HttpPut]
-        public async Task<ActionResult> DeleteXuatXu(XuatSu xx)
+        public async Task<ActionResult> DeleteXuatsu(XuatSu xx)
         {
             string url = $"https://localhost:7214/api/XuatSu/Delete/{xx.Id}";
             var obj = JsonConvert.SerializeObject(xx);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
             HttpResponseMessage httpResponseMessage = await _client.PutAsync(url, content);
 
-            return RedirectToAction("GellAllXuatXu", "QuanTri");
+            return RedirectToAction("GellAllXuatsu", "QuanTri");
 
         }
 
@@ -491,16 +488,22 @@ namespace AppView.Controllers
         // san pham chi tiet
 
         [HttpGet]
-        public ActionResult GellAllSanPhamCT(string name, string danhMucFilter, string chatLieuFilter, string ThuongHieuFilter)
+        public ActionResult GellAllSanPhamCT(string name, string danhMucFilter, string chatLieuFilter, string ThuongHieuFilter, int trangthaiFilter)
         {   // list danh sach
 
-
-            
             string url = "https://localhost:7214/api/SanPhamChiTiet/GetAllSanphamchitietViewModel";
             var respon = _client.GetAsync(url).Result;
             var datalist = respon.Content.ReadAsStringAsync().Result;
             List<SanPhamChiTietViewModel> list = JsonConvert.DeserializeObject<List<SanPhamChiTietViewModel>>(datalist);
 
+            //Lấy ảnh ra theo id sản phẩm chi tiết
+            List<AnhSanPham> anhsanpham = new List<AnhSanPham>();
+            foreach (var item in list)
+            {
+
+            }
+
+            //View thương hiệu lên TABLE
             // lọc theo danh muc
             List<string> tendanhmuc = new List<string>();
             foreach (var item in _context.danhMucs.ToList())
@@ -520,8 +523,29 @@ namespace AppView.Controllers
             var chatlieulist = tenchatlieu;
             ViewBag.ChatlieuList = new SelectList(chatlieulist);
 
-            //Lọc theo thương hiệu
+            //Lọc trạng thái 
+            //List<int> trangthai = new List<int>();
+            //foreach (var item in list)
+            //{
+            //    trangthai.Add(item.status);
+            //}
+            //var trangthailist = trangthai.Distinct();
+            //List<string> trangthaitext = new List<string>();
+            //foreach (var item in trangthailist)
+            //{
+            //    if (item == 0)
+            //    {
+            //        trangthaitext.Add("Hêt hàng");
+            //    }
+            //    else if (item == 1)
+            //    {
+            //        trangthaitext.Add("Còn hàng");
+            //    }
+            //}
+            //ViewBag.TrangthaiText = trangthaitext.Distinct();
+            //ViewBag.Trangthai = trangthailist;
 
+            //Lọc theo thương hiệu
             List<string> tenthuonghieu = new List<string>();
             foreach (var thuonghieu in _context.thuongHieus.ToList())
             {
@@ -626,8 +650,23 @@ namespace AppView.Controllers
             //}
             else if (name == null || name == "")
             {
-
+                //foreach (var item in list)
+                //{
+                //    item.QRCode = GenerateQRCode(item.Id);
+                //}
                 return View(list);
+            }
+            else if (trangthaiFilter != null)
+            {
+                if (trangthaiFilter == 0)
+                {
+                    sanphamchitiet = list.Where(c => c.status == 0).ToList();
+                }
+                else if (trangthaiFilter == 1)
+                {
+                    sanphamchitiet = list.Where(c => c.status == 1).ToList();
+                }
+                return View(sanphamchitiet);
             }
             else
             {
@@ -671,50 +710,50 @@ namespace AppView.Controllers
         //    }
         //}
 
-        //public string GenerateQRCode(Guid id)
-        //{
-        //    // Truy xuất thông tin đối tượng dựa trên ID
-        //    SanPhamChiTietViewModel spct = _spctViewModel.GetById(id);
+        public string GenerateQRCode(Guid id)
+        {
+            // Truy xuất thông tin đối tượng dựa trên ID
+            SanPhamChiTietViewModel spct = _spctViewModel.GetById(id);
 
-        //    if (spct != null)
-        //    {
-        //        string infor = "Mã Sản phẩm :" + spct.MaSp+ " Tên: " + spct.TenSP + " Màu sắc :" + spct.MauSac + "Chất liệu: " + spct.ChatLieu + " Size :" + spct.Size;
-        //        // Tạo mã QR từ thông tin đối tượng
-        //        BarcodeWriter<Bitmap> qrCodeWriter = new BarcodeWriter<Bitmap>();
-        //        qrCodeWriter.Format = BarcodeFormat.QR_CODE;
-        //        qrCodeWriter.Options = new QrCodeEncodingOptions
-        //        {
-        //            DisableECI = true,
-        //            CharacterSet = "UTF-8",
-        //            Width = 200,
-        //            Height = 200,
-        //        };
+            if (spct != null)
+            {
+                string infor = "Mã Sản phẩm :" + spct.MaSp + " Tên: " + spct.TenSP + " Màu sắc :" + spct.MauSac + "Chất liệu: " + spct.ChatLieu + " Size :" + spct.Size;
+                // Tạo mã QR từ thông tin đối tượng
+                BarcodeWriter<Bitmap> qrCodeWriter = new BarcodeWriter<Bitmap>();
+                qrCodeWriter.Format = BarcodeFormat.QR_CODE;
+                qrCodeWriter.Options = new QrCodeEncodingOptions
+                {
+                    DisableECI = true,
+                    CharacterSet = "UTF-8",
+                    Width = 200,
+                    Height = 200,
+                };
 
-        //        var qrCodeBitmap = qrCodeWriter.Write(infor);
+                var qrCodeBitmap = qrCodeWriter.Write(infor);
 
-        //        // Chuyển đổi mã QR thành một dạng hiển thị trên giao diện
-        //        using (var bitmap = new Bitmap(qrCodeBitmap))
-        //        {
-        //            var byteArray = BitmapToByteArray(bitmap);
-        //            var base64String = Convert.ToBase64String(byteArray);
+                // Chuyển đổi mã QR thành một dạng hiển thị trên giao diện
+                using (var bitmap = new Bitmap(qrCodeBitmap))
+                {
+                    var byteArray = BitmapToByteArray(bitmap);
+                    var base64String = Convert.ToBase64String(byteArray);
 
-        //            // Trả về mã QR dưới dạng hình ảnh hoặc sử dụng nó trong giao diện
-        //            return $"<img src='data:image/png;base64,{base64String}' />";
-        //        }
-        //    }
-        //    else
-        //    {
-        //        return "Không tìm thấy đối tượng.";
-        //    }
-        //}
-        //private byte[] BitmapToByteArray(Bitmap bitmap)
-        //{
-        //    using (MemoryStream stream = new MemoryStream())
-        //    {
-        //        bitmap.Save(stream, ImageFormat.Png);
-        //        return stream.ToArray();
-        //    }
-        //}
+                    // Trả về mã QR dưới dạng hình ảnh hoặc sử dụng nó trong giao diện
+                    return $"<img src='data:image/png;base64,{base64String}' />";
+                }
+            }
+            else
+            {
+                return "Không tìm thấy đối tượng.";
+            }
+        }
+        private byte[] BitmapToByteArray(Bitmap bitmap)
+        {
+            using (MemoryStream stream = new MemoryStream())
+            {
+                bitmap.Save(stream, ImageFormat.Png);
+                return stream.ToArray();
+            }
+        }
         // Kết thúc 
 
         [HttpGet]
@@ -761,8 +800,7 @@ namespace AppView.Controllers
         }
 
         [HttpGet]
-        [HttpPost]
-        public async Task<ActionResult> CreateSanPhamCT(SanPhamChiTiet spct)
+        public async Task<ActionResult> CreateSanPhamCT()
         {
             ViewBag.DanhMuc = new SelectList(_context.danhMucs.ToList().Where(c => c.status == 1).OrderBy(c => c.TenDanhMuc), "Id", "TenDanhMuc");
             ViewBag.SanPham = new SelectList(_context.sanPhams.ToList().Where(c => c.status == 1).OrderBy(c => c.TenSanPham), "Id", "TenSanPham");
@@ -773,7 +811,6 @@ namespace AppView.Controllers
             ViewBag.Size = new SelectList(_context.sizes.ToList().Where(c => c.status == 1).OrderBy(c => c.SizeName), "Id", "SizeName");
             //ViewBag.Anh = new SelectList(_context.anhs.ToList(), "Id", "Connect");
 
-
             string urlanh = "https://localhost:7214/api/Anh/GetAll";
             var respon = _client.GetAsync(urlanh).Result;
             var data = respon.Content.ReadAsStringAsync().Result;
@@ -781,10 +818,14 @@ namespace AppView.Controllers
             ImageUploadModel img = new ImageUploadModel();
             ViewBag.upload = img.ImageFile;
             ViewBag.listanh = album;
+            return View();
+        }
+        [HttpPost]
+        public async Task<ActionResult> CreateSanPhamCT(SanPhamChiTiet spct , [FromBody] List<string> ImagesPath)
+        {
+            string url2 = $"https://localhost:7214/api/SanPhamChiTiet/CreateSanPhamChiTiet?iddm={spct.IdDanhMuc}&idcl={spct.IdChatLieu}&idms={spct.IdMauSac}&idsize={spct.IdSize}&idsp={spct.IDSP}&soluong={spct.SoLuong}&gia={spct.GiaBan}&mota={spct.MoTa}";
+            //string url2 = ""; &idanh={spct.IdAnh}
 
-            //string url = $"https://localhost:7214/api/SanPhamChiTiet/CreateSanPhamChiTiet?iddm={spct.IdDanhMuc}&idcl={spct.ChatLieu}&idms={spct.IdMauSac}&idsize={spct.IdSize}&idanh={spct.IdAnh}&idsp={spct.IDSP}&masp={spct.MaSp}&soluong={spct.SoLuong}&gia={spct.GiaBan}&mota={spct.MoTa}";
-            //string url2 = $"https://localhost:7214/api/SanPhamChiTiet/CreateSanPhamChiTiet?iddm={spct.IdDanhMuc}&idcl={spct.IdChatLieu}&idms={spct.IdMauSac}&idsize={spct.IdSize}&idanh={spct.IdAnh}&idsp={spct.IDSP}&soluong={spct.SoLuong}&gia={spct.GiaBan}&mota={spct.MoTa}";
-            string url2 = "";
             var obj = JsonConvert.SerializeObject(spct);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
             HttpResponseMessage httpResponseMessage = _client.PostAsync(url2, content).Result;
@@ -795,22 +836,22 @@ namespace AppView.Controllers
                 if (error == "Sản phẩm bị trùng mã")
                 {
                     TempData["ErrorMessage"] = "Sản phẩm bị trùng mã. Mời bạn nhập mã khác";
-                    return RedirectToAction("CreateSanPhamCT", "QuanTri");
+                    return RedirectToAction("CreateSanPhamCT");
 
                 }
                 else if (error == "Sản phẩm đã tồn tại")
                 {
                     TempData["ErrorMessage"] = "Sản phẩm bạn nhập " + _sanphamservice.GetAll().Where(c => c.Id == spct.IDSP).Select(c => c.TenSanPham) + " đã có trong danh sách sản phẩm.";
-                    return RedirectToAction("CreateSanPhamCT", "QuanTri");
+                    return RedirectToAction("CreateSanPhamCT");
                 }
                 else
                 {
-                    return RedirectToAction("GellAllSanPhamCT", "QuanTri");
+                    return RedirectToAction("GellAllSanPhamCT");
                 }
             }
             else
             {
-                return View();
+                return RedirectToAction("CreateSanPhamCT");
             }
         }
         [HttpGet]
@@ -836,8 +877,8 @@ namespace AppView.Controllers
             ViewBag.upload = img.ImageFile;
             ViewBag.listanh = album;
 
-            //string urltest = $"https://localhost:7214/api/SanPhamChiTiet/UpdateSanPhamChiTiet?id={spct.Id}&iddm={spct.IdDanhMuc}&idcl={spct.IdChatLieu}&idms={spct.IdMauSac}&idsize={spct.IdSize}&idanh={spct.IdAnh}&idsp={spct.IDSP}&masp={spct.MaSp}&soluong={spct.SoLuong}&gia={spct.GiaBan}&mota={spct.MoTa}&trangthai={spct.status}";
-            string urltest = "";
+            string urltest = $"https://localhost:7214/api/SanPhamChiTiet/UpdateSanPhamChiTiet?id={spct.Id}&iddm={spct.IdDanhMuc}&idcl={spct.IdChatLieu}&idms={spct.IdMauSac}&idsize={spct.IdSize}&idsp={spct.IDSP}&masp={spct.MaSp}&soluong={spct.SoLuong}&gia={spct.GiaBan}&mota={spct.MoTa}&trangthai={spct.status}";
+            //string urltest = ""; &idanh={spct.IdAnh}
             var obj = JsonConvert.SerializeObject(spct);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
             HttpResponseMessage httpResponseMessage = await _client.PostAsync(urltest, content);

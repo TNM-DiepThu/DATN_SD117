@@ -70,7 +70,15 @@ else
                         <option value="">All</option>
                     </select>
                 </div>
-                <div class="col-2" style="margin-top: 31px;">
+                <div class="col-2">
+                    <label for="trangthaiFilter" class="control-label">Trạng thái: </label>
+                    <select id="trangthaiFilter" name="trangthaiFilter" class="form-control">
+                        <option value="">All</option>
+                        <option value="0">Hết hàng</option>
+                        <option value="1">Còn hàng</option>
+                    </select>
+                </div>
+                <div class="col-1" style="margin-top: 31px;">
                     <input type="submit" value="Filter" class="btn btn-primary" />
                 </div>
             </div>
@@ -110,13 +118,15 @@ else
                 <th>
                     @Html.DisplayNameFor(model => model.GiaBan)
                 </th>
-                <th>
+               @* <th>
                     @Html.DisplayNameFor(model => model.MoTa)
-                </th>
+                </th>*@
                 <th>
                     Trạng thái
                 </th>
-                <th></th>
+                <th>
+
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -145,18 +155,18 @@ else
                         @Html.DisplayFor(modelItem => item.Size)
                     </td>
                     <td>
-                        <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = item.Anh })" alt="Image" width="50%" height="50%" />
+                       @* <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = item.Anh })" alt="Image" width="50%" height="50%" />*@
                     </td>
 
                     <td>
                         @Html.DisplayFor(modelItem => item.SoLuong)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.GiaBan)
+                        @Html.DisplayFor(modelItem => item.GiaBan) VND
                     </td>
-                    <td>
+                    @*<td>
                         @Html.DisplayFor(modelItem => item.MoTa)
-                    </td>
+                    </td>*@
                     <td>
                         @if (item.status == 1)
                         {
