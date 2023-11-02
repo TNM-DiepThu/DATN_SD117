@@ -1,4 +1,6 @@
 ﻿using AppData.model;
+using AppData.Serviece.Implements;
+using AppData.Serviece.Interfaces;
 using Bill.Serviece.Implements;
 using Bill.Serviece.Interfaces;
 
@@ -12,15 +14,28 @@ namespace AppAPI.Controllers
     public class AnhController : ControllerBase
     {
         private readonly IAnhServiece _anhsv;
+        private readonly IAnhSanPhamService anhSanPhamService;
         public AnhController()
         {
             _anhsv = new AnhServiece();
+            anhSanPhamService = new AnhSanPhamService();
         }
         [HttpGet("GetAll")]
 
         public IEnumerable<Anh> GetAllAnh()
         {
             return _anhsv.GetAll();
+        }
+
+        [HttpGet("[action]")]
+        public IEnumerable<AnhSanPham> GetAllAnhsp()
+        {
+            return anhSanPhamService.GetAllAnhChoSanPham();
+        }
+        [HttpGet("[action]")]
+        public IEnumerable<AnhSanPham> GetAllAnhByIDsp(Guid idsp)
+        {
+            return anhSanPhamService.GetAllAnhChoSanPhamBySP(idsp);
         }
         [HttpPost("Create")]
         public bool CreateAnh(string name)

@@ -23,6 +23,7 @@ builder.Services.AddDbContext<MyDbContext>(options =>
 });
 builder.Services.AddHttpClient();
 
+
 builder.Services.AddHttpContextAccessor();
 
 // cau hinh identity

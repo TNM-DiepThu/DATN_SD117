@@ -30,6 +30,8 @@ using static QRCoder.PayloadGenerator.SwissQrCode;
 using System.ComponentModel;
 using LicenseContext = OfficeOpenXml.LicenseContext;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
+using AppData.Serviece.Interfaces;
+using AppData.Serviece.Implements;
 
 namespace AppView.Controllers
 {
@@ -44,6 +46,7 @@ namespace AppView.Controllers
         private readonly ISanPhamChiTietServiece _sanphamchitietservice;
         private readonly IDanhMucServiece _danhmucservice;
         private readonly IMauSacServiece _mausacservice;
+        private readonly IAnhSanPhamService _ianhsanpham;
         private readonly ISizeServiece sizeServiece;
         private readonly IThuongHieuServiece _thuonghieuservice;
         private readonly IChatLieuServiece _chatlieuservice;
@@ -53,12 +56,15 @@ namespace AppView.Controllers
         private readonly IWebHostEnvironment _hostingEnvironment;
         private static List<SanPhamChiTiet> _tempProducts;
         public static List<SanPhamChiTietViewModel> _temspctvm;
+        public readonly List<Anh> anhSanPhams = new List<Anh>();
+        private readonly List<string> path = new List<string>();
         public QuanTriController(ILogger<QuanTriController> logger, IWebHostEnvironment hostingEnvironment)
         {
             _logger = logger;
             _hostingEnvironment = hostingEnvironment;
             _sanphamchitietservice = new SanPhamChiTietServiece();
             _mausacservice = new MauSacServiece();
+            _ianhsanpham = new AnhSanPhamService();
             sizeServiece = new SizeServiece();
             sanphanviewmodel = new SanPhamViewModelService();
             _chatlieuservice = new ChatLieuServiece();
@@ -484,25 +490,41 @@ namespace AppView.Controllers
             return RedirectToAction("GellAllSanPham", "QuanTri");
 
         }
-
+        [HttpGet]
+        public void LayIdHienThiAnh(Guid idsp)
+        {
+            //Lấy ảnh ra theo id sản phẩm chi tiết
+            // list ảnh lên 
+            
+           
+        }
         // san pham chi tiet
 
         [HttpGet]
-        public ActionResult GellAllSanPhamCT(string name, string danhMucFilter, string chatLieuFilter, string ThuongHieuFilter, int trangthaiFilter)
-        {   // list danh sach
+        public ActionResult GellAllSanPhamCT(Guid id, string name, string danhMucFilter, string chatLieuFilter, string ThuongHieuFilter, int trangthaiFilter)
+        {
+
+            // list danh sach
 
             string url = "https://localhost:7214/api/SanPhamChiTiet/GetAllSanphamchitietViewModel";
             var respon = _client.GetAsync(url).Result;
             var datalist = respon.Content.ReadAsStringAsync().Result;
             List<SanPhamChiTietViewModel> list = JsonConvert.DeserializeObject<List<SanPhamChiTietViewModel>>(datalist);
 
-            //Lấy ảnh ra theo id sản phẩm chi tiết
-            List<AnhSanPham> anhsanpham = new List<AnhSanPham>();
-            foreach (var item in list)
-            {
+            // view anh
+            var urllsstanh = $"https://localhost:7214/api/Anh/GetAllAnhByIDsp?idsp={id}";
+            var listanh = _client.GetAsync(urllsstanh).Result;
+            var dataanh = listanh.Content.ReadAsStringAsync().Result;
+            List<AnhSanPham> anhsanpham = JsonConvert.DeserializeObject<List<AnhSanPham>>(dataanh);
 
+
+            foreach (var item in anhsanpham)
+            {
+                var stringpath = _context.anhs.FirstOrDefault(c => c.Id == item.Idanh).Connect;
+                path.Add(stringpath);
             }
 
+            ViewBag.path = path;
             //View thương hiệu lên TABLE
             // lọc theo danh muc
             List<string> tendanhmuc = new List<string>();
@@ -820,8 +842,22 @@ namespace AppView.Controllers
             ViewBag.listanh = album;
             return View();
         }
+
         [HttpPost]
-        public async Task<ActionResult> CreateSanPhamCT(SanPhamChiTiet spct , [FromBody] List<string> ImagesPath)
+        public List<Anh> LuuAnh([FromBody] List<string> ImagesPath)
+        {
+            var length = ImagesPath.Count;
+            for (int i = 0; i < length; i++)
+            {
+                var item = anhservice.GetAll().FirstOrDefault(c => c.Connect == ImagesPath[i]);
+                anhSanPhams.Add(item);
+            }
+            var anhSanPhamsJson = JsonConvert.SerializeObject(anhSanPhams);
+            HttpContext.Session.SetString("anhSanPhams", anhSanPhamsJson);
+            return anhSanPhams;
+        }
+        [HttpPost]
+        public async Task<ActionResult> CreateSanPhamCT(SanPhamChiTiet spct)
         {
             string url2 = $"https://localhost:7214/api/SanPhamChiTiet/CreateSanPhamChiTiet?iddm={spct.IdDanhMuc}&idcl={spct.IdChatLieu}&idms={spct.IdMauSac}&idsize={spct.IdSize}&idsp={spct.IDSP}&soluong={spct.SoLuong}&gia={spct.GiaBan}&mota={spct.MoTa}";
             //string url2 = ""; &idanh={spct.IdAnh}
@@ -846,6 +882,18 @@ namespace AppView.Controllers
                 }
                 else
                 {
+                    //var masp = _sanphamchitietservice.GetAll()[_sanphamchitietservice.GetAll().Count() - 1].MaSp;
+
+                    string anhSanPhamsJson = HttpContext.Session.GetString("anhSanPhams");
+                    List<Anh> anhSanPham1s = JsonConvert.DeserializeObject<List<Anh>>(anhSanPhamsJson);
+                    AnhSanPham anhSanPham = new AnhSanPham();
+                    foreach (var idanh in anhSanPham1s)
+                    {
+                        anhSanPham.IdSanPhamChiTiet = _sanphamchitietservice.GetAll().OrderByDescending(c => c.MaSp).First().Id;
+                        anhSanPham.Idanh = idanh.Id;
+                        _ianhsanpham.AddAnhChoSanPham(anhSanPham);
+                    }
+
                     return RedirectToAction("GellAllSanPhamCT");
                 }
             }
