@@ -501,7 +501,7 @@ namespace AppView.Controllers
         // san pham chi tiet
 
         [HttpGet]
-        public ActionResult GellAllSanPhamCT(Guid id, string name, string danhMucFilter, string chatLieuFilter, string ThuongHieuFilter, int trangthaiFilter)
+        public ActionResult GellAllSanPhamCT(Guid id, string name, string danhMucFilter, string chatLieuFilter, string ThuongHieuFilter, string  trangthaiFilter)
         {
 
             // list danh sach
@@ -546,26 +546,9 @@ namespace AppView.Controllers
             ViewBag.ChatlieuList = new SelectList(chatlieulist);
 
             //Lọc trạng thái 
-            //List<int> trangthai = new List<int>();
-            //foreach (var item in list)
-            //{
-            //    trangthai.Add(item.status);
-            //}
-            //var trangthailist = trangthai.Distinct();
-            //List<string> trangthaitext = new List<string>();
-            //foreach (var item in trangthailist)
-            //{
-            //    if (item == 0)
-            //    {
-            //        trangthaitext.Add("Hêt hàng");
-            //    }
-            //    else if (item == 1)
-            //    {
-            //        trangthaitext.Add("Còn hàng");
-            //    }
-            //}
-            //ViewBag.TrangthaiText = trangthaitext.Distinct();
-            //ViewBag.Trangthai = trangthailist;
+           
+            
+
 
             //Lọc theo thương hiệu
             List<string> tenthuonghieu = new List<string>();
@@ -660,36 +643,23 @@ namespace AppView.Controllers
                 var spct1 = _spctViewModel.GetAll().Where(c => c.ChatLieu == chatLieuFilter).ToList();
                 return View(spct1);
             }
-            //else if()
-            //{
-            //    foreach (var spct in sanphammangthuonghieu)
-            //    {
-            //        var spct1 = _spctViewModel.GetAll().FirstOrDefault(c => c.TenSP == spct);
-            //        sanphamchitiet.Add(spct1);
-            //    }
-            //    return View(sanphamchitiet);
-
-            //}
-            else if (name == null || name == "")
-            {
-                //foreach (var item in list)
-                //{
-                //    item.QRCode = GenerateQRCode(item.Id);
-                //}
-                return View(list);
-            }
             else if (trangthaiFilter != null)
             {
-                if (trangthaiFilter == 0)
+                if (Convert.ToInt32(trangthaiFilter) == 0)
                 {
-                    sanphamchitiet = list.Where(c => c.status == 0).ToList();
+                    sanphamchitiet = _spctViewModel.GetAll().Where(c => c.status == 0).ToList();
                 }
-                else if (trangthaiFilter == 1)
+                else if (Convert.ToInt32(trangthaiFilter) == 1)
                 {
-                    sanphamchitiet = list.Where(c => c.status == 1).ToList();
+                    sanphamchitiet = _spctViewModel.GetAll().Where(c => c.status == 1).ToList();
                 }
                 return View(sanphamchitiet);
             }
+            else if (name == null || name == "")
+            {
+                return View(list);
+            }
+            
             else
             {
 
