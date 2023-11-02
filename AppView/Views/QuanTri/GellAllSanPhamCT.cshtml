@@ -4,6 +4,7 @@
     ViewData["Title"] = "GellAllSanPhamCT";
     var lstmau = ViewBag.lstmausac;
     var lstsize = ViewBag.listSize;
+    var path = ViewBag.path;
 }
 
 <h1>Danh sách sản phẩm</h1>
@@ -155,7 +156,13 @@ else
                         @Html.DisplayFor(modelItem => item.Size)
                     </td>
                     <td>
-                       @* <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = item.Anh })" alt="Image" width="50%" height="50%" />*@
+
+                        @Url.Action("GellAllSanPhamCT", "QuanTri", new { id = item.Id })
+                        @for (var i = 0; i < path.Count; i++)
+                        {
+                            <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = path[i] })" alt="Image" width="50%" height="50%" />
+                        }
+                        @* *@
                     </td>
 
                     <td>
