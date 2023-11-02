@@ -12,11 +12,11 @@
     <div class="col-md-4">
         <form asp-action="CreateNguoiDung">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>           
-            <div class="form-group">
+            @* <div class="form-group">
                 <label asp-for="Anh" class="control-label"></label>
                 <input asp-for="Anh" class="form-control" />
                 <span asp-validation-for="Anh" class="text-danger"></span>
-            </div>
+            </div> *@
             <div class="form-group">
                 <label asp-for="TenNguoiDung" class="control-label"></label>
                 <input asp-for="TenNguoiDung" class="form-control" />
@@ -64,6 +64,12 @@
                 <input asp-for="DiaChi" class="form-control" />
                 <span asp-validation-for="DiaChi" class="text-danger"></span>
             </div>
+            
+            <div class="form-group">
+                <label asp-for="NgaySinh" class="control-label"></label>
+                <input asp-for="NgaySinh" class="form-control" type="date" id="ngaySinhInput" />
+                <span asp-validation-for="NgaySinh" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label class="control-label">Giới Tính</label>
                 <div class="form-check">
@@ -76,11 +82,7 @@
                 </div>
                 <span asp-validation-for="GioiTinh" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="NgaySinh" class="control-label"></label>
-                <input asp-for="NgaySinh" class="form-control" type="date" />
-                <span asp-validation-for="NgaySinh" class="text-danger"></span>
-            </div>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -97,6 +99,15 @@
         $('#ngaySinhInput').datepicker({
             format: 'dd/mm/yyyy',
             autoclose: true
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#ngaySinhInput').datepicker({
+            dateFormat: 'dd/mm/yy', // Định dạng dd/mm/yyyy
+            changeMonth: true,
+            changeYear: true
         });
     });
 </script>

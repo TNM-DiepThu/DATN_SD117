@@ -91,7 +91,7 @@ namespace AppData.Serviece.Implements
                 UserName = nguoiDung.username,
                 TenNguoiDung = nguoiDung.TenNguoiDung,
                 CCCD = nguoiDung.CCCD,
-                Anh = nguoiDung.Anh,
+                Anh = "user.png",
                 GioiTinh = nguoiDung.GioiTinh,
                 Email = nguoiDung.Email,
                 SDT = nguoiDung.SDT,
@@ -139,7 +139,7 @@ namespace AppData.Serviece.Implements
                 UserName = nguoiDung.username,
                 TenNguoiDung = nguoiDung.TenNguoiDung,
                 CCCD = nguoiDung.CCCD,
-                Anh = nguoiDung.Anh,
+                Anh = "user.png",
                 GioiTinh = nguoiDung.GioiTinh,
                 Email = nguoiDung.Email,
                 SDT = nguoiDung.SDT,
@@ -147,7 +147,7 @@ namespace AppData.Serviece.Implements
                 QuanHuyen = nguoiDung.QuanHuyen,
                 ThanhPho = nguoiDung.ThanhPho,
                 DiaChi = nguoiDung.DiaChi,
-                NgaySinh = nguoiDung.NgaySinh,
+                NgaySinh = Convert.ToDateTime(nguoiDung.NgaySinh),
                 status = 1
             };
 
@@ -196,6 +196,7 @@ namespace AppData.Serviece.Implements
             user.ThanhPho = nguoiDung.ThanhPho;
             user.DiaChi = nguoiDung.DiaChi;
             user.NgaySinh = nguoiDung.NgaySinh;
+            user.GioiTinh = nguoiDung.GioiTinh;
             user.status = nguoiDung.status;
 
             await _userManager.UpdateAsync(user);
