@@ -73,8 +73,8 @@
         {
             <tr>
                 <td>
-                    <img src="@item.Anh" alt="Hình ảnh" />
-                </td
+                    <img src="~/avatar/@item.Anh" alt="Hình ảnh"  width="100px" height="100px">
+                </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.username)
                 </td>
@@ -107,7 +107,7 @@
                 </td>
                 <td>
                     @{
-                        var gioitinhtxt = item.GioiTinh == 1 ? "Nữ" : "Nam";
+                        var gioitinhtxt = item.GioiTinh == 0 ? "Nữ" : "Nam";
                     }
                     @gioitinhtxt
                 </td>

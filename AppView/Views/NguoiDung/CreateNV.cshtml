@@ -12,11 +12,11 @@
     <div class="col-md-4">
         <form asp-action="CreateNV">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
+            @* <div class="form-group">
                 <label asp-for="Anh" class="control-label"></label>
                 <input asp-for="Anh" class="form-control" />
                 <span asp-validation-for="Anh" class="text-danger"></span>
-            </div>
+            </div> *@
             <div class="form-group">
                 <label asp-for="Email" class="control-label"></label>
                 <input asp-for="Email" class="form-control" />
@@ -63,12 +63,8 @@
                 <label asp-for="DiaChi" class="control-label"></label>
                 <input asp-for="DiaChi" class="form-control" />
                 <span asp-validation-for="DiaChi" class="text-danger"></span>
-            </div> 
-            <div class="form-group">
-                <label asp-for="NgaySinh" class="control-label"></label>
-                <input asp-for="NgaySinh" class="form-control" type="date" />
-                <span asp-validation-for="NgaySinh" class="text-danger"></span>
             </div>
+
             <div class="form-group">
                 <label class="control-label">Giới Tính</label>
                 <div class="form-check">
@@ -81,6 +77,12 @@
                 </div>
                 <span asp-validation-for="GioiTinh" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="NgaySinh" class="control-label"></label>
+                <input asp-for="NgaySinh" class="form-control" type="date" id="ngaySinhInput" />
+                <span asp-validation-for="NgaySinh" class="text-danger"></span>
+            </div>
+           
                     
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -92,12 +94,12 @@
 <div>
     <a asp-action="GetAllNV">Back to List</a>
 </div>
-@* <script>
-    // Thiết lập mã JavaScript để định dạng ngày tháng
+<script>
     $(document).ready(function () {
         $('#ngaySinhInput').datepicker({
-            format: 'dd/mm/yyyy',
-            autoclose: true
+            dateFormat: 'dd/mm/yy', // Định dạng dd/mm/yyyy
+            changeMonth: true,
+            changeYear: true
         });
     });
-</script> *@
+</script>

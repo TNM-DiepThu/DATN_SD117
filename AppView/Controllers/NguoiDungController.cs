@@ -7,6 +7,7 @@ using Microsoft.Azure.Cosmos;
 using Newtonsoft.Json;
 using System.Text;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 
 namespace AppView.Controllers
 {
@@ -14,6 +15,7 @@ namespace AppView.Controllers
     {
         private readonly HttpClient _httpClient;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly UserManager<NguoiDung> _userManager;
         public NguoiDungController(IWebHostEnvironment webHostEnvironment)
         {
             _httpClient = new HttpClient();
@@ -145,6 +147,49 @@ namespace AppView.Controllers
             {
                 return BadRequest("sai roi");
             }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> UploadAvatar(IFormFile imageFile, string userId)
+        {
+            if (imageFile != null && imageFile.Length > 0 && !string.IsNullOrEmpty(userId))
+            {
+                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "avatar");
+
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                // Tạo tên tệp ảnh duy nhất
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(stream);
+                }
+
+                // Lấy thông tin người dùng từ cơ sở dữ liệu
+                var user = await _userManager.FindByIdAsync(userId);
+
+                if (user != null)
+                {
+                    // Cập nhật đường dẫn ảnh vào thuộc tính Anh của người dùng
+                    user.Anh = Path.Combine("avatar", fileName);
+
+                    var result = await _userManager.UpdateAsync(user);
+
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction("UserProfile", new { userId });
+                    }
+                }
+            }
+
+            // Xử lý lỗi hoặc trả về view tùy theo trường hợp
+            return View("Error");
         }
     }
 }
