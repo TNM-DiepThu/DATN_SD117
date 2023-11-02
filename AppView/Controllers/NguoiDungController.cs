@@ -8,6 +8,9 @@ using Newtonsoft.Json;
 using System.Text;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using AppData.Serviece.Interfaces;
+using AppData.Serviece.Implements;
+using AppData.data;
 
 namespace AppView.Controllers
 {
@@ -16,10 +19,14 @@ namespace AppView.Controllers
         private readonly HttpClient _httpClient;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly UserManager<NguoiDung> _userManager;
-        public NguoiDungController(IWebHostEnvironment webHostEnvironment)
+        private readonly MyDbContext _dbContext;
+        public NguoiDungController(IWebHostEnvironment webHostEnvironment, UserManager<NguoiDung> userManager)
         {
             _httpClient = new HttpClient();
             _webHostEnvironment = webHostEnvironment;
+            _userManager = userManager;
+            _dbContext = new MyDbContext();
+            
         }
         [HttpGet]
         public async Task<IActionResult> NguoiDungView()
@@ -33,14 +40,7 @@ namespace AppView.Controllers
         {
             var response = await _httpClient.GetFromJsonAsync<List<NguoiDungVM>>($"https://localhost:7214/api/NguoiDung/GetAllNV");
             return View(response);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAllKH()
-        {
-            var response = await _httpClient.GetFromJsonAsync<List<NguoiDungVM>>($"https://localhost:7214/api/NguoiDung/GetAllKH");
-            return View(response);
-        }
+        }      
 
         [HttpGet]
         public ActionResult CreateNguoiDung()
@@ -109,11 +109,37 @@ namespace AppView.Controllers
             ViewBag.Roles = new SelectList(roles, "Name", "Name");
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction("CreateNguoiDung", "NguoiDung");
+                return RedirectToAction("NguoiDungView", "NguoiDung");
             }
             return View();
 
         }
+
+        [HttpGet]
+        public async Task<IActionResult> EditNV(Guid Id)
+        {
+            var response = await _httpClient.GetFromJsonAsync<NguoiDungVM>($"https://localhost:7214/api/NguoiDung/GetById/{Id}");
+            var roles = await _httpClient.GetFromJsonAsync<List<Quyen>>($"https://localhost:7214/api/Quyen/GetAllActive");
+            ViewBag.Roles = new SelectList(roles, "Name", "Name");
+            return View(response);
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditNV(Guid Id, NguoiDungVM UserUpdateVM)
+        {
+            var roleJson = JsonConvert.SerializeObject(UserUpdateVM);
+            HttpContent content = new StringContent(roleJson, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync($"https://localhost:7214/api/NguoiDung/Edit/{Id}", content);
+            var roles = await _httpClient.GetFromJsonAsync<List<QuyenVM>>($"https://localhost:7214/api/Quyen/GetAllActive");
+            ViewBag.Roles = new SelectList(roles, "Name", "Name");
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("GetAllNV", "NguoiDung");
+            }
+            return View();
+
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> Delete(Guid Id)
@@ -150,46 +176,125 @@ namespace AppView.Controllers
         }
 
 
-        [HttpPost]
-        public async Task<IActionResult> UploadAvatar(IFormFile imageFile, string userId)
+        //[HttpPost]
+        //public async Task<IActionResult> UploadAvatar(IFormFile imageFile, string userId)
+        //{
+        //    if (imageFile != null && imageFile.Length > 0 && !string.IsNullOrEmpty(userId))
+        //    {
+        //        var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "avatar");
+
+        //        if (!Directory.Exists(uploadsFolder))
+        //        {
+        //            Directory.CreateDirectory(uploadsFolder);
+        //        }
+
+        //        // Tạo tên tệp ảnh duy nhất
+        //        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+        //        var filePath = Path.Combine(uploadsFolder, fileName);
+
+        //        using (var stream = new FileStream(filePath, FileMode.Create))
+        //        {
+        //            await imageFile.CopyToAsync(stream);
+        //        }
+
+        //        // Lấy thông tin người dùng từ cơ sở dữ liệu
+        //        var user = await _userManager.FindByIdAsync(userId);
+
+        //        if (user != null)
+        //        {
+        //            // Cập nhật đường dẫn ảnh vào thuộc tính Anh của người dùng
+        //            user.Anh = Path.Combine("avatar", fileName);
+
+        //            var result = await _userManager.UpdateAsync(user);
+
+        //            if (result.Succeeded)
+        //            {
+        //                return RedirectToAction("UserProfile", new { userId });
+        //            }
+        //        }
+        //    }
+
+            // Xử lý lỗi hoặc trả về view tùy theo trường hợp
+        //    return View("Error");
+        //}
+
+        public async Task<NguoiDung> GetNguoiDungByIdAsync(Guid userId)
         {
-            if (imageFile != null && imageFile.Length > 0 && !string.IsNullOrEmpty(userId))
+            return await _userManager.FindByIdAsync(userId.ToString());
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditAvatar(Guid id, IFormFile imageFile)
+        {
+            // Lấy thông tin người dùng từ cơ sở dữ liệu dựa trên id
+            NguoiDung nguoiDung = await GetNguoiDungByIdAsync(id);
+
+            if (nguoiDung == null)
             {
-                var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "avatar");
+                return NotFound();
+            }
 
-                if (!Directory.Exists(uploadsFolder))
-                {
-                    Directory.CreateDirectory(uploadsFolder);
-                }
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "avatar");
+                string imagePath = Path.Combine(uploadsFolder, uniqueFileName);
 
-                // Tạo tên tệp ảnh duy nhất
-                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
-                var filePath = Path.Combine(uploadsFolder, fileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                using (var stream = new FileStream(imagePath, FileMode.Create))
                 {
                     await imageFile.CopyToAsync(stream);
                 }
 
-                // Lấy thông tin người dùng từ cơ sở dữ liệu
-                var user = await _userManager.FindByIdAsync(userId);
+                nguoiDung.Anh = uniqueFileName;
 
-                if (user != null)
+                // Lưu thông tin người dùng vào cơ sở dữ liệu bằng UserManager
+                var result = await _userManager.UpdateAsync(nguoiDung);
+                if (!result.Succeeded)
                 {
-                    // Cập nhật đường dẫn ảnh vào thuộc tính Anh của người dùng
-                    user.Anh = Path.Combine("avatar", fileName);
-
-                    var result = await _userManager.UpdateAsync(user);
-
-                    if (result.Succeeded)
-                    {
-                        return RedirectToAction("UserProfile", new { userId });
-                    }
+                    // Xử lý lỗi, ví dụ: result.Errors
+                    // Điều hướng hoặc thông báo lỗi
+                    return View();
                 }
             }
 
-            // Xử lý lỗi hoặc trả về view tùy theo trường hợp
-            return View("Error");
+            return RedirectToAction("NguoiDungView");
         }
+
+        [HttpPost]
+        public async Task<IActionResult> EditAvatarNV(Guid id, IFormFile imageFile)
+        {
+            // Lấy thông tin người dùng từ cơ sở dữ liệu dựa trên id
+            NguoiDung nguoiDung = await GetNguoiDungByIdAsync(id);
+
+            if (nguoiDung == null)
+            {
+                return NotFound();
+            }
+
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "avatar");
+                string imagePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var stream = new FileStream(imagePath, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(stream);
+                }
+
+                nguoiDung.Anh = uniqueFileName;
+
+                // Lưu thông tin người dùng vào cơ sở dữ liệu bằng UserManager
+                var result = await _userManager.UpdateAsync(nguoiDung);
+                if (!result.Succeeded)
+                {
+                    // Xử lý lỗi, ví dụ: result.Errors
+                    // Điều hướng hoặc thông báo lỗi
+                    return View();
+                }
+            }
+
+            return RedirectToAction("GetAllNV");
+        }
+
     }
 }
