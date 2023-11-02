@@ -2,7 +2,7 @@
 @model NguoiDungVM;
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Sửa thông tin nhân viên";
 }
 <html>
 <head>
@@ -18,7 +18,7 @@
     <hr />
     <div class="row">
         <div class="col-md-4">
-            <form asp-action="EditNguoiDung">
+            <form asp-action="EditNV">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="form-group">
                     <label asp-for="Email" class="control-label"></label>
@@ -101,7 +101,7 @@
             </form>
         </div>
         <div class="col-md-6">
-            <form asp-action="EditAvatar" method="post" asp-controller="NguoiDung" enctype="multipart/form-data">
+            <form asp-action="EditAvatarNV" method="post" asp-controller="NguoiDung" enctype="multipart/form-data">
                 <input type="hidden" name="id" value="@Model.id" />
                 <div class="form-group">
                     <label asp-for="ImageFile" class="control-label"></label>
@@ -113,7 +113,7 @@
     </div>
 
     <div>
-        <a asp-action="NguoiDungView">Back to List</a>
+        <a asp-action="GetAllNV">Back to List</a>
     </div>
 </body>
 
@@ -122,7 +122,7 @@
 <script>
     $(document).ready(function () {
         $('#ngaySinhInput').datepicker({
-            dateFormat: 'dd/mm/yy', 
+            dateFormat: 'dd/mm/yy', // Định dạng dd/mm/yyyy
             changeMonth: true,
             changeYear: true
         });
