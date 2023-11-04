@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,11 +6,9 @@ using System.Threading.Tasks;
 
 namespace AppData.ViewModal.Usermodalview
 {
-    public class NguoiDungVM
+    public class NguoiDungEditVM
     {
-        public IFormFile? ImageFile { get; set; }
-        public Guid id { get; set; }
-        public string? Anh { get; set; }
+        public Guid? Id { get; set; }
         public string Email { get; set; }
         public string username { get; set; }
         public string TenNguoiDung { get; set; }
@@ -24,6 +21,5 @@ namespace AppData.ViewModal.Usermodalview
         public DateTime NgaySinh { get; set; }
         public int GioiTinh { get; set; }
         public int status { get; set; }
-        public List<string>? roleNames { get; set; }
     }
 }

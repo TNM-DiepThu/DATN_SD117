@@ -71,17 +71,17 @@ namespace AppAPI.Controllers
         }
 
         [HttpPut("Edit/{id}")]
-        public async Task<ActionResult> Put(Guid id, [FromBody] NguoiDungVM nguoiDung)
+        public async Task<ActionResult> Put(Guid id, [FromBody] NguoiDungEditVM nguoiDung)
         {
             await _nguoiDungService.UpdateAsync(id, nguoiDung);
-            return NoContent();
+            return Ok();
         }
 
         [HttpDelete("Delete/{id}")]
         public async Task<ActionResult> Delete(Guid id)
         {
             await _nguoiDungService.DeleteAsync(id);
-            return NoContent();
+            return Ok();
         }
 
 
@@ -89,7 +89,7 @@ namespace AppAPI.Controllers
         public async Task<ActionResult> DeleteNV(Guid id)
         {
             await _nguoiDungService.DeleteAsync(id);
-            return NoContent();
+            return Ok();
         }
         [HttpPost("Login")]
         public async Task<IActionResult> LoginWithJWT(LoginRequestVM loginRequest)

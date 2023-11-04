@@ -179,17 +179,15 @@ namespace AppData.Serviece.Implements
             }
         }
 
-        public async Task UpdateAsync(Guid id, NguoiDungVM nguoiDung)
+        public async Task UpdateAsync(Guid id, NguoiDungEditVM nguoiDung)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)
                 return;
+            user.Email = nguoiDung.Email;
             user.UserName = nguoiDung.username; 
             user.TenNguoiDung = nguoiDung.TenNguoiDung;
             user.CCCD = nguoiDung.CCCD;
-            user.Anh = nguoiDung.Anh;
-            user.GioiTinh = nguoiDung.GioiTinh;
-            user.Email = nguoiDung.Email;
             user.SDT = nguoiDung.SDT;
             user.MatKhau = nguoiDung.MatKhau;
             user.QuanHuyen = nguoiDung.QuanHuyen;

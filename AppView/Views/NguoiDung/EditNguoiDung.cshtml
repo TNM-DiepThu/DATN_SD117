@@ -1,143 +1,112 @@
 ﻿@using AppData.ViewModal.Usermodalview;
-@model NguoiDungVM;
+@model NguoiDungEditVM;
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Sửa thông tin người dùng ";
 }
-<html>
-<head>
-    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-    <link rel="stylesheet" href="./css/filter_multi_select.css" />
-    <script src="./js/filter-multi-select-bundle.js"></script>
-</head>
-<body>
-    <h1>Update</h1>
 
-    <hr />
-    <div class="row">
-        <div class="col-md-4">
-            <form asp-action="EditNguoiDung">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group">
-                    <label asp-for="Email" class="control-label"></label>
-                    <input asp-for="Email" class="form-control" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
-                </div>
+<h1>Edit</h1>
 
-                <div class="form-group">
-                    <label asp-for="username" class="control-label"></label>
-                    <input asp-for="username" class="form-control" />
-                    <span asp-validation-for="username" class="text-danger"></span>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="EditNguoiDung">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="username" class="control-label"></label>
+                <input asp-for="username" class="form-control" />
+                <span asp-validation-for="username" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="TenNguoiDung" class="control-label"></label>
+                <input asp-for="TenNguoiDung" class="form-control" />
+                <span asp-validation-for="TenNguoiDung" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CCCD" class="control-label"></label>
+                <input asp-for="CCCD" class="form-control" />
+                <span asp-validation-for="CCCD" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="SDT" class="control-label"></label>
+                <input asp-for="SDT" class="form-control" />
+                <span asp-validation-for="SDT" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="MatKhau" class="control-label"></label>
+                <input asp-for="MatKhau" class="form-control" />
+                <span asp-validation-for="MatKhau" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="QuanHuyen" class="control-label"></label>
+                <input asp-for="QuanHuyen" class="form-control" />
+                <span asp-validation-for="QuanHuyen" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ThanhPho" class="control-label"></label>
+                <input asp-for="ThanhPho" class="form-control" />
+                <span asp-validation-for="ThanhPho" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DiaChi" class="control-label"></label>
+                <input asp-for="DiaChi" class="form-control" />
+                <span asp-validation-for="DiaChi" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Giới Tính</label>
+                <div class="form-check">
+                    <input asp-for="GioiTinh" class="form-check-input" type="radio" id="gioiTinhNam" value="0" checked>
+                    <label class="form-check-label" for="gioiTinhNam">Nam</label>
                 </div>
-                <div class="form-group">
-                    <label asp-for="TenNguoiDung" class="control-label"></label>
-                    <input asp-for="TenNguoiDung" class="form-control" />
-                    <span asp-validation-for="TenNguoiDung" class="text-danger"></span>
+                <div class="form-check">
+                    <input asp-for="GioiTinh" class="form-check-input" type="radio" id="gioiTinhNu" value="1">
+                    <label class="form-check-label" for="gioiTinhNu">Nữ</label>
                 </div>
-                <div class="form-group">
-                    <label asp-for="CCCD" class="control-label"></label>
-                    <input asp-for="CCCD" class="form-control" />
-                    <span asp-validation-for="CCCD" class="text-danger"></span>
+                <span asp-validation-for="GioiTinh" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Trạngt thái</label>
+                <div class="form-check">
+                    <input asp-for="status" class="form-check-input" type="radio" id="gioiTinhNam" value="1" checked>
+                    <label class="form-check-label" for="gioiTinhNam">Hoạt động</label>
                 </div>
-                <div class="form-group">
-                    <label asp-for="SDT" class="control-label"></label>
-                    <input asp-for="SDT" class="form-control" />
-                    <span asp-validation-for="SDT" class="text-danger"></span>
+                <div class="form-check">
+                    <input asp-for="status" class="form-check-input" type="radio" id="gioiTinhNu" value="0">
+                    <label class="form-check-label" for="gioiTinhNu">Không hoạt động</label>
                 </div>
-                <div class="form-group">
-                    <label asp-for="MatKhau" class="control-label"></label>
-                    <input asp-for="MatKhau" class="form-control" />
-                    <span asp-validation-for="MatKhau" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="QuanHuyen" class="control-label"></label>
-                    <input asp-for="QuanHuyen" class="form-control" />
-                    <span asp-validation-for="QuanHuyen" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="ThanhPho" class="control-label"></label>
-                    <input asp-for="ThanhPho" class="form-control" />
-                    <span asp-validation-for="ThanhPho" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="DiaChi" class="control-label"></label>
-                    <input asp-for="DiaChi" type="datetime" class="form-control" />
-                    <span asp-validation-for="DiaChi" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="NgaySinh" class="control-label"></label>
-                    <input asp-for="NgaySinh" class="form-control" type="date" id="ngaySinhInput" />
-                    <span asp-validation-for="NgaySinh" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label class="control-label">Giới Tính</label>
-                    <div class="form-check">
-                        <input asp-for="GioiTinh" class="form-check-input" type="radio" id="gioiTinhNam" value="1" checked>
-                        <label class="form-check-label" for="gioiTinhNam">Nam</label>
-                    </div>
-                    <div class="form-check">
-                        <input asp-for="GioiTinh" class="form-check-input" type="radio" id="gioiTinhNu" value="0">
-                        <label class="form-check-label" for="gioiTinhNu">Nữ</label>
-                    </div>
-                    <span asp-validation-for="GioiTinh" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label class="control-label">Giới Tính</label>
-                    <div class="form-check">
-                        <input asp-for="status" class="form-check-input" type="radio" id="gioiTinhNam" value="1" checked>
-                        <label class="form-check-label" for="gioiTinhNam">Hoạt động</label>
-                    </div>
-                    <div class="form-check">
-                        <input asp-for="status" class="form-check-input" type="radio" id="gioiTinhNu" value="0">
-                        <label class="form-check-label" for="gioiTinhNu">Không hoạt động</label>
-                    </div>
-                    <span asp-validation-for="status" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Edit" class="btn btn-primary" />
-                </div>
-            </form>
-        </div>
-        <div class="col-md-6">
-            <form asp-action="EditAvatar" method="post" asp-controller="NguoiDung" enctype="multipart/form-data">
-                <input type="hidden" name="id" value="@Model.id" />
-                <div class="form-group">
-                    <label asp-for="ImageFile" class="control-label"></label>
-                    <input type="file" name="imageFile" asp-for="ImageFile" class="form-control" />
-                </div>
-                <button type="submit" class="btn btn-primary">Thay avatar</button>
-            </form>
-        </div>
+                <span asp-validation-for="status" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="NgaySinh" class="control-label"></label>
+                <input asp-for="NgaySinh" class="form-control" type="date" id="ngaySinhInput" />
+                <span asp-validation-for="NgaySinh" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
+                <input type="submit" value="Edit" class="btn btn-primary" />
+            </div>
+        </form>
     </div>
+</div>
 
-    <div>
-        <a asp-action="NguoiDungView">Back to List</a>
-    </div>
-</body>
-
-</html>
-
-<script>
+<div>
+    <a asp-action="NguoiDungView">Back to List</a>
+</div>
+<@* script>
     $(document).ready(function () {
         $('#ngaySinhInput').datepicker({
-            dateFormat: 'dd/mm/yy', 
+            dateFormat: 'dd/mm/yy', // Định dạng dd/mm/yyyy
             changeMonth: true,
             changeYear: true
         });
     });
-</script>
-@section Scripts {
-    <script src="./js/filter-multi-select-bundle.js"></script>
-    <link rel="stylesheet" href="./css/filter_multi_select.css" />
-    <script>
-        $('#id_selectrole').multipleSelect({
-            selectAll: false,
-            keepOpen: false,
-            isOpen: false
-        });
-    </script>
-
-    <partial name="_ValidationScriptsPartial" />
-}
+</script> *@
