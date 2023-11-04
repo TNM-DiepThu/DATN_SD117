@@ -16,6 +16,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using AppData.Serviece.ViewModeService;
 using ZXing;
+using ZXing.Rendering;
+
 using iTextSharp.text.pdf.codec;
 using QRCoder;
 using ZXing.QrCode;
@@ -32,6 +34,8 @@ using LicenseContext = OfficeOpenXml.LicenseContext;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using AppData.Serviece.Interfaces;
 using AppData.Serviece.Implements;
+using iTextSharp.text.pdf.qrcode;
+using X.PagedList;
 
 namespace AppView.Controllers
 {
@@ -491,19 +495,29 @@ namespace AppView.Controllers
 
         }
         [HttpGet]
-        public void LayIdHienThiAnh(Guid idsp)
+        public ActionResult LayIdHienThiAnh(Guid idsp)
         {
             //Lấy ảnh ra theo id sản phẩm chi tiết
             // list ảnh lên 
+
+            var urllsstanh = $"https://localhost:7214/api/Anh/GetAllAnhByIDsp?idsp={idsp}";
+            var listanh = _client.GetAsync(urllsstanh).Result;
+            var dataanh = listanh.Content.ReadAsStringAsync().Result;
+            List<AnhSanPham> anhsanpham = JsonConvert.DeserializeObject<List<AnhSanPham>>(dataanh);
+            var idmang0 = anhsanpham[0].Idanh;
+            var path = anhservice.GetAll().FirstOrDefault(c => c.Id == idmang0).Connect;
             
-           
+            return RedirectToAction("GellAllSanPhamCT");
         }
         // san pham chi tiet
 
         [HttpGet]
-        public ActionResult GellAllSanPhamCT(Guid id, string name, string danhMucFilter, string chatLieuFilter, string ThuongHieuFilter, string  trangthaiFilter)
+        public ActionResult GellAllSanPhamCT(int? page, string name, string danhMucFilter, string chatLieuFilter, string ThuongHieuFilter, string trangthaiFilter)
         {
+            // phân trang 
 
+            int pageNumber = page ?? 1 ;
+            int pagesize = 5;
             // list danh sach
 
             string url = "https://localhost:7214/api/SanPhamChiTiet/GetAllSanphamchitietViewModel";
@@ -512,19 +526,7 @@ namespace AppView.Controllers
             List<SanPhamChiTietViewModel> list = JsonConvert.DeserializeObject<List<SanPhamChiTietViewModel>>(datalist);
 
             // view anh
-            var urllsstanh = $"https://localhost:7214/api/Anh/GetAllAnhByIDsp?idsp={id}";
-            var listanh = _client.GetAsync(urllsstanh).Result;
-            var dataanh = listanh.Content.ReadAsStringAsync().Result;
-            List<AnhSanPham> anhsanpham = JsonConvert.DeserializeObject<List<AnhSanPham>>(dataanh);
-
-
-            foreach (var item in anhsanpham)
-            {
-                var stringpath = _context.anhs.FirstOrDefault(c => c.Id == item.Idanh).Connect;
-                path.Add(stringpath);
-            }
-
-            ViewBag.path = path;
+           
             //View thương hiệu lên TABLE
             // lọc theo danh muc
             List<string> tendanhmuc = new List<string>();
@@ -546,8 +548,8 @@ namespace AppView.Controllers
             ViewBag.ChatlieuList = new SelectList(chatlieulist);
 
             //Lọc trạng thái 
-           
-            
+
+
 
 
             //Lọc theo thương hiệu
@@ -657,9 +659,36 @@ namespace AppView.Controllers
             }
             else if (name == null || name == "")
             {
-                return View(list);
+
+
+                //foreach (var item in list)
+                //{
+                //    SanPhamChiTietViewModel product = _spctViewModel.GetById(item.Id);
+                //    string infor = "Mã Sản phẩm :" + product.MaSp + " Tên: " + product.TenSP + " Màu sắc :" + product.MauSac + "Chất liệu: " + product.ChatLieu + " Size :" + product.Size;
+                //    if (product != null)
+                //    {
+                //        // Tạo barcode cho sản phẩm
+                //        QRCodeGenerator qrGenerator = new QRCodeGenerator();
+                //        QRCodeData qrCodeData = qrGenerator.CreateQrCode(infor, QRCodeGenerator.ECCLevel.Q);
+
+                //        QRCode qrCode = new QRCode(qrCodeData);
+                //        Bitmap qrCodeImage = qrCode.GetGraphic(20, Color.Black, Color.White, new QRCodeGenerator());
+
+                //        using (var stream = new MemoryStream())
+                //        {
+                //            qrCodeImage.Save(stream, ImageFormat.Png);
+                //            return File(stream.ToArray(), "image/png");
+                //        }
+                //    }
+                //}
+                var products = list;
+                var model = new SanPhamChiTietViewModel
+                {
+                    Products = products.ToPagedList(pageNumber, pagesize)
+                };
+                return View(model);
             }
-            
+
             else
             {
 
@@ -672,80 +701,68 @@ namespace AppView.Controllers
         }
 
         // tạo QrCode cho SanphamCTViewModel 
-        //public IActionResult GenerateBarcode(Guid Id)
-        //{
-        //    // Tìm sản phẩm trong cơ sở dữ liệu bằng productId
-        //    SanPhamChiTietViewModel product = _spctViewModel.GetById(Id);
-
-        //    if (product != null)
-        //    {
-        //        // Tạo barcode cho sản phẩm
-        //        BarcodeWriter<Bitmap> barcodeWriter = new BarcodeWriter<Bitmap>();
-        //        barcodeWriter.Format = BarcodeFormat.QR_CODE; // Chọn định dạng barcode
-        //        var barcodeBitmap = barcodeWriter.Write(product);
-
-        //        // Lưu hình ảnh barcode vào thư mục hoặc cơ sở dữ liệu
-
-        //        // Trả về hình ảnh barcode dưới dạng FileResult
-        //        return File(ImageToByte2D(barcodeBitmap), "image/png");
-        //    }
-
-        //    // Xử lý trường hợp sản phẩm không tồn tại
-        //    return NotFound();
-        //}
-        //public static byte[] ImageToByte2D(Bitmap img)
-        //{
-        //    using (MemoryStream stream = new MemoryStream())
-        //    {
-        //        img.Save(stream, ImageFormat.Png);
-        //        return stream.ToArray();
-        //    }
-        //}
-
-        public string GenerateQRCode(Guid id)
+        public IActionResult GenerateBarcode(Guid Id)
         {
-            // Truy xuất thông tin đối tượng dựa trên ID
-            SanPhamChiTietViewModel spct = _spctViewModel.GetById(id);
+            // Tìm sản phẩm trong cơ sở dữ liệu bằng productId
+            SanPhamChiTietViewModel product = _spctViewModel.GetById(Id);
+           
 
-            if (spct != null)
-            {
-                string infor = "Mã Sản phẩm :" + spct.MaSp + " Tên: " + spct.TenSP + " Màu sắc :" + spct.MauSac + "Chất liệu: " + spct.ChatLieu + " Size :" + spct.Size;
-                // Tạo mã QR từ thông tin đối tượng
-                BarcodeWriter<Bitmap> qrCodeWriter = new BarcodeWriter<Bitmap>();
-                qrCodeWriter.Format = BarcodeFormat.QR_CODE;
-                qrCodeWriter.Options = new QrCodeEncodingOptions
-                {
-                    DisableECI = true,
-                    CharacterSet = "UTF-8",
-                    Width = 200,
-                    Height = 200,
-                };
-
-                var qrCodeBitmap = qrCodeWriter.Write(infor);
-
-                // Chuyển đổi mã QR thành một dạng hiển thị trên giao diện
-                using (var bitmap = new Bitmap(qrCodeBitmap))
-                {
-                    var byteArray = BitmapToByteArray(bitmap);
-                    var base64String = Convert.ToBase64String(byteArray);
-
-                    // Trả về mã QR dưới dạng hình ảnh hoặc sử dụng nó trong giao diện
-                    return $"<img src='data:image/png;base64,{base64String}' />";
-                }
-            }
-            else
-            {
-                return "Không tìm thấy đối tượng.";
-            }
+            // Xử lý trường hợp sản phẩm không tồn tại
+            return NotFound();
         }
-        private byte[] BitmapToByteArray(Bitmap bitmap)
+        public static byte[] ImageToByte2D(Bitmap img)
         {
             using (MemoryStream stream = new MemoryStream())
             {
-                bitmap.Save(stream, ImageFormat.Png);
+                img.Save(stream, ImageFormat.Png);
                 return stream.ToArray();
             }
         }
+
+        //public string GenerateQRCode(Guid id)
+        //{
+        //    // Truy xuất thông tin đối tượng dựa trên ID
+        //    SanPhamChiTietViewModel spct = _spctViewModel.GetById(id);
+
+        //    if (spct != null)
+        //    {
+        //        string infor = "Mã Sản phẩm :" + spct.MaSp + " Tên: " + spct.TenSP + " Màu sắc :" + spct.MauSac + "Chất liệu: " + spct.ChatLieu + " Size :" + spct.Size;
+        //        // Tạo mã QR từ thông tin đối tượng
+        //        BarcodeWriter<Bitmap> qrCodeWriter = new BarcodeWriter<Bitmap>();
+        //        qrCodeWriter.Format = BarcodeFormat.QR_CODE;
+        //        qrCodeWriter.Options = new QrCodeEncodingOptions
+        //        {
+        //            DisableECI = true,
+        //            CharacterSet = "UTF-8",
+        //            Width = 200,
+        //            Height = 200,
+        //        };
+
+        //        var qrCodeBitmap = qrCodeWriter.Write(infor);
+
+        //        // Chuyển đổi mã QR thành một dạng hiển thị trên giao diện
+        //        using (var bitmap = new Bitmap(qrCodeBitmap))
+        //        {
+        //            var byteArray = BitmapToByteArray(bitmap);
+        //            var base64String = Convert.ToBase64String(byteArray);
+
+        //            // Trả về mã QR dưới dạng hình ảnh hoặc sử dụng nó trong giao diện
+        //            return $"<img src='data:image/png;base64,{base64String}' />";
+        //        }
+        //    }
+        //    else
+        //    {
+        //        return "Không tìm thấy đối tượng.";
+        //    }
+        //}
+        //private byte[] BitmapToByteArray(Bitmap bitmap)
+        //{
+        //    using (MemoryStream stream = new MemoryStream())
+        //    {
+        //        bitmap.Save(stream, ImageFormat.Png);
+        //        return stream.ToArray();
+        //    }
+        //}
         // Kết thúc 
 
         [HttpGet]
@@ -1087,7 +1104,7 @@ namespace AppView.Controllers
                                 ChatLieu = worksheet.Cells[row, 3].Value.ToString(),
                                 MauSac = worksheet.Cells[row, 4].Value.ToString(),
                                 Size = worksheet.Cells[row, 5].Value.ToString(),
-                                Anh = worksheet.Cells[row, 6].Value.ToString(),
+                                //Anh = worksheet.Cells[row, 6].Value.ToString(),
                                 SoLuong = Convert.ToInt32(worksheet.Cells[row, 7].Value),
                                 GiaBan = Convert.ToDecimal(worksheet.Cells[row, 8].Value),
                                 MoTa = worksheet.Cells[row, 9].Value.ToString()

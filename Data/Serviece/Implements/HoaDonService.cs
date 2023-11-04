@@ -10,20 +10,20 @@ using System.Threading.Tasks;
 
 namespace AppData.Serviece.Implements
 {
-    public class HoaDonService<T> : IHoaDonService<T> where T : class
+    public class HoaDonService : IHoaDonService
     {
-        public MyDbContext _dbContext;
-        public DbSet<T> _dbSet;
-        public HoaDonService(MyDbContext dbContext, DbSet<T> dbSet) 
+        public readonly MyDbContext _dbContext;
+
+        public HoaDonService() 
         {
-            _dbContext = dbContext;
-            this._dbSet = dbSet;
+            _dbContext = new MyDbContext();
+
         }
-        public bool AddItem(T item)
+        public bool AddItem(HoaDon hd)
         {
             try
             {
-                _dbSet.Add(item);
+                _dbContext.hoaDons.Add(hd);
                 _dbContext.SaveChanges();
                 return true;
             }
@@ -33,11 +33,11 @@ namespace AppData.Serviece.Implements
             }
         }
 
-        public bool EditItem(T item)
+        public bool EditItem(HoaDon item)
         {
             try
             {
-                _dbSet.Update(item);
+                _dbContext.Update(item);
                 _dbContext.SaveChanges();
                 return true;
             }
@@ -47,9 +47,9 @@ namespace AppData.Serviece.Implements
             }
         }
 
-        public IEnumerable<T> GetAll()
+        public List<HoaDon> GetAll()
         {
-            return _dbSet.ToList();
+            return _dbContext.hoaDons.ToList();
         }
 
         public HoaDon GetByID(Guid id)
@@ -57,11 +57,11 @@ namespace AppData.Serviece.Implements
             return _dbContext.hoaDons.FirstOrDefault(c => c.Id == id);
         }
 
-        public bool RemoveItem(T item)
+        public bool RemoveItem(HoaDon item)
         {
             try
             {
-                _dbSet.Remove(item);
+                _dbContext.Update(item);
                 _dbContext.SaveChanges();
                 return true;
             }

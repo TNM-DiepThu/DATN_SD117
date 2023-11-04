@@ -92,7 +92,6 @@ namespace AppAPI.Controllers
             {
                 return "Them so luong that bai.";
             }
-
         }
         [HttpDelete("[action]")]
         public bool XoaSanPham(Guid id)

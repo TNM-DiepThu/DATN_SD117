@@ -1,4 +1,6 @@
-﻿using AppData.ViewModal.SanPhamChiTietVM;
+﻿using AppData.Serviece.Implements;
+using AppData.Serviece.Interfaces;
+using AppData.ViewModal.SanPhamChiTietVM;
 using Bill.Serviece.Implements;
 using Bill.Serviece.Interfaces;
 using System;
@@ -15,6 +17,7 @@ namespace AppData.Serviece.ViewModeService
         private readonly ISanPhamServiece _sanpham;
         private readonly IMauSacServiece _mausac;
         private readonly IChatLieuServiece _chatlieu;
+        private readonly IAnhSanPhamService _anhsanpham;
         private readonly ISizeServiece _size;
         private readonly IDanhMucServiece _danhmuc;
         private readonly IAnhServiece _anh;
@@ -22,6 +25,7 @@ namespace AppData.Serviece.ViewModeService
         {
             _anh = new AnhServiece();
             _spct = new SanPhamChiTietServiece();
+            _anhsanpham = new AnhSanPhamService();
             _sanpham = new SanPhamServiece();
             _mausac = new MauSacServiece();
             _chatlieu = new ChatLieuServiece();
@@ -30,30 +34,29 @@ namespace AppData.Serviece.ViewModeService
         }
         public List<SanPhamChiTietViewModel> GetAll()
         {
-            var spct = from a in _spct.GetAll()
-                       join b in _sanpham.GetAll() on a.IDSP equals b.Id
-                       join c in _mausac.GetAll() on a.IdMauSac equals c.Id
-                       join d in _danhmuc.GetAll() on a.IdDanhMuc equals d.Id
-                       join e in _size.GetAll() on a.IdSize equals e.Id
-                       //join f in _anh.GetAll() on a.IdAnh equals f.Id
-                       join h in _chatlieu.GetAll() on a.IdChatLieu equals h.Id
-                       select new SanPhamChiTietViewModel
-                       {
-                           Id = a.Id,
-                           DanhMuc = d.TenDanhMuc,
-                           TenSP = b.TenSanPham,
-                           ChatLieu = h.TenChatLieu,
-                           MauSac = c.TenMauSac,
-                           Size = e.SizeName,
-                           //Anh = f.Connect,
-                           MaSp = a.MaSp,
-                           SoLuong = a.SoLuong,
-                           GiaBan = a.GiaBan,
-                           MoTa = a.MoTa,
-                           status = a.status,
-                       };
-            return spct.ToList();
+            //List<SanPhamChiTietViewModel> lstsp = new List<SanPhamChiTietViewModel>();
+                var spct = from a in _spct.GetAll()
+                           join b in _sanpham.GetAll() on a.IDSP equals b.Id
+                           join c in _mausac.GetAll() on a.IdMauSac equals c.Id
+                           join d in _danhmuc.GetAll() on a.IdDanhMuc equals d.Id
+                           join e in _size.GetAll() on a.IdSize equals e.Id
+                           join h in _chatlieu.GetAll() on a.IdChatLieu equals h.Id
+                           select new SanPhamChiTietViewModel
+                           {
+                               Id = a.Id,
+                               DanhMuc = d.TenDanhMuc,
+                               TenSP = b.TenSanPham,
+                               ChatLieu = h.TenChatLieu,
+                               MauSac = c.TenMauSac,
+                               Size = e.SizeName,
+                               MaSp = a.MaSp,
+                               SoLuong = a.SoLuong,
+                               GiaBan = a.GiaBan,
+                               MoTa = a.MoTa,
+                               status = a.status,
+                           };
 
+            return spct.ToList();
         }
         public SanPhamChiTietViewModel GetById(Guid ID)
         {
@@ -72,7 +75,6 @@ namespace AppData.Serviece.ViewModeService
                            ChatLieu = h.TenChatLieu,
                            MauSac = c.TenMauSac,
                            Size = e.SizeName,
-                           //Anh = f.Connect,
                            MaSp = a.MaSp,
                            SoLuong = a.SoLuong,
                            GiaBan = a.GiaBan,

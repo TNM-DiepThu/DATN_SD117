@@ -15,7 +15,7 @@ namespace AppData.Serviece.ViewModeService
 {
     public class HoaDonChiTietViewModelService
     {
-        private readonly IHoaDonService<HoaDon> _hoaDonService;
+        private readonly IHoaDonService _hoaDonService;
         private readonly IHoaDonCTService<HoaDonChiTiet> _hoaDonCTService;
         private readonly GioHangChiTietViewModelService _gioHangCTService;
         private readonly SanPhamChiTietViewModelService _spctvmservice;
@@ -24,7 +24,7 @@ namespace AppData.Serviece.ViewModeService
         public HoaDonChiTietViewModelService()
         {
             _context = new MyDbContext();
-            _hoaDonService = new HoaDonService<HoaDon>(_context, _context.hoaDons);
+            _hoaDonService = new HoaDonService();
             _hoaDonCTService = new HoaDonCTService<HoaDonChiTiet>(_context, _context.hoaDonChiTiets);
             _gioHangCTService = new GioHangChiTietViewModelService();
             _spctvmservice = new SanPhamChiTietViewModelService();

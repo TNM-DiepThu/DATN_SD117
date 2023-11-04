@@ -14,15 +14,13 @@ namespace AppAPI.Controllers
     [ApiController]
     public class HoaDonController : ControllerBase
     {
-        private readonly IHoaDonService<HoaDon> _hoaDonService;
+        private readonly IHoaDonService _hoaDonService;
         private MyDbContext _dbContext = new MyDbContext();
-        private DbSet<HoaDon> hd;
+
 
         public HoaDonController()
         {
-            hd = _dbContext.hoaDons;
-            HoaDonService<HoaDon> all = new HoaDonService<HoaDon>(_dbContext, hd);
-            _hoaDonService = all;
+            _hoaDonService = new HoaDonService();
         }
         [HttpGet("GetByID")]
         public HoaDon GetByID(Guid Id)
@@ -37,16 +35,15 @@ namespace AppAPI.Controllers
         }
 
         // POST api/<HoaDonController>
-        [HttpPost("create-hoadon")]
-        public bool CreateHoaDon(string mahd, DateTime ngaytao, int soluong, decimal tongtien, decimal tienvanchuyen, DateTime ngaygiao, DateTime ngaynhan, string nguoinhan, string sdt, string quanhuyen, string tinh, string diachi, DateTime ngaythanhtoan, string ghichu, int trangthai, Guid idnguoidung, Guid idvoucherdetail, Guid idhttt)
+        [HttpPost("[action]")]
+        public bool CreateHoaDon(DateTime ngaytao, int soluong, decimal tongtien, decimal tienvanchuyen, DateTime ngaygiao, DateTime ngaynhan, string nguoinhan, string sdt, string quanhuyen, string tinh, string diachi, DateTime ngaythanhtoan, string ghichu,  Guid idnguoidung, Guid idvoucherdetail, Guid idhttt)
         {
-
             HoaDon hd = new HoaDon();
             hd.Id = Guid.NewGuid();
             hd.IdNguoiDunh = idnguoidung;
             hd.IdVoucherDetail = idvoucherdetail;
             hd.IDHTTT = idhttt;
-            hd.MaHD = mahd;
+            hd.MaHD = Convert.ToString(hd.Id).Substring(0, 8).ToUpper();
             hd.NgayTao = ngaytao;
             hd.SoLuong = soluong;
             hd.TongTien = tongtien;
@@ -60,23 +57,20 @@ namespace AppAPI.Controllers
             hd.DiaChi = diachi;
             hd.NgayThanhToan = ngaythanhtoan;
             hd.GhiChu = ghichu;
-            hd.status = trangthai;
-
+            hd.status = 1;
             return _hoaDonService.AddItem(hd);
-            
         }
 
         // PUT api/<HoaDonController>/5
-        [HttpPut("update-hoadon")]
-        public bool UpdateHoaDon(Guid id, string mahd, DateTime ngaytao, int soluong, decimal tongtien, decimal tienvanchuyen, DateTime ngaygiao, DateTime ngaynhan, string nguoinhan, string sdt, string quanhuyen, string tinh, string diachi, DateTime ngaythanhtoan, string ghichu, int trangthai, Guid idnguoidung, Guid idvoucherdetail, Guid idhttt)
+        [HttpPut("[action]")]
+        public bool UpdateHoaDon(Guid id,  DateTime ngaygiao, DateTime ngaynhan, string nguoinhan, string sdt, string quanhuyen, string tinh, string diachi, DateTime ngaythanhtoan, string? ghichu,   Guid idvoucherdetail, Guid idhttt)
         {
             var hd = _hoaDonService.GetAll().First(c => c.Id == id);
-           
-            hd.MaHD = mahd;
-            hd.NgayTao = ngaytao;
-            hd.SoLuong = soluong;
-            hd.TongTien = tongtien;
-            hd.TienVanChuyen = tienvanchuyen;
+          
+            hd.NgayTao = DateTime.Now;
+            hd.SoLuong = 0;
+            hd.TongTien = 0;
+            hd.TienVanChuyen = 0;
             hd.NgayGiao = ngaygiao;
             hd.NgayNhan = ngaynhan;
             hd.NguoiNhan = nguoinhan;
@@ -86,15 +80,15 @@ namespace AppAPI.Controllers
             hd.DiaChi = diachi;
             hd.NgayThanhToan = ngaythanhtoan;
             hd.GhiChu = ghichu;
-            hd.status = trangthai;
-            hd.IdNguoiDunh = idnguoidung;
+            hd.status = 1;
+            //hd.IdNguoiDunh = idnguoidung;
             hd.IdVoucherDetail = idvoucherdetail;
             hd.IDHTTT = idhttt;
             return _hoaDonService.EditItem(hd);
         }
 
         // DELETE api/<HoaDonController>/5
-        [HttpDelete("delete-hoadon")]
+        [HttpPut("[action]")]
         public bool Delete(Guid id)
         {
             var hd = _hoaDonService.GetAll().First(c => c.Id == id);
