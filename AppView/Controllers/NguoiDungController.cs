@@ -93,20 +93,16 @@ namespace AppView.Controllers
         [HttpGet]
         public async Task<IActionResult> EditNguoiDung(Guid Id)
         {
-            var response = await _httpClient.GetFromJsonAsync<NguoiDungVM>($"https://localhost:7214/api/NguoiDung/GetById/{Id}");
-            var roles = await _httpClient.GetFromJsonAsync<List<Quyen>>($"https://localhost:7214/api/Quyen/GetAllActive");
-            ViewBag.Roles = new SelectList(roles, "Name", "Name");
+            var response = await _httpClient.GetFromJsonAsync<NguoiDungEditVM>($"https://localhost:7214/api/NguoiDung/GetById/{Id}");
             return View(response);
 
         }
         [HttpPost]
-        public async Task<IActionResult> EditNguoiDung(Guid Id, NguoiDungVM UserUpdateVM)
+        public async Task<IActionResult> EditNguoiDung(Guid Id, NguoiDungEditVM UserUpdateVM)
         {
             var roleJson = JsonConvert.SerializeObject(UserUpdateVM);
             HttpContent content = new StringContent(roleJson, Encoding.UTF8, "application/json");
             var response = await _httpClient.PutAsync($"https://localhost:7214/api/NguoiDung/Edit/{Id}", content);
-            var roles = await _httpClient.GetFromJsonAsync<List<QuyenVM>>($"https://localhost:7214/api/Quyen/GetAllActive");
-            ViewBag.Roles = new SelectList(roles, "Name", "Name");
             if (response.IsSuccessStatusCode)
             {
                 return RedirectToAction("NguoiDungView", "NguoiDung");
@@ -283,17 +279,14 @@ namespace AppView.Controllers
 
                 nguoiDung.Anh = uniqueFileName;
 
-                // Lưu thông tin người dùng vào cơ sở dữ liệu bằng UserManager
                 var result = await _userManager.UpdateAsync(nguoiDung);
                 if (!result.Succeeded)
                 {
-                    // Xử lý lỗi, ví dụ: result.Errors
-                    // Điều hướng hoặc thông báo lỗi
                     return View();
                 }
             }
 
-            return RedirectToAction("GetAllNV");
+            return RedirectToAction("NguoiDungView");
         }
 
     }
