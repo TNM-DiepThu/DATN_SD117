@@ -1,6 +1,7 @@
 ﻿using AppData.model;
 using AppData.Serviece.Implements;
 using AppData.Serviece.Interfaces;
+using AppData.ViewModal.SanPhamChiTietVM;
 using Bill.Serviece.Implements;
 using Bill.Serviece.Interfaces;
 
@@ -36,6 +37,21 @@ namespace AppAPI.Controllers
         public IEnumerable<AnhSanPham> GetAllAnhByIDsp(Guid idsp)
         {
             return anhSanPhamService.GetAllAnhChoSanPhamBySP(idsp);
+        }
+
+        [HttpGet("[action]")]
+        public List<Guid> Test(Guid idsp)
+        {
+            List<Guid> DanhsachIdAnh = new List<Guid>();
+   
+            foreach(var sp in anhSanPhamService.GetAllAnhChoSanPham())
+            {
+                if(sp.IdSanPhamChiTiet == idsp)
+                {
+                    DanhsachIdAnh.Add(sp.Idanh);
+                }
+            }
+            return DanhsachIdAnh;
         }
         [HttpPost("Create")]
         public bool CreateAnh(string name)

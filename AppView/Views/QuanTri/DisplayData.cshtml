@@ -31,7 +31,7 @@
                 @Html.DisplayNameFor(model => model.Size)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Anh)
+               @* @Html.DisplayNameFor(model => model.Oneanh)*@
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.SoLuong)
@@ -71,7 +71,7 @@
                     @Html.DisplayFor(modelItem => item.Size)
                 </td>
                 <td>
-                    <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = item.Anh })" alt="Image" width="70%" height="70%" />
+                    @*<img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = item.Oneanh })" alt="Image" width="70%" height="70%" />*@
                 </td>
 
                 <td>

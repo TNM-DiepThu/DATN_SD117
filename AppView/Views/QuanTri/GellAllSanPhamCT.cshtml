@@ -1,4 +1,5 @@
-﻿@model IEnumerable<AppData.ViewModal.SanPhamChiTietVM.SanPhamChiTietViewModel>
+﻿@model AppData.ViewModal.SanPhamChiTietVM.SanPhamChiTietViewModel
+@using X.PagedList.Mvc.Core
 
 @{
     ViewData["Title"] = "GellAllSanPhamCT";
@@ -30,6 +31,50 @@ else
 
     a {
         font-size: 16px;
+    }
+
+    /* Điều chỉnh màu nền và màu chữ cho các nút phân trang */
+    .pagedList a {
+        background-color: #007bff;
+        color: #fff;
+        padding: 5px 10px;
+        margin: 2px;
+        border: 1px solid #007bff;
+        border-radius: 3px;
+        text-decoration: none;
+    }
+
+    /* Điều chỉnh màu nền và màu chữ cho nút trang hiện tại */
+    .pagedList .active {
+        background-color: #333;
+        color: #fff;
+        padding: 5px 10px;
+        margin: 2px;
+        border: 1px solid #333;
+        border-radius: 3px;
+        text-decoration: none;
+    }
+
+    /* Điều chỉnh kiểu hiển thị cho liên kết "Trang trước" và "Trang sau" */
+    .pagedList .pagedList-skip {
+        background-color: #f8f9fa;
+        color: #333;
+        padding: 5px 10px;
+        margin: 2px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        text-decoration: none;
+    }
+
+    /* Điều chỉnh kiểu hiển thị cho các liên kết "Trang đầu" và "Trang cuối" */
+    .pagedList .pagedList-skip-strong {
+        background-color: #f8f9fa;
+        color: #333;
+        padding: 5px 10px;
+        margin: 2px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        text-decoration: none;
     }
 </style>
 
@@ -111,7 +156,7 @@ else
                     @Html.DisplayNameFor(model => model.Size)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Anh)
+                    @*@Html.DisplayNameFor(model => model.Oneanh)*@
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.SoLuong)
@@ -131,7 +176,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+            @foreach (var item in Model.Products)
             {
                 <tr>
                     @*<td>
@@ -157,12 +202,10 @@ else
                     </td>
                     <td>
 
-                        @Url.Action("GellAllSanPhamCT", "QuanTri", new { id = item.Id })
-                        @for (var i = 0; i < path.Count; i++)
-                        {
-                            <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = path[i] })" alt="Image" width="50%" height="50%" />
-                        }
-                        @* *@
+                        @Url.Action("LayIdHienThiAnh", "QuanTri", new { id = item.Id })
+                        
+                            @*<img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = path[i] })" alt="Image" width="50%" height="50%" />*@
+
                     </td>
 
                     <td>
@@ -185,7 +228,7 @@ else
                         }
                     </td>
                     <td>
-                        <img src="@item.QRCode" alt="QR Code" />
+                        @*<img src="data:image/png;base64,@Convert.ToBase64String(item.QRCode)" alt="QR Code" />*@
                     </td>
                     <td>
                         <a href="@Url.Action("UpdateSanPhamCT","QuanTri",new { id = item.Id})">
@@ -202,5 +245,6 @@ else
             }
         </tbody>
     </table>
+    @Html.PagedListPager(Model.Products , page =>  Url.Action("GellAllSanPhamCT", new { page }), new X.PagedList.Web.Common.PagedListRenderOptions { Display = X.PagedList.Web.Common.PagedListDisplayMode.IfNeeded })
 </form>
 

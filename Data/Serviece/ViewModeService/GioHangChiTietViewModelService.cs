@@ -33,6 +33,7 @@ namespace AppData.Serviece.ViewModeService
         public IEnumerable<GioHangChiTietViewModel> GetAllListGioHang(Guid idNguoiDung)
         {
             IEnumerable<GioHangChiTietViewModel> lst = new List<GioHangChiTietViewModel>();
+            
             if (_giohangctservice.GetAllGioHangTheoNguoiDungDangNhap(idNguoiDung).Any(c => c.IdComboChiTiet == null))
             {
                      lst = from a in _giohangctservice.GetAllGioHangTheoNguoiDungDangNhap(idNguoiDung)
@@ -46,7 +47,7 @@ namespace AppData.Serviece.ViewModeService
                               TenSanPham = _spctviewmodelservice.GetAll().FirstOrDefault(c => c.Id == a.IdSanPhamChiTiet).TenSP,
                               Mausac = c.MauSac,
                               Size = c.Size,
-                              anh = c.Anh,
+                              //anh = c.Anh[0].ToString(),
                               Soluong = a.SoLuong,
                               GiaSanPham = a.DonGia,
                               TienGiamGia = 0,
