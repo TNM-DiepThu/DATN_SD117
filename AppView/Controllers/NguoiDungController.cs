@@ -248,11 +248,11 @@ namespace AppView.Controllers
                 {
                     // Xử lý lỗi, ví dụ: result.Errors
                     // Điều hướng hoặc thông báo lỗi
-                    return View();
+                    return View("Error");
                 }
             }
 
-            return RedirectToAction("NguoiDungView");
+            return RedirectToAction("EditNguoiDung");
         }
 
         [HttpPost]
