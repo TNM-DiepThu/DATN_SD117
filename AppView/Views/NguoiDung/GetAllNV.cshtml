@@ -119,7 +119,7 @@
                 </td>
                 <td>
                     <div class="action-buttons" style="display: flex; gap: 15px;">
-                        <a href="@Url.Action("EditNguoiDung", "NguoiDung", new { id = item.id })" style="width: 15px; height: 15px;">
+                        <a href="@Url.Action("EditNV", "NguoiDung", new { id = item.id })" style="width: 15px; height: 15px;">
                             <i class="fas fa-pen" style="color: #007bff;"></i>
                         </a>
                         <form method="post" action="@Url.Action("Delete", "NguoiDung", new { id = item.id })">
