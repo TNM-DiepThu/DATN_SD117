@@ -5,7 +5,7 @@
     ViewData["Title"] = "GellAllSanPhamCT";
     var lstmau = ViewBag.lstmausac;
     var lstsize = ViewBag.listSize;
-    var path = ViewBag.path;
+    //var path = ViewBag.path;
 }
 
 <h1>Danh sách sản phẩm</h1>
@@ -117,7 +117,7 @@ else
                     </select>
                 </div>
                 <div class="col-2">
-                    <label  class="control-label">Trạng thái: </label>
+                    <label class="control-label">Trạng thái: </label>
                     <select id="trangthaiFilter" name="trangthaiFilter" class="form-control">
                         <option value="">All</option>
                         <option value="0">Hết hàng</option>
@@ -138,34 +138,34 @@ else
                 @Html.DisplayNameFor(model => model.Id)
                 </th>*@
                 <th>
-                    @Html.DisplayNameFor(model => model.MaSp)
+                    Mã sản phẩm
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.TenSP)
+                    Tên sản phẩm
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.DanhMuc)
+                    Danh mục
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.ChatLieu)
+                    Chất liệu
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.MauSac)
+                    Màu sắc
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Size)
+                    Size
+                </th>
+                <th style="width:300px;">
+                    Ảnh sản phẩm
                 </th>
                 <th>
-                    @*@Html.DisplayNameFor(model => model.Oneanh)*@
+                    Số lượng
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.SoLuong)
+                    Gía bán
                 </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.GiaBan)
-                </th>
-               @* <th>
-                    @Html.DisplayNameFor(model => model.MoTa)
+                @* <th>
+                @Html.DisplayNameFor(model => model.MoTa)
                 </th>*@
                 <th>
                     Trạng thái
@@ -202,10 +202,10 @@ else
                     </td>
                     <td>
 
-                        @Url.Action("LayIdHienThiAnh", "QuanTri", new { id = item.Id })
-                        
-                            @*<img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = path[i] })" alt="Image" width="50%" height="50%" />*@
-
+                        @foreach (var path in item.Images)
+                        {
+                            <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = path.Connect })" alt="Image" width="30%" height="30%" />
+                        }
                     </td>
 
                     <td>
@@ -215,8 +215,8 @@ else
                         @Html.DisplayFor(modelItem => item.GiaBan) VND
                     </td>
                     @*<td>
-                        @Html.DisplayFor(modelItem => item.MoTa)
-                    </td>*@
+                @Html.DisplayFor(modelItem => item.MoTa)
+                </td>*@
                     <td>
                         @if (item.status == 1)
                         {
@@ -228,7 +228,13 @@ else
                         }
                     </td>
                     <td>
-                        @*<img src="data:image/png;base64,@Convert.ToBase64String(item.QRCode)" alt="QR Code" />*@
+                        @if (item.QRCode != null)
+                        {
+                            <img src="data:image/png;base64,@Convert.ToBase64String(item.QRCode)" alt="QR Code" />
+                        }
+                        @*<a href="@Url.Action("GenerateQRCode","QuanTri",new { id = item.Id})">
+                            <i class="fas fa-qrcode"></i>
+                        </a>*@
                     </td>
                     <td>
                         <a href="@Url.Action("UpdateSanPhamCT","QuanTri",new { id = item.Id})">
@@ -247,4 +253,6 @@ else
     </table>
     @Html.PagedListPager(Model.Products , page =>  Url.Action("GellAllSanPhamCT", new { page }), new X.PagedList.Web.Common.PagedListRenderOptions { Display = X.PagedList.Web.Common.PagedListDisplayMode.IfNeeded })
 </form>
+
+
 

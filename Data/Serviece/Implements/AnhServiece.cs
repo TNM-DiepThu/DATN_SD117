@@ -1,5 +1,7 @@
 ﻿using AppData.data;
 using AppData.model;
+using AppData.Serviece.ViewModeService;
+using AppData.ViewModal.SanPhamChiTietVM;
 using Bill.Serviece.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -16,6 +18,7 @@ namespace Bill.Serviece.Implements
         public AnhServiece()
         {
             _context = new MyDbContext();
+
         }
         public bool Add(Anh p)
         {

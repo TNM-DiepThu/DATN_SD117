@@ -23,6 +23,8 @@ namespace AppData.ViewModal.SanPhamChiTietVM
         public string? MoTa { get; set; }
         public byte[] QRCode { get; set; }
         public int status { get; set; }
+        public List<Anh> Images { get; set; }
         public IPagedList<SanPhamChiTietViewModel> Products { get; set; }
+        public byte[] QRCodeupfat { get; set; }
     }
 }

@@ -5,37 +5,38 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGeneration;
+
 using Newtonsoft.Json;
-using System.Drawing.Imaging;
-using System.Drawing;
-using System.IO;
-using System.Net.Http.Json;
+
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AppData.Serviece.ViewModeService;
-using ZXing;
-using ZXing.Rendering;
 
-using iTextSharp.text.pdf.codec;
-using QRCoder;
-using ZXing.QrCode;
-using ZXing.Common;
 using Bill.Serviece.Interfaces;
 using Bill.Serviece.Implements;
 using System.Collections.Generic;
 using OfficeOpenXml;
-using Org.BouncyCastle.Crypto;
-using iTextSharp.text;
-using static QRCoder.PayloadGenerator.SwissQrCode;
+
 using System.ComponentModel;
 using LicenseContext = OfficeOpenXml.LicenseContext;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using AppData.Serviece.Interfaces;
 using AppData.Serviece.Implements;
-using iTextSharp.text.pdf.qrcode;
+
 using X.PagedList;
+using Microsoft.VisualStudio.Web.CodeGeneration;
+
+
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using ZXing;
+using ZXing.QrCode;
+using System.Drawing;
+using System.Drawing.Imaging;
+using Microsoft.AspNetCore.Components.RenderTree;
+using ZXing.Rendering;
+using ZXing.Common;
+using System.Collections;
 
 namespace AppView.Controllers
 {
@@ -494,29 +495,13 @@ namespace AppView.Controllers
             return RedirectToAction("GellAllSanPham", "QuanTri");
 
         }
-        [HttpGet]
-        public ActionResult LayIdHienThiAnh(Guid idsp)
-        {
-            //Lấy ảnh ra theo id sản phẩm chi tiết
-            // list ảnh lên 
-
-            var urllsstanh = $"https://localhost:7214/api/Anh/GetAllAnhByIDsp?idsp={idsp}";
-            var listanh = _client.GetAsync(urllsstanh).Result;
-            var dataanh = listanh.Content.ReadAsStringAsync().Result;
-            List<AnhSanPham> anhsanpham = JsonConvert.DeserializeObject<List<AnhSanPham>>(dataanh);
-            var idmang0 = anhsanpham[0].Idanh;
-            var path = anhservice.GetAll().FirstOrDefault(c => c.Id == idmang0).Connect;
-            
-            return RedirectToAction("GellAllSanPhamCT");
-        }
-        // san pham chi tiet
 
         [HttpGet]
         public ActionResult GellAllSanPhamCT(int? page, string name, string danhMucFilter, string chatLieuFilter, string ThuongHieuFilter, string trangthaiFilter)
         {
             // phân trang 
 
-            int pageNumber = page ?? 1 ;
+            int pageNumber = page ?? 1;
             int pagesize = 5;
             // list danh sach
 
@@ -524,9 +509,49 @@ namespace AppView.Controllers
             var respon = _client.GetAsync(url).Result;
             var datalist = respon.Content.ReadAsStringAsync().Result;
             List<SanPhamChiTietViewModel> list = JsonConvert.DeserializeObject<List<SanPhamChiTietViewModel>>(datalist);
+          
+            foreach (var item in list)
+            {
+                string infor = "Mã Sản phẩm :" + item.MaSp + " Tên: " + item.TenSP + " Màu sắc :" + item.MauSac + "Chất liệu: " + item.ChatLieu + " Size :" + item.Size;
 
+                var qrCodeWriter = new ZXing.BarcodeWriterPixelData
+                {
+                    Format = ZXing.BarcodeFormat.QR_CODE,
+                    Options = new QrCodeEncodingOptions
+                    {
+                        Height = 100,
+                        Width = 100,
+                        Margin = 0
+                    }
+                };
+                var pixelData = qrCodeWriter.Write(infor);
+
+                // creating a bitmap from the raw pixel data; if only black and white colors are used it makes no difference   
+                // that the pixel data ist BGRA oriented and the bitmap is initialized with RGB   
+                using (var bitmap = new System.Drawing.Bitmap(pixelData.Width, pixelData.Height, System.Drawing.Imaging.PixelFormat.Format32bppRgb))
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        var bitmapData = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, pixelData.Width, pixelData.Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+                        try
+                        {
+                            // we assume that the row stride of the bitmap is aligned to 4 byte multiplied by the width of the image   
+                            System.Runtime.InteropServices.Marshal.Copy(pixelData.Pixels, 0, bitmapData.Scan0, pixelData.Pixels.Length);
+                        }
+                        finally
+                        {
+                            bitmap.UnlockBits(bitmapData);
+                        }
+                        //string fileGuid = Guid.NewGuid().ToString().Substring(0, 4);
+                        //bitmap.Save("wwwroot/qrr/" + fileGuid + ".png", System.Drawing.Imaging.ImageFormat.Png);
+                        // save to stream as PNG   
+                        bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                        item.QRCode = ms.ToArray();
+                    }
+                }
+            }
             // view anh
-           
+
             //View thương hiệu lên TABLE
             // lọc theo danh muc
             List<string> tendanhmuc = new List<string>();
@@ -548,10 +573,6 @@ namespace AppView.Controllers
             ViewBag.ChatlieuList = new SelectList(chatlieulist);
 
             //Lọc trạng thái 
-
-
-
-
             //Lọc theo thương hiệu
             List<string> tenthuonghieu = new List<string>();
             foreach (var thuonghieu in _context.thuongHieus.ToList())
@@ -590,9 +611,14 @@ namespace AppView.Controllers
                                 var spct5 = _spctViewModel.GetAll().FirstOrDefault(c => c.TenSP == spct && c.ChatLieu == chatLieuFilter);
                                 sanphamchitiet.Add(spct5);
                             }
-                            var botrungsp = sanphamchitiet.Where(c => c.DanhMuc == danhMucFilter && c.ChatLieu == chatLieuFilter).Distinct().ToList();
+                            var botrungsp = sanphamchitiet.Where(c => c.DanhMuc == danhMucFilter && c.ChatLieu == chatLieuFilter).OrderByDescending(c => c.MaSp).Distinct().ToList();
 
-                            return View(botrungsp);
+                            var products1 = botrungsp;
+                            var model1 = new SanPhamChiTietViewModel
+                            {
+                                Products = products1.ToPagedList(pageNumber, pagesize)
+                            };
+                            return View(model1);
                             //}
                             //return View(products);
                         }
@@ -628,59 +654,65 @@ namespace AppView.Controllers
                 }
                 //productQuery = productQuery.Where(c => c.ChatLieu == chatLieuFilter).ToList();
                 //var products = productQuery.ToList();
-                return View(sanphamchitiet);
+                var products = sanphamchitiet.OrderByDescending(c => c.MaSp);
+                var model = new SanPhamChiTietViewModel
+                {
+                    Products = products.ToPagedList(pageNumber, pagesize)
+                };
+                return View(model);
             } // else tiếp 
             else if (!string.IsNullOrEmpty(chatLieuFilter) && !string.IsNullOrEmpty(danhMucFilter))
             {
-                var item = _spctViewModel.GetAll().Where(c => c.ChatLieu == chatLieuFilter && c.DanhMuc == danhMucFilter).ToList();
-                return View(item);
+                var item = _spctViewModel.GetAll().Where(c => c.ChatLieu == chatLieuFilter && c.DanhMuc == danhMucFilter).OrderByDescending(c => c.MaSp).ToList();
+                var products = item;
+                var model = new SanPhamChiTietViewModel
+                {
+                    Products = products.ToPagedList(pageNumber, pagesize)
+                };
+                return View(model);
             }
             else if (!string.IsNullOrEmpty(danhMucFilter))
             {
-                var spct1 = _spctViewModel.GetAll().Where(c => c.DanhMuc == danhMucFilter).ToList();
-                return View(spct1);
+                var spct1 = _spctViewModel.GetAll().Where(c => c.DanhMuc == danhMucFilter).OrderByDescending(c => c.MaSp).ToList();
+                var products = spct1;
+                var model = new SanPhamChiTietViewModel
+                {
+                    Products = products.ToPagedList(pageNumber, pagesize)
+                };
+                return View(model);
             }
             else if (!string.IsNullOrEmpty(chatLieuFilter))
             {
-                var spct1 = _spctViewModel.GetAll().Where(c => c.ChatLieu == chatLieuFilter).ToList();
-                return View(spct1);
+                var spct1 = _spctViewModel.GetAll().Where(c => c.ChatLieu == chatLieuFilter).OrderByDescending(c => c.MaSp).ToList();
+                var products = spct1;
+                var model = new SanPhamChiTietViewModel
+                {
+                    Products = products.ToPagedList(pageNumber, pagesize)
+                };
+                return View(model);
             }
             else if (trangthaiFilter != null)
             {
                 if (Convert.ToInt32(trangthaiFilter) == 0)
                 {
-                    sanphamchitiet = _spctViewModel.GetAll().Where(c => c.status == 0).ToList();
+                    sanphamchitiet = _spctViewModel.GetAll().Where(c => c.status == 0).OrderByDescending(c => c.MaSp).ToList();
                 }
                 else if (Convert.ToInt32(trangthaiFilter) == 1)
                 {
-                    sanphamchitiet = _spctViewModel.GetAll().Where(c => c.status == 1).ToList();
+                    sanphamchitiet = _spctViewModel.GetAll().Where(c => c.status == 1).OrderByDescending(c => c.MaSp).ToList();
                 }
-                return View(sanphamchitiet);
+                var products = sanphamchitiet;
+                var model = new SanPhamChiTietViewModel
+                {
+                    Products = products.ToPagedList(pageNumber, pagesize)
+                };
+                return View(model);
             }
             else if (name == null || name == "")
             {
 
 
-                //foreach (var item in list)
-                //{
-                //    SanPhamChiTietViewModel product = _spctViewModel.GetById(item.Id);
-                //    string infor = "Mã Sản phẩm :" + product.MaSp + " Tên: " + product.TenSP + " Màu sắc :" + product.MauSac + "Chất liệu: " + product.ChatLieu + " Size :" + product.Size;
-                //    if (product != null)
-                //    {
-                //        // Tạo barcode cho sản phẩm
-                //        QRCodeGenerator qrGenerator = new QRCodeGenerator();
-                //        QRCodeData qrCodeData = qrGenerator.CreateQrCode(infor, QRCodeGenerator.ECCLevel.Q);
 
-                //        QRCode qrCode = new QRCode(qrCodeData);
-                //        Bitmap qrCodeImage = qrCode.GetGraphic(20, Color.Black, Color.White, new QRCodeGenerator());
-
-                //        using (var stream = new MemoryStream())
-                //        {
-                //            qrCodeImage.Save(stream, ImageFormat.Png);
-                //            return File(stream.ToArray(), "image/png");
-                //        }
-                //    }
-                //}
                 var products = list;
                 var model = new SanPhamChiTietViewModel
                 {
@@ -688,7 +720,6 @@ namespace AppView.Controllers
                 };
                 return View(model);
             }
-
             else
             {
 
@@ -696,72 +727,48 @@ namespace AppView.Controllers
                 var respon1 = _client.GetAsync(urltimliem).Result;
                 var data = respon1.Content.ReadAsStringAsync().Result;
                 List<SanPhamChiTietViewModel> listbyname = JsonConvert.DeserializeObject<List<SanPhamChiTietViewModel>>(data);
-                return View(listbyname);
+                var products = listbyname.OrderByDescending(c => c.MaSp);
+                var model = new SanPhamChiTietViewModel
+                {
+                    Products = products.ToPagedList(pageNumber, pagesize)
+                };
+                return View(model);
+                // return View(listbyname);
             }
         }
-
-        // tạo QrCode cho SanphamCTViewModel 
-        public IActionResult GenerateBarcode(Guid Id)
-        {
-            // Tìm sản phẩm trong cơ sở dữ liệu bằng productId
-            SanPhamChiTietViewModel product = _spctViewModel.GetById(Id);
-           
-
-            // Xử lý trường hợp sản phẩm không tồn tại
-            return NotFound();
-        }
-        public static byte[] ImageToByte2D(Bitmap img)
-        {
-            using (MemoryStream stream = new MemoryStream())
-            {
-                img.Save(stream, ImageFormat.Png);
-                return stream.ToArray();
-            }
-        }
-
-        //public string GenerateQRCode(Guid id)
+       
+        //public void GenerateQRCode(Guid id)
         //{
         //    // Truy xuất thông tin đối tượng dựa trên ID
         //    SanPhamChiTietViewModel spct = _spctViewModel.GetById(id);
-
         //    if (spct != null)
         //    {
         //        string infor = "Mã Sản phẩm :" + spct.MaSp + " Tên: " + spct.TenSP + " Màu sắc :" + spct.MauSac + "Chất liệu: " + spct.ChatLieu + " Size :" + spct.Size;
-        //        // Tạo mã QR từ thông tin đối tượng
-        //        BarcodeWriter<Bitmap> qrCodeWriter = new BarcodeWriter<Bitmap>();
-        //        qrCodeWriter.Format = BarcodeFormat.QR_CODE;
-        //        qrCodeWriter.Options = new QrCodeEncodingOptions
+        //        BarcodeWriter<Bitmap> barcodeWriter = new BarcodeWriter<Bitmap>();
+        //        barcodeWriter.Format = BarcodeFormat.QR_CODE;
+
+        //        // Cấu hình các thuộc tính của mã QR code (kích thước, margin, ...)
+        //        barcodeWriter.Options = new QrCodeEncodingOptions
         //        {
-        //            DisableECI = true,
-        //            CharacterSet = "UTF-8",
         //            Width = 200,
         //            Height = 200,
+        //            Margin = 0
         //        };
 
-        //        var qrCodeBitmap = qrCodeWriter.Write(infor);
+        //        // Tạo mã QR code từ dữ liệu đầu vào
+        //        Bitmap qrCodeBitmap = barcodeWriter.Write(infor);
 
-        //        // Chuyển đổi mã QR thành một dạng hiển thị trên giao diện
-        //        using (var bitmap = new Bitmap(qrCodeBitmap))
+        //        // Chuyển đổi Bitmap thành mảng byte
+        //        //byte[] imageBytes;
+        //        using (MemoryStream stream = new MemoryStream())
         //        {
-        //            var byteArray = BitmapToByteArray(bitmap);
-        //            var base64String = Convert.ToBase64String(byteArray);
-
-        //            // Trả về mã QR dưới dạng hình ảnh hoặc sử dụng nó trong giao diện
-        //            return $"<img src='data:image/png;base64,{base64String}' />";
+        //            qrCodeBitmap.Save(stream, ImageFormat.Png);
+        //            spct.QRCode = stream.ToArray();
         //        }
         //    }
-        //    else
-        //    {
-        //        return "Không tìm thấy đối tượng.";
-        //    }
-        //}
-        //private byte[] BitmapToByteArray(Bitmap bitmap)
-        //{
-        //    using (MemoryStream stream = new MemoryStream())
-        //    {
-        //        bitmap.Save(stream, ImageFormat.Png);
-        //        return stream.ToArray();
-        //    }
+        //    // string json = JsonConvert.DeserializeObject(spct);
+
+
         //}
         // Kết thúc 
 
