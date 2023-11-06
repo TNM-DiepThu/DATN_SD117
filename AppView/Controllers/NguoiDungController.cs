@@ -82,13 +82,13 @@ namespace AppView.Controllers
                 HttpResponseMessage respones = await _httpClient.PostAsync("https://localhost:7214/api/NguoiDung/CreateNV", content);
                 if (respones.IsSuccessStatusCode)
                 {
-                    return RedirectToAction(nameof(NguoiDungView));
+                    return RedirectToAction(nameof(GetAllNV));
                 }
                 else
                 {
                     return BadRequest();
                 }
-            return View(Create);
+            
         }
         [HttpGet]
         public async Task<IActionResult> EditNguoiDung(Guid Id)
@@ -114,9 +114,7 @@ namespace AppView.Controllers
         [HttpGet]
         public async Task<IActionResult> EditNV(Guid Id)
         {
-            var response = await _httpClient.GetFromJsonAsync<NguoiDungVM>($"https://localhost:7214/api/NguoiDung/GetById/{Id}");
-            var roles = await _httpClient.GetFromJsonAsync<List<Quyen>>($"https://localhost:7214/api/Quyen/GetAllActive");
-            ViewBag.Roles = new SelectList(roles, "Name", "Name");
+            var response = await _httpClient.GetFromJsonAsync<NguoiDungEditVM>($"https://localhost:7214/api/NguoiDung/GetById/{Id}");
             return View(response);
 
         }
@@ -126,8 +124,6 @@ namespace AppView.Controllers
             var roleJson = JsonConvert.SerializeObject(UserUpdateVM);
             HttpContent content = new StringContent(roleJson, Encoding.UTF8, "application/json");
             var response = await _httpClient.PutAsync($"https://localhost:7214/api/NguoiDung/Edit/{Id}", content);
-            var roles = await _httpClient.GetFromJsonAsync<List<QuyenVM>>($"https://localhost:7214/api/Quyen/GetAllActive");
-            ViewBag.Roles = new SelectList(roles, "Name", "Name");
             if (response.IsSuccessStatusCode)
             {
                 return RedirectToAction("GetAllNV", "NguoiDung");
@@ -252,7 +248,7 @@ namespace AppView.Controllers
                 }
             }
 
-            return RedirectToAction("EditNguoiDung");
+            return RedirectToAction("EditNguoiDung", new { Id = id });
         }
 
         [HttpPost]
@@ -279,14 +275,17 @@ namespace AppView.Controllers
 
                 nguoiDung.Anh = uniqueFileName;
 
+                // Lưu thông tin người dùng vào cơ sở dữ liệu bằng UserManager
                 var result = await _userManager.UpdateAsync(nguoiDung);
                 if (!result.Succeeded)
                 {
-                    return View();
+                    // Xử lý lỗi, ví dụ: result.Errors
+                    // Điều hướng hoặc thông báo lỗi
+                    return View("Error");
                 }
             }
 
-            return RedirectToAction("NguoiDungView");
+            return RedirectToAction("EditNV", new { Id = id });
         }
 
     }

@@ -4,7 +4,7 @@
     ViewData["Title"] = "Danh sách khách hàng";
 }
 
-<h1>Danh sách người dùng</h1>
+<h1>Danh sách nhân viên</h1>
 <style>
     td .btn {
         margin: 8px;
@@ -118,7 +118,7 @@
                     @statusText
                 </td>
                 <td>
-                    <a href="@Url.Action("EditNguoiDung","NguoiDung",new { id = item.id})">
+                    <a href="@Url.Action("EditNV","NguoiDung",new { id = item.id})">
                         <i class="fas fa-pen" style="color: #007bff;"></i>
                     </a>
                     <form method="post" action="@Url.Action("DeleteNV", "NguoiDung", new { id = item.id })">
