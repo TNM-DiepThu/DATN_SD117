@@ -215,7 +215,7 @@ namespace AppData.Serviece.Implements
 
         public async Task<LoginResponesVM> LoginWithJWT(LoginRequestVM loginRequest)
         {
-            var user = await _userManager.FindByEmailAsync(loginRequest.Email) ?? await _userManager.FindByNameAsync(loginRequest.Username); 
+            var user = await _userManager.FindByEmailAsync(loginRequest.Username) ?? await _userManager.FindByNameAsync(loginRequest.Username); 
             
             if (user == null) return new LoginResponesVM
             {
@@ -233,7 +233,9 @@ namespace AppData.Serviece.Implements
             {
                 new Claim(ClaimTypes.Name,user.UserName),
                 new Claim(ClaimTypes.Email,user.Email),
-            };
+                new Claim("Anh", user.Anh),
+                new Claim("Ten", user.TenNguoiDung),
+        };
             foreach (var role in rolesOfUser)
             {
                 claims.Add(new Claim(ClaimTypes.Role, role));

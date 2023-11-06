@@ -27,7 +27,7 @@ namespace AppData.model
         public Guid IdNguoiDunh { get; set; }
         public NguoiDung NguoiDung { get; set; }
         public Guid? IdVoucherDetail { get; set; }
-        public VoucherDetail voucherDetail { get; set; }
+        public VoucherDetail? voucherDetail { get; set; }
         public Guid IDHTTT { get; set; }
         public HinhThucThanhToan HinhThucThanhToan { get; set; }    
         public virtual ICollection<HoaDonChiTiet> hoaDonChiTiets { get; set; }
