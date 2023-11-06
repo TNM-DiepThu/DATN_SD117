@@ -1,4 +1,5 @@
-﻿using AppData.ViewModal.Login;
+﻿using AppData.model;
+using AppData.ViewModal.Login;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -68,6 +69,15 @@ namespace AppView.Controllers
             HttpContext.Session.Remove("JWTToken");
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("GellAllSanPhamCT", "QuanTri");
+        }
+        public IActionResult MyAction( string anh)
+        {
+            var nguoiDung = new NguoiDung
+            {
+                Anh = anh
+            };
+            ViewBag.NguoiDung = nguoiDung; // Hoặc truyền thông tin người dùng vào Model
+            return View();
         }
 
     }
