@@ -210,8 +210,8 @@ namespace AppData.Serviece.Implements
             return new DoiMatKhauVM
             {
                 Id = user.Id,
-                username = user.UserName,               
-                pass = user.MatKhau,                              
+                oldpass = user.MatKhau,               
+                                            
             };
         }
 
@@ -219,9 +219,19 @@ namespace AppData.Serviece.Implements
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
             if (user == null)
-                return;            
-            user.UserName = nguoiDung.username;            
-            user.MatKhau = nguoiDung.pass;          
+                return;
+
+            // Kiểm tra mật khẩu cũ
+            var isOldPasswordCorrect = await _userManager.CheckPasswordAsync(user, nguoiDung.oldpass);
+            if (!isOldPasswordCorrect)
+            {
+                // Mật khẩu cũ không đúng, xử lý lỗi hoặc thông báo
+                // Ví dụ: return BadRequest("Mật khẩu cũ không đúng");
+                return;
+            }
+
+            // Mật khẩu cũ đúng, tiến hành cập nhật mật khẩu;
+            user.MatKhau = nguoiDung.pass;
             await _userManager.UpdateAsync(user);
         }
 

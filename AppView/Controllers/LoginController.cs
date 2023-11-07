@@ -61,7 +61,7 @@ namespace AppView.Controllers
 
                     return RedirectToAction("GellAllSanPhamCT", "QuanTri");
                 }
-            }
+            }                 
             return View();
         }
 

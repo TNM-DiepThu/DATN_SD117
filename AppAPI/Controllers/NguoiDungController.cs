@@ -88,7 +88,7 @@ namespace AppAPI.Controllers
         }
 
         [HttpPut("DoiMatKhau/{id}")]
-        public async Task<ActionResult> DoiMatKhau(Guid id, [FromForm] DoiMatKhauVM nguoiDung)
+        public async Task<ActionResult> DoiMatKhau(Guid id, [FromBody] DoiMatKhauVM nguoiDung)
         {
             await _nguoiDungService.DoiMatKhau(id, nguoiDung);
             return Ok();
