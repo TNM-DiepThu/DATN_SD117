@@ -1,51 +1,20 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@using System.Text.Json;
+
 @{
+    var provinces = ViewBag.thongtin as List<AppData.ViewModal.GioHangChiTietViewModel.ThongTinThanhPho>;
+    var districts = ViewBag.thongtinhuyen as List<AppData.ViewModal.GioHangChiTietViewModel.ThongTinQuanHuyen>;
 }
+<script type="text/javascript" src="~/library/plugins/jquery/jquery.min.js"></script>
+
 <link type="text/css" href="~/css/thanhtoan.css" rel="stylesheet" />
 <link href="~/library/plugins/bootstrap/css/bootstrap.min.css" type="text/javascript" rel="stylesheet" />
 <link href="~/library/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
-<!-- header -->
-<nav class="navbar navbar-expand-md navbar-dark sticky-top bg-dark">
-    <div class="container">
-        <a class="navbar-brand" href="https://nentang.vn">Nền tảng</a>
-        <div class="navbar-collapse collapse" id="navbarCollapse">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="../index.html">Trang chủ <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="https://nentang.vn">Quản trị</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="products.html">Sản phẩm</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="about.html">Giới thiệu</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="contact.html">Liên hệ</a>
-                </li>
-            </ul>
-            <form class="form-inline mt-2 mt-md-0" method="get" action="search.html">
-                <input class="form-control mr-sm-2" type="text" placeholder="Tìm kiếm" aria-label="Search"
-                       name="keyword_tensanpham">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Tìm kiếm</button>
-            </form>
-        </div>
-        <ul class="navbar-nav px-3">
-            <li class="nav-item text-nowrap">
-                <a class="nav-link" href="cart.html">Giỏ hàng</a>
-            </li>
-            <li class="nav-item text-nowrap">
-                <!-- Nếu chưa đăng nhập thì hiển thị nút Đăng nhập -->
-                <a class="nav-link" href="login.html">Đăng nhập</a>
-            </li>
-        </ul>
-    </div>
-</nav>
-<!-- end header -->
+
+<link type="text/css" href="~/library/plugins/select2/css/select2.min.css" rel="stylesheet" />
+<link type="text/css" href="~/library/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css" rel="stylesheet" />
+
+<script type="text/javascript" src="~/library/plugins/select2/js/select2.min.js"></script>
+<script type="text/javascript" src="~/library/plugins/select2/js/select2.full.min.js"></script>
 
 <main role="main">
     <!-- Block content - Đục lỗ trên giao diện bố cục chung, đặt tên là `content` -->
@@ -110,38 +79,69 @@
                     <div class="row">
                         <div class="col-md-12">
                             <label for="kh_ten">Họ tên</label>
-                            <input type="text" class="form-control" name="kh_ten" id="kh_ten"
-                                   value="Dương Nguyễn Phú Cường" readonly="">
+                            <input type="text" class="form-control" name="kh_ten" id="kh_ten" value="Dương Nguyễn Phú Cường">
                         </div>
                         <div class="col-md-12">
                             <label for="kh_gioitinh">Giới tính</label>
-                            <input type="text" class="form-control" name="kh_gioitinh" id="kh_gioitinh" value="Nam"
-                                   readonly="">
+                            <input type="text" class="form-control" name="kh_gioitinh" id="kh_gioitinh" value="Nam">
                         </div>
-                        <div class="col-md-12">
+                        <div class="col-md-12 row" style="margin:2px;">
+                            <div class="col-md-6 row">
+                                <label for="kh_diachi">Tỉnh/ Thành phố: </label>
+                                <select id="provinceDropdown" class="form-control col-md-11">
+                                    <option value="">Chọn tỉnh/thành phố</option>
+                                    @if (provinces != null)
+                                    {
+                                        foreach (var province in provinces)
+                                        {
+                                            <option value="@province.Id" data-url="@Url.Action("LayIDthanhPho", "GioHang", new { idthanhpho = province.Id })">@province.Name</option>
+                                        }
+                                    }
+                                </select>
+                                <a id="searchButton" class="col-md-1" style="margin-top:3px;"><i class="fas fa-search" style="color: #005eff;"></i></a>
+                                <div id="searchContainer" style="display: none;">
+                                    <input type="text" id="searchBox" class="form-control col-md-11" placeholder="Tìm kiếm" />
+                                </div>
+                            </div>
+                            <div class="col-md-6 row">
+                                <label for="kh_diachi">Quận Huyện: </label>
+                                <select id="provinceDropdown" class="form-control col-md-11">
+                                    <option value="">Chọn tỉnh/thành phố</option>
+                                    @if (districts != null)
+                                    {
+                                        foreach (var district in districts)
+                                        {
+                                            <option value="@district.Id" data-url="@Url.Action("LayThongTinQuanHuyen", "GioHang", new { idquanhuyen = district.Id })">@district.Name</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        
+                                    }
+                                </select>
+                                <a id="searchButton" class="col-md-1" style="margin-top:3px;"><i class="fas fa-search" style="color: #005eff;"></i></a>
+                                <div id="searchContainer" style="display: none;">
+                                    <input type="text" id="searchBox" class="form-control col-md-11" placeholder="Tìm kiếm" />
+                                </div>
+                            </div>
                             <label for="kh_diachi">Địa chỉ</label>
-                            <input type="text" class="form-control" name="kh_diachi" id="kh_diachi"
-                                   value="130 Xô Viết Nghệ Tỉnh" readonly="">
+                            <input type="text" class="form-control" name="kh_diachi" id="kh_diachi" value="130 Xô Viết Nghệ Tỉnh">
                         </div>
                         <div class="col-md-12">
                             <label for="kh_dienthoai">Điện thoại</label>
-                            <input type="text" class="form-control" name="kh_dienthoai" id="kh_dienthoai"
-                                   value="0915659223" readonly="">
+                            <input type="text" class="form-control" name="kh_dienthoai" id="kh_dienthoai" value="0915659223">
                         </div>
                         <div class="col-md-12">
                             <label for="kh_email">Email</label>
-                            <input type="text" class="form-control" name="kh_email" id="kh_email"
-                                   value="phucuong@ctu.edu.vn" readonly="">
+                            <input type="text" class="form-control" name="kh_email" id="kh_email" value="phucuong@ctu.edu.vn">
                         </div>
                         <div class="col-md-12">
                             <label for="kh_ngaysinh">Ngày sinh</label>
-                            <input type="text" class="form-control" name="kh_ngaysinh" id="kh_ngaysinh"
-                                   value="11/6/1989" readonly="">
+                            <input type="text" class="form-control" name="kh_ngaysinh" id="kh_ngaysinh" value="11/6/1989" readonly="">
                         </div>
                         <div class="col-md-12">
                             <label for="kh_cmnd">CMND</label>
-                            <input type="text" class="form-control" name="kh_cmnd" id="kh_cmnd" value="362209685"
-                                   readonly="">
+                            <input type="text" class="form-control" name="kh_cmnd" id="kh_cmnd" value="362209685" readonly="">
                         </div>
                     </div>
 
@@ -166,8 +166,7 @@
                     </div>
                     <hr class="mb-4">
                     <button class="btn btn-primary btn-lg btn-block" type="submit" name="btnDatHang">
-                        Đặt
-                        hàng
+                        Đặt hàng
                     </button>
                 </div>
             </div>
@@ -176,3 +175,55 @@
     </div>
     <!-- End block content -->
 </main>
+
+<script>
+    $(document).ready(function () {
+
+        var isInputVisible = false;
+
+        $("#searchButton").click(function () {
+            if (isInputVisible) {
+                $("#searchContainer").hide();
+            } else {
+                $("#searchContainer").show();
+            }
+            isInputVisible = !isInputVisible;
+        });
+        $("#searchBox").on("input", function () {
+            var searchValue = $(this).val().toLowerCase();
+            $("#provinceDropdown option").each(function () {
+                if ($(this).text().toLowerCase().indexOf(searchValue) === -1) {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+            });
+        });
+        $("#provinceDropdown").change(function () {
+            var selectedId = $(this).val();
+            var selectedOption = $(this).find("option:selected");
+            var url = selectedOption.data("url");
+            console.log("selectedId: " + selectedId);
+            if (selectedId && url) {
+                $.ajax({
+                    url: url,
+                    method: "POST",
+                    contentType: "application/json; charset=utf-8",
+                    data: { idthanhpho: selectedId },
+                    success: function (data) {
+                        if (data === "success") {
+                            alert("Lấy ID thành công: " + selectedId);
+                        } else {
+                            alert("Lấy ID thất bại");
+                        }
+                    },
+                    error: function () {
+                        alert("Có lỗi xảy ra");
+                    }
+                });
+            }
+        });
+    });
+
+
+</script>

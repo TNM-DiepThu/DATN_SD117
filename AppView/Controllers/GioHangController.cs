@@ -2,11 +2,13 @@
 using AppData.Serviece.Implements;
 using AppData.Serviece.Interfaces;
 using AppData.ViewModal.GioHangChiTietViewModel;
+using AppData.ViewModal.SanPhamChiTietVM;
 using AppData.ViewModal.Usermodalview;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
@@ -182,19 +184,19 @@ namespace AppView.Controllers
         }
         [HttpGet]
         [HttpPost]
-        public ActionResult DecreaseButton(Guid id , int soluong)
+        public ActionResult DecreaseButton(Guid id, int soluong)
         {
             var idnguoidung = Guid.Parse("911a9476-05be-4a4f-8325-2ea61766e2a0");
-            GioHangChiTiet ghct = ghctservice.GetAllGioHangTheoNguoiDungDangNhap(idnguoidung).FirstOrDefault(c => c.Id == id); 
+            GioHangChiTiet ghct = ghctservice.GetAllGioHangTheoNguoiDungDangNhap(idnguoidung).FirstOrDefault(c => c.Id == id);
             if (ghct != null)
             {
-                if(soluong > 0)
+                if (soluong > 0)
                 {
                     soluong--;
                 }
                 ghct.SoLuong = soluong;
             }
-            ghctservice.EditSoluong(id , soluong);
+            ghctservice.EditSoluong(id, soluong);
             return RedirectToAction("GetGioHangChiTiet");
         }
         [HttpGet]
@@ -210,6 +212,100 @@ namespace AppView.Controllers
             }
             ghctservice.EditSoluong(id, soluong);
             return RedirectToAction("GetGioHangChiTiet");
+        }
+
+        [HttpGet]
+        [HttpPost]
+        public int LayIDthanhPho(int idthanhpho)
+        {
+            string json = JsonConvert.SerializeObject(idthanhpho);
+            HttpContext.Session.SetString("IDThongtinThanhPho", json);
+            return idthanhpho;
+        }
+        [HttpGet]
+        [HttpPost]
+        public int LayThongTinQuanHuyen(int idquanhuyen)
+        {
+            string json = JsonConvert.SerializeObject(idquanhuyen);
+            HttpContext.Session.SetString("IDThongtinThanhPho", json);
+            return idquanhuyen;
+        }
+        [HttpGet]
+        [HttpPost]
+        public async Task<ActionResult> ThanhToan()
+        {
+            string token = "be8ee160-008a-11ee-a281-3aa62a37e0a5";
+            _client.DefaultRequestHeaders.Add("token", token);
+            var urlTinhThanhPho = "https://online-gateway.ghn.vn/shiip/public-api/master-data/province";
+            HttpResponseMessage response = await _client.GetAsync(urlTinhThanhPho);
+
+            // lấy ID tỉnh
+            if (response.IsSuccessStatusCode)
+            {
+                var provinces = await response.Content.ReadAsStringAsync();
+
+                JObject jsonObject = JObject.Parse(provinces);
+
+                // Lấy danh sách tỉnh/thành phố từ đối tượng JSON
+                JArray provinceArray = (JArray)jsonObject["data"];
+
+                List<ThongTinThanhPho> thongtintp = new List<ThongTinThanhPho>();
+                if (provinceArray != null)
+                {
+                    foreach (JObject province in provinceArray)
+                    {
+                        ThongTinThanhPho thongTinThanhPho = new ThongTinThanhPho();
+                        thongTinThanhPho.Id = Convert.ToInt32(province["ProvinceID"]);
+                        thongTinThanhPho.Name = Convert.ToString(province["ProvinceName"]);
+                        thongtintp.Add(thongTinThanhPho);
+                    }
+                }
+                else
+                {
+                    thongtintp = null;
+                }
+                ViewBag.thongtin = thongtintp;
+            }
+
+            //Lấy tất cả quyện huyện theo ID tỉnh
+            string IDtinh_thanhpho = HttpContext.Session.GetString("IDThongtinThanhPho");
+           
+            if(IDtinh_thanhpho != null)
+            {
+                ThongTinThanhPho thongtin = JsonConvert.DeserializeObject<ThongTinThanhPho>(IDtinh_thanhpho);
+
+                HttpResponseMessage response1 = await _client.GetAsync($"https://online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id={thongtin.Id}");
+                if (response1.IsSuccessStatusCode)
+                {
+                    var jsonData = await response.Content.ReadAsStringAsync();
+
+                    JObject jsonObject = JObject.Parse(jsonData);
+
+                    // Lấy danh sách tỉnh/thành phố từ đối tượng JSON
+                    JArray districtArray = (JArray)jsonObject["data"];
+
+                    List<ThongTinQuanHuyen> thongtinquanhuyen = new List<ThongTinQuanHuyen>();
+                    if (districtArray != null)
+                    {
+                        foreach (JObject district in districtArray)
+                        {
+                            if (thongtin.Id == Convert.ToInt32(district["ProvinceID"]))
+                            {
+                                ThongTinQuanHuyen thongTinQuanHuyen = new ThongTinQuanHuyen();
+                                thongTinQuanHuyen.Id = Convert.ToInt32(district["DistrictID"]);
+                                thongTinQuanHuyen.Name = Convert.ToString(district["DistrictName"]);
+                                thongtinquanhuyen.Add(thongTinQuanHuyen);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        thongtinquanhuyen = null;
+                    }
+                    ViewBag.thongtinhuyen = thongtinquanhuyen;
+                }
+            } 
+            return View();
         }
     }
 }

@@ -1,8 +1,11 @@
-﻿using AppData.Serviece.Implements;
+﻿using AppData.data;
+using AppData.model;
+using AppData.Serviece.Implements;
 using AppData.Serviece.Interfaces;
 using AppData.ViewModal.SanPhamChiTietVM;
 using Bill.Serviece.Implements;
 using Bill.Serviece.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +21,7 @@ namespace AppData.Serviece.ViewModeService
         private readonly IMauSacServiece _mausac;
         private readonly IChatLieuServiece _chatlieu;
         private readonly IAnhSanPhamService _anhsanpham;
+        private readonly MyDbContext _context;
         private readonly ISizeServiece _size;
         private readonly IDanhMucServiece _danhmuc;
         private readonly IAnhServiece _anh;
@@ -25,6 +29,7 @@ namespace AppData.Serviece.ViewModeService
         {
             _anh = new AnhServiece();
             _spct = new SanPhamChiTietServiece();
+            _context = new MyDbContext();
             _anhsanpham = new AnhSanPhamService();
             _sanpham = new SanPhamServiece();
             _mausac = new MauSacServiece();
@@ -35,28 +40,41 @@ namespace AppData.Serviece.ViewModeService
         public List<SanPhamChiTietViewModel> GetAll()
         {
             //List<SanPhamChiTietViewModel> lstsp = new List<SanPhamChiTietViewModel>();
-                var spct = from a in _spct.GetAll()
-                           join b in _sanpham.GetAll() on a.IDSP equals b.Id
-                           join c in _mausac.GetAll() on a.IdMauSac equals c.Id
-                           join d in _danhmuc.GetAll() on a.IdDanhMuc equals d.Id
-                           join e in _size.GetAll() on a.IdSize equals e.Id
-                           join h in _chatlieu.GetAll() on a.IdChatLieu equals h.Id
-                           select new SanPhamChiTietViewModel
-                           {
-                               Id = a.Id,
-                               DanhMuc = d.TenDanhMuc,
-                               TenSP = b.TenSanPham,
-                               ChatLieu = h.TenChatLieu,
-                               MauSac = c.TenMauSac,
-                               Size = e.SizeName,
-                               MaSp = a.MaSp,
-                               SoLuong = a.SoLuong,
-                               GiaBan = a.GiaBan,
-                               MoTa = a.MoTa,
-                               status = a.status,
-                           };
 
-            return spct.ToList();
+            var spct = from a in _spct.GetAll()
+                       join b in _sanpham.GetAll() on a.IDSP equals b.Id
+                       join c in _mausac.GetAll() on a.IdMauSac equals c.Id
+                       join d in _danhmuc.GetAll() on a.IdDanhMuc equals d.Id
+                       join e in _size.GetAll() on a.IdSize equals e.Id
+                       join h in _chatlieu.GetAll() on a.IdChatLieu equals h.Id
+                       select new SanPhamChiTietViewModel
+                       {
+                           Id = a.Id,
+                           DanhMuc = d.TenDanhMuc,
+                           TenSP = b.TenSanPham,
+                           ChatLieu = h.TenChatLieu,
+                           MauSac = c.TenMauSac,
+                           Size = e.SizeName,
+                           MaSp = a.MaSp,
+                           SoLuong = a.SoLuong,
+                           GiaBan = a.GiaBan,
+                           MoTa = a.MoTa,
+                           status = a.status,
+                       };
+            var products = spct.ToList();
+            foreach (var product in products)
+            {
+                // Lấy các hình ảnh cho sản phẩm
+                var productImages = _context.anhSanPhams
+                .Where(a => a.IdSanPhamChiTiet == product.Id)
+                .Select(a => new Anh { Id = a.Idanh, Connect = a.Anh.Connect, status = a.Anh.status })
+                .ToList();
+                // Gán danh sách hình ảnh cho sản phẩm
+                product.Images = productImages;
+            }
+
+            return products.ToList();
+            //return spct.ToList();
         }
         public SanPhamChiTietViewModel GetById(Guid ID)
         {
@@ -81,7 +99,19 @@ namespace AppData.Serviece.ViewModeService
                            MoTa = a.MoTa,
                            status = a.status,
                        };
-            return spct.FirstOrDefault(c => c.Id == ID);
+            var product = spct.FirstOrDefault(c => c.Id == ID);
+            //foreach (var product in products)
+            //{
+            // Lấy các hình ảnh cho sản phẩm
+            var productImages = _context.anhSanPhams
+            .Where(a => a.IdSanPhamChiTiet == product.Id)
+            .Select(a => new Anh { Id = a.Idanh, Connect = a.Anh.Connect, status = a.Anh.status })
+            .ToList();
+            // Gán danh sách hình ảnh cho sản phẩm
+            product.Images = productImages;
+            //}
+            return product;
+            //return spct.FirstOrDefault(c => c.Id == ID);
         }
 
         public IEnumerable<SanPhamChiTietViewModel> GetByName(string name)
@@ -108,7 +138,21 @@ namespace AppData.Serviece.ViewModeService
                            MoTa = a.MoTa,
                            status = a.status,
                        };
-            return spct.Where(c => c.TenSP.Contains(name)).ToList();
+
+            var products = spct.Where(c => c.TenSP.Contains(name)).OrderByDescending(c => c.MaSp).ToList();
+            foreach (var product in products)
+            {
+                //Lấy các hình ảnh cho sản phẩm
+                var productImages = _context.anhSanPhams
+             .Where(a => a.IdSanPhamChiTiet == product.Id)
+             .Select(a => new Anh { Id = a.Idanh, Connect = a.Anh.Connect, status = a.Anh.status })
+             .ToList();
+                // Gán danh sách hình ảnh cho sản phẩm
+                product.Images = productImages;
+            }
+
+            return products;
+            //return spct.Where(c => c.TenSP.Contains(name)).ToList();
         }
     }
 }
