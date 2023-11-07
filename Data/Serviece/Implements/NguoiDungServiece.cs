@@ -200,6 +200,31 @@ namespace AppData.Serviece.Implements
             await _userManager.UpdateAsync(user);
         }
 
+
+        public async Task<DoiMatKhauVM> GetByIdDMK(Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+                return null;
+
+            return new DoiMatKhauVM
+            {
+                Id = user.Id,
+                username = user.UserName,               
+                pass = user.MatKhau,                              
+            };
+        }
+
+        public async Task DoiMatKhau(Guid id, DoiMatKhauVM nguoiDung)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+                return;            
+            user.UserName = nguoiDung.username;            
+            user.MatKhau = nguoiDung.pass;          
+            await _userManager.UpdateAsync(user);
+        }
+
         public async Task<bool> DeleteAsync(Guid id)
         {
             var user = await _userManager.FindByIdAsync(id.ToString());
@@ -235,6 +260,7 @@ namespace AppData.Serviece.Implements
                 new Claim(ClaimTypes.Email,user.Email),
                 new Claim("Anh", user.Anh),
                 new Claim("Ten", user.TenNguoiDung),
+                new Claim("id",user.Id.ToString()),
         };
             foreach (var role in rolesOfUser)
             {
@@ -265,7 +291,9 @@ namespace AppData.Serviece.Implements
         public async Task<IEnumerable<NguoiDungVM>> GetAllNV()
         {
             var users = await _userManager.GetUsersInRoleAsync("NhanVien");
-            return users.Select(user => new NguoiDungVM
+            var sortedUsers = users.OrderBy(user => user.TenNguoiDung);
+
+            return sortedUsers.Select(user => new NguoiDungVM
             {
                 id = user.Id,
                 username = user.UserName,

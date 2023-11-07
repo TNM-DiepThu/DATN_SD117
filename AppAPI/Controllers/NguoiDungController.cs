@@ -50,6 +50,16 @@ namespace AppAPI.Controllers
             return Ok(nguoiDung);
         }
 
+        [HttpGet("GetByIdDMK/{id}")]
+        public async Task<ActionResult<DoiMatKhauVM>> GetIdDMK(Guid id)
+        {
+            var nguoiDung = await _nguoiDungService.GetByIdDMK(id);
+            if (nguoiDung == null)
+                return NotFound();
+
+            return Ok(nguoiDung);
+        }
+
         [HttpPost("Create")]
         public async Task<ActionResult<Guid>> Post([FromBody] NguoiDungVM nguoiDung)
         {
@@ -74,6 +84,13 @@ namespace AppAPI.Controllers
         public async Task<ActionResult> Put(Guid id, [FromBody] NguoiDungEditVM nguoiDung)
         {
             await _nguoiDungService.UpdateAsync(id, nguoiDung);
+            return Ok();
+        }
+
+        [HttpPut("DoiMatKhau/{id}")]
+        public async Task<ActionResult> DoiMatKhau(Guid id, [FromForm] DoiMatKhauVM nguoiDung)
+        {
+            await _nguoiDungService.DoiMatKhau(id, nguoiDung);
             return Ok();
         }
 

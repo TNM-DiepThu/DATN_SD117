@@ -126,7 +126,7 @@ namespace AppView.Controllers
             var response = await _httpClient.PutAsync($"https://localhost:7214/api/NguoiDung/Edit/{Id}", content);
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction("GetAllNV", "NguoiDung");
+                return RedirectToAction(nameof(GetAllNV));
             }
             return View();
 
@@ -168,47 +168,7 @@ namespace AppView.Controllers
         }
 
 
-        //[HttpPost]
-        //public async Task<IActionResult> UploadAvatar(IFormFile imageFile, string userId)
-        //{
-        //    if (imageFile != null && imageFile.Length > 0 && !string.IsNullOrEmpty(userId))
-        //    {
-        //        var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "avatar");
-
-        //        if (!Directory.Exists(uploadsFolder))
-        //        {
-        //            Directory.CreateDirectory(uploadsFolder);
-        //        }
-
-        //        // Tạo tên tệp ảnh duy nhất
-        //        var fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
-        //        var filePath = Path.Combine(uploadsFolder, fileName);
-
-        //        using (var stream = new FileStream(filePath, FileMode.Create))
-        //        {
-        //            await imageFile.CopyToAsync(stream);
-        //        }
-
-        //        // Lấy thông tin người dùng từ cơ sở dữ liệu
-        //        var user = await _userManager.FindByIdAsync(userId);
-
-        //        if (user != null)
-        //        {
-        //            // Cập nhật đường dẫn ảnh vào thuộc tính Anh của người dùng
-        //            user.Anh = Path.Combine("avatar", fileName);
-
-        //            var result = await _userManager.UpdateAsync(user);
-
-        //            if (result.Succeeded)
-        //            {
-        //                return RedirectToAction("UserProfile", new { userId });
-        //            }
-        //        }
-        //    }
-
-            // Xử lý lỗi hoặc trả về view tùy theo trường hợp
-        //    return View("Error");
-        //}
+        
 
         public async Task<NguoiDung> GetNguoiDungByIdAsync(Guid userId)
         {

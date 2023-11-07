@@ -20,7 +20,8 @@ namespace AppData.Serviece.Interfaces
         public Task<LoginResponesVM> LoginWithJWT(LoginRequestVM loginRequest);
         Task<IEnumerable<NguoiDungVM>> GetAllNV();
         Task<IEnumerable<NguoiDungVM>> GetAllKH();
-        
+        Task DoiMatKhau(Guid id, DoiMatKhauVM nguoiDung);
+        Task<DoiMatKhauVM> GetByIdDMK(Guid id);
 
     }
 }

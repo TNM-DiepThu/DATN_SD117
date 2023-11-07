@@ -1,5 +1,6 @@
 ﻿using AppData.model;
 using AppData.ViewModal.Login;
+using AppData.ViewModal.Usermodalview;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -78,6 +79,26 @@ namespace AppView.Controllers
             };
             ViewBag.NguoiDung = nguoiDung; // Hoặc truyền thông tin người dùng vào Model
             return View();
+        }
+        [HttpGet]
+        public async Task<IActionResult> DoiMatKhau(Guid Id)
+        {
+            var response = await _httpClient.GetFromJsonAsync<DoiMatKhauVM>($"https://localhost:7214/api/NguoiDung/GetByIdDMK/{Id}");
+            return View(response);
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> DoiMatKhau(Guid Id, DoiMatKhauVM UserUpdateVM)
+        {
+            var roleJson = JsonConvert.SerializeObject(UserUpdateVM);
+            HttpContent content = new StringContent(roleJson, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync($"https://localhost:7214/api/NguoiDung/DoiMatKhau/{Id}", content);
+            if (response.IsSuccessStatusCode)
+            {
+                return RedirectToAction("GellAllSanPhamCT", "QuanTri");
+            }
+            return View();
+
         }
 
     }

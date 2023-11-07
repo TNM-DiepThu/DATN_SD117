@@ -6,6 +6,7 @@
 
     var sessionJWT = httpAccess.HttpContext.Session.GetString("JWTToken");
     var sessionGG = httpAccess.HttpContext.Session.GetString("User");
+    var id = "";
     var img = "";
     var ten = "";
     var username = "";
@@ -20,6 +21,7 @@
             username = decodedToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
             img = decodedToken.Claims.FirstOrDefault(c => c.Type == "Anh")?.Value;
             ten = decodedToken.Claims.FirstOrDefault(c => c.Type == "Ten")?.Value;
+            id = decodedToken.Claims.FirstOrDefault(c => c.Type == "id")?.Value;
         }
     }
 
@@ -106,7 +108,10 @@
                     <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                         <ul class="navbar-nav flex-grow-1" style="flex-direction:row-reverse">
 
-
+                            
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="DoiMatKhau" asp-route-id="@id">Đổi mật khẩu</a>
+                            </li>  
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="Logout">Logout</a>
                             </li>                           
