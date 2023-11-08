@@ -16,7 +16,7 @@ namespace AppData.Serviece.ViewModeService
     public class HoaDonChiTietViewModelService
     {
         private readonly IHoaDonService _hoaDonService;
-        private readonly IHoaDonCTService<HoaDonChiTiet> _hoaDonCTService;
+        private readonly IHoaDonCTService _hoaDonCTService;
         private readonly GioHangChiTietViewModelService _gioHangCTService;
         private readonly SanPhamChiTietViewModelService _spctvmservice;
         private readonly ComBoChiTietViewModelService _comboCTService;
@@ -25,7 +25,7 @@ namespace AppData.Serviece.ViewModeService
         {
             _context = new MyDbContext();
             _hoaDonService = new HoaDonService();
-            _hoaDonCTService = new HoaDonCTService<HoaDonChiTiet>(_context, _context.hoaDonChiTiets);
+            _hoaDonCTService = new HoaDonCTService();
             _gioHangCTService = new GioHangChiTietViewModelService();
             _spctvmservice = new SanPhamChiTietViewModelService();
             _comboCTService = new ComBoChiTietViewModelService();
@@ -33,13 +33,13 @@ namespace AppData.Serviece.ViewModeService
 
         public List<HoaDonCTViewModel> GetAllHoaDonChiTiet(Guid idHoaDon)
         {
-            List<HoaDonChiTiet> hoaDonChiTiet = _hoaDonCTService.GetAll().Where(c => c.IDHD == idHoaDon).ToList();
+            List<HoaDonChiTiet> hoaDonChiTiet = _hoaDonCTService.GetAllByIdHd(idHoaDon).ToList();
             List<HoaDonCTViewModel> newlist = new List<HoaDonCTViewModel>();
             foreach (var item in hoaDonChiTiet)
             {
                 if (item.IdCombo == null)
                 {
-                    var list = from a in _hoaDonCTService.GetAll()
+                    var list = from a in hoaDonChiTiet
                                join b in _spctvmservice.GetAll() on a.IdSPCT equals b.Id
                                join c in _hoaDonService.GetAll() on a.IDHD equals c.Id
                                select new HoaDonCTViewModel
@@ -56,7 +56,7 @@ namespace AppData.Serviece.ViewModeService
                 }
                 else if (item.IdSPCT == null)
                 {
-                    var list = from a in _hoaDonCTService.GetAll()
+                    var list = from a in hoaDonChiTiet
                                join b in _comboCTService.GetAllComBoChiTiet() on a.IdCombo equals b.Id
                                join c in _hoaDonService.GetAll() on a.IDHD equals c.Id
                                select new HoaDonCTViewModel

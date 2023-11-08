@@ -100,9 +100,6 @@ namespace AppData.Serviece.ViewModeService
                            status = a.status,
                        };
             var product = spct.FirstOrDefault(c => c.Id == ID);
-            //foreach (var product in products)
-            //{
-            // Lấy các hình ảnh cho sản phẩm
             var productImages = _context.anhSanPhams
             .Where(a => a.IdSanPhamChiTiet == product.Id)
             .Select(a => new Anh { Id = a.Idanh, Connect = a.Anh.Connect, status = a.Anh.status })
@@ -111,7 +108,6 @@ namespace AppData.Serviece.ViewModeService
             product.Images = productImages;
             //}
             return product;
-            //return spct.FirstOrDefault(c => c.Id == ID);
         }
 
         public IEnumerable<SanPhamChiTietViewModel> GetByName(string name)

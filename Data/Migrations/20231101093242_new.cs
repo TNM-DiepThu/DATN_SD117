@@ -400,7 +400,7 @@ namespace AppData.Migrations
                     GhiChu = table.Column<string>(type: "nvarchar(100)", nullable: false),
                     status = table.Column<int>(type: "int", nullable: false),
                     IdNguoiDunh = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IdVoucherDetail = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IdVoucherDetail = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     IDHTTT = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>

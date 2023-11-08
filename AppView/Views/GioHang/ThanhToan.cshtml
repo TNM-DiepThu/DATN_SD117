@@ -94,7 +94,7 @@
                                     {
                                         foreach (var province in provinces)
                                         {
-                                            <option value="@province.Id" data-url="@Url.Action("LayIDthanhPho", "GioHang", new { idthanhpho = province.Id })">@province.Name</option>
+                                            <option value="@province.Id" data-url="@Url.Action("ThanhToan", "GioHang", new { idthanhpho = province.Id })">@province.Name</option>
                                         }
                                     }
                                 </select>
@@ -106,17 +106,13 @@
                             <div class="col-md-6 row">
                                 <label for="kh_diachi">Quận Huyện: </label>
                                 <select id="provinceDropdown" class="form-control col-md-11">
-                                    <option value="">Chọn tỉnh/thành phố</option>
+                                    <option value="">Chọn Quận huyện</option>
                                     @if (districts != null)
                                     {
                                         foreach (var district in districts)
                                         {
-                                            <option value="@district.Id" data-url="@Url.Action("LayThongTinQuanHuyen", "GioHang", new { idquanhuyen = district.Id })">@district.Name</option>
+                                            <option value="@district.Id" data-url="@Url.Action("ThanhToan", "GioHang", new { idquanhuyen = district.Id })">@district.Name</option>
                                         }
-                                    }
-                                    else
-                                    {
-                                        
                                     }
                                 </select>
                                 <a id="searchButton" class="col-md-1" style="margin-top:3px;"><i class="fas fa-search" style="color: #005eff;"></i></a>
@@ -211,7 +207,7 @@
                     contentType: "application/json; charset=utf-8",
                     data: { idthanhpho: selectedId },
                     success: function (data) {
-                        if (data === "success") {
+                        if (data == "success") {
                             alert("Lấy ID thành công: " + selectedId);
                         } else {
                             alert("Lấy ID thất bại");
@@ -224,6 +220,4 @@
             }
         });
     });
-
-
 </script>

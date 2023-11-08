@@ -9,6 +9,7 @@ using System.Linq;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace AppData.Serviece.Implements
 {
@@ -40,10 +41,8 @@ namespace AppData.Serviece.Implements
 
             }
         }
-
         public bool Del(Guid id)
         {
-
             try
             {
                 GioHangChiTiet obj = _context.gioHangChiTiets.FirstOrDefault(c => c.Id == id);
@@ -68,13 +67,22 @@ namespace AppData.Serviece.Implements
         }
         public List<GioHangChiTiet> GetAllGioHangTheoNguoiDungDangNhap(Guid idnguoidung)
         {
-            var idgh = _GH.GetAll().FirstOrDefault(c => c.IdNguoiDung == idnguoidung).Id ;
+
+            if (_GH.GetAll().Any(c => c.IdNguoiDung == idnguoidung) == false)
+            {
+                _GH.Add(idnguoidung);
+                var idgh1 = _GH.GetAll().FirstOrDefault(c => c.IdNguoiDung == idnguoidung).Id;
+                return _context.gioHangChiTiets.Where(c => c.IdGioHang == idgh1).ToList();
+            }
+
+            var idgh = _GH.GetAll().FirstOrDefault(c => c.IdNguoiDung == idnguoidung).Id;
             return _context.gioHangChiTiets.Where(c => c.IdGioHang == idgh).ToList();
+
         }
         public bool Edit(Guid idghct, GioHangChiTiet p)
         {
             GioHangChiTiet ghct = _context.gioHangChiTiets.FirstOrDefault(c => c.Id == idghct);
-            if(ghct == null) return false;
+            if (ghct == null) return false;
             ghct.SoLuong = p.SoLuong;
             _context.gioHangChiTiets.Update(ghct);
             _context.SaveChangesAsync();

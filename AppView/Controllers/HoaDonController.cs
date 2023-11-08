@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Text;
 
 namespace AppView.Controllers
@@ -22,6 +23,7 @@ namespace AppView.Controllers
         {
             _logger = logger;
             _context = new MyDbContext();
+            _context = new MyDbContext();
            
         }
         [HttpGet]
@@ -36,6 +38,25 @@ namespace AppView.Controllers
             //return View(lsthoadon);
            
         }
+        public Guid IDNguoiDung()
+        {
+            ClaimsPrincipal claimsPrincipal = HttpContext.User;
+
+            var userlogin = HttpContext.User;
+            var email = userlogin.FindFirstValue(ClaimTypes.Email);
+            var user = _context.Users.FirstOrDefault(c => c.Email == email);
+            return user.Id;
+        }
+        [HttpGet]
+        public async Task<ActionResult> GetAllHDById()
+        {
+            Guid IDnguoidung = IDNguoiDung();
+            string url = $"https://localhost:7214/api/HoaDon/GetAllHoaDonByIDnguoiDung?id={IDnguoidung}";
+            var respone = await _client.GetAsync(url);
+            var data = await respone.Content.ReadAsStringAsync();
+            List<HoaDon> lsthd = JsonConvert.DeserializeObject<List<HoaDon>>(data);
+            return View(lsthd);
+        }
         [HttpGet]
         [HttpPost]
         public async Task<ActionResult> CreateHoaDon(HoaDon hoadon)
@@ -43,8 +64,7 @@ namespace AppView.Controllers
             ViewBag.User = new SelectList(_context.Users.ToList().Where(c => c.status == 1).OrderBy(c => c.UserName), "Id", "UserName");
             ViewBag.HinhThucTT = new SelectList(_context.hinhThucThanhToans.ToList().Where(c => c.status == 1).OrderBy(c => c.TenHinhThucThanhToan), "Id", "TenHinhThucThanhToan");
             ViewBag.VoucherDetail = new SelectList(_context.voucherDetail.ToList().Where(c => c.status == 1).OrderBy(c => c.Id), "Id", "Id");
-            string url = $"https://localhost:7214/api/HoaDon/create-hoadon?mahd={hoadon.MaHD}&ngaytao={hoadon.NgayTao}&soluong={hoadon.SoLuong}&tongtien={hoadon.TongTien}&tienvanchuyen={hoadon.TienVanChuyen}&ngaygiao={hoadon.NgayGiao}&ngaynhan={hoadon.NgayNhan}&nguoinhan={hoadon.NguoiNhan}&sdt={hoadon.SDT}&quanhuyen={hoadon.QuanHuyen}&tinh={hoadon.Tinh}&diachi={hoadon.DiaChi}&ngaythanhtoan={hoadon.NgayThanhToan}&ghichu={hoadon.GhiChu}&trangthai={hoadon.status}&idnguoidung={hoadon.IdNguoiDunh}&idvoucherdetail={hoadon.IdVoucherDetail}&idhttt={hoadon.IDHTTT}";
-            // https://localhost:7214/api/HoaDon/CreateHoaDon?ngaytao=2023%2F11%2F02&soluong=312&tongtien=12321&tienvanchuyen=1231&ngaygiao=2023%2F11%2F02&ngaynhan=2023%2F11%2F02&nguoinhan=fafaf&sdt=21312&quanhuyen=fafsa&tinh=adfaf&diachi=%E1%BA%A7df&ngaythanhtoan=2023%2F11%2F02&ghichu=fafda&idnguoidung=6b5e0c51-2d7a-41c8-a1e4-a15ab3dc9296&idvoucherdetail=c529d4e3-e600-4eaa-91ed-77e4dc6c34d4&idhttt=91185eb8-a1a3-4de3-882a-738ba4f501db
+            string url = $"https://localhost:7214/api/HoaDon/CreateHoaDon?ngaygiao={hoadon.NgayGiao}&ngaynhan={hoadon.NgayNhan}&nguoinhan={hoadon.NguoiNhan}&sdt={hoadon.SDT}&quanhuyen={hoadon.QuanHuyen}&tinh={hoadon.Tinh}&diachi={hoadon.DiaChi}&ngaythanhtoan={hoadon.NgayThanhToan}&ghichu={hoadon.GhiChu}&idnguoidung={hoadon.IdNguoiDunh}&idhttt={hoadon.IDHTTT}";
             var obj = JsonConvert.SerializeObject(hoadon);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
             HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
@@ -85,19 +105,10 @@ namespace AppView.Controllers
                 return View(lstsize);
             }
         }
+        [HttpPut("[action]")]
         public async Task<ActionResult> Delete(Guid id)
         {
-           /* string url = $"https://localhost:7214/api/HoaDon/delete-hoadon?id={id}";
-            var obj = JsonConvert.SerializeObject(id);
-            StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
-            HttpResponseMessage httpResponseMessage = await _client.PutAsync(url, content);
-
-            return RedirectToAction("GetAllHD", "HoaDon");*/
-            //var cus = .GetAll().First(c => c.ColorID == id);
-            var httpClient = new HttpClient();
-            string apiUrl = $"https://localhost:7214/api/HoaDon/delete-hoadon?id={id}";
-            var response = await httpClient.DeleteAsync(apiUrl);
-            return RedirectToAction("GetAllHD","HoaDon");
+            return View();
         }
 
         //Tính tiền ship
@@ -105,6 +116,109 @@ namespace AppView.Controllers
         {
 
             return 0;
+        }
+
+        [HttpPost]
+        public IActionResult UpdateDaXacNhan(HoaDon hd)
+        {
+            string url = $"https://localhost:7214/api/HoaDon/UpdateDaXacNhan?idhb={hd.Id}";
+            var respons = _client.GetAsync(url).Result;
+            var obj = JsonConvert.SerializeObject(hd);
+            StringContent stringContent = new StringContent(obj, Encoding.UTF8, "application/json");
+            HttpResponseMessage httpResponseMessage = _client.PostAsync(url, stringContent).Result;
+            if(httpResponseMessage.IsSuccessStatusCode)
+            {
+                return RedirectToAction("GetAllHD","HoaDon");
+            }
+            else
+            {
+                return RedirectToAction("GetAllHD", "HoaDon");
+            }
+        }
+        [HttpPost]
+        public IActionResult UpdateChoLayHang(HoaDon hd)
+        {
+            string url = $"https://localhost:7214/api/HoaDon/UpdateChoLayHang?idhb={hd.Id}";
+            var respons = _client.GetAsync(url).Result;
+            var obj = JsonConvert.SerializeObject(hd);
+            StringContent stringContent = new StringContent(obj, Encoding.UTF8, "application/json");
+            HttpResponseMessage httpResponseMessage = _client.PostAsync(url, stringContent).Result;
+            if (httpResponseMessage.IsSuccessStatusCode)
+            {
+                return RedirectToAction("GetAllHD", "HoaDon");
+            }
+            else
+            {
+                return RedirectToAction("GetAllHD", "HoaDon");
+            }
+        }
+        [HttpPost]
+        public IActionResult UpdateDaLayHang(HoaDon hd)
+        {
+            string url = $"https://localhost:7214/api/HoaDon/UpdateDaLayhang?idhb={hd.Id}";
+            var respons = _client.GetAsync(url).Result;
+            var obj = JsonConvert.SerializeObject(hd);
+            StringContent stringContent = new StringContent(obj, Encoding.UTF8, "application/json");
+            HttpResponseMessage httpResponseMessage = _client.PostAsync(url, stringContent).Result;
+            if (httpResponseMessage.IsSuccessStatusCode)
+            {
+                return RedirectToAction("GetAllHD", "HoaDon");
+            }
+            else
+            {
+                return RedirectToAction("GetAllHD", "HoaDon");
+            }
+        }
+        [HttpPost]
+        public IActionResult UpdateHuy(HoaDon hd)
+        {
+            string url = $"https://localhost:7214/api/HoaDon/UpdateHuyHang?idhb={hd.Id}";
+            var respons = _client.GetAsync(url).Result;
+            var obj = JsonConvert.SerializeObject(hd);
+            StringContent stringContent = new StringContent(obj, Encoding.UTF8, "application/json");
+            HttpResponseMessage httpResponseMessage = _client.PostAsync(url, stringContent).Result;
+            if (httpResponseMessage.IsSuccessStatusCode)
+            {
+                return RedirectToAction("GetAllHD", "HoaDon");
+            }
+            else
+            {
+                return RedirectToAction("GetAllHD", "HoaDon");
+            }
+        }
+        [HttpPost]
+        public IActionResult UpdateDaNhanHang(HoaDon hd)
+        {
+            string url = $"https://localhost:7214/api/HoaDon/UpdateDaNhanHang?idhb={hd.Id}";
+            var respons = _client.GetAsync(url).Result;
+            var obj = JsonConvert.SerializeObject(hd);
+            StringContent stringContent = new StringContent(obj, Encoding.UTF8, "application/json");
+            HttpResponseMessage httpResponseMessage = _client.PostAsync(url, stringContent).Result;
+            if (httpResponseMessage.IsSuccessStatusCode)
+            {
+                return RedirectToAction("GetAllHD", "HoaDon");
+            }
+            else
+            {
+                return RedirectToAction("GetAllHD", "HoaDon");
+            }
+        }
+        [HttpPost]
+        public IActionResult UpdateDaThanhToan(HoaDon hd)
+        {
+            string url = $"https://localhost:7214/api/HoaDon/UpdateDaThanhToan?idhb={hd.Id}";
+            var respons = _client.GetAsync(url).Result;
+            var obj = JsonConvert.SerializeObject(hd);
+            StringContent stringContent = new StringContent(obj, Encoding.UTF8, "application/json");
+            HttpResponseMessage httpResponseMessage = _client.PostAsync(url, stringContent).Result;
+            if (httpResponseMessage.IsSuccessStatusCode)
+            {
+                return RedirectToAction("GetAllHD", "HoaDon");
+            }
+            else
+            {
+                return RedirectToAction("GetAllHD", "HoaDon");
+            }
         }
     }
 }

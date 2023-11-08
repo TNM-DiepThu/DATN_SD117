@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "UpdateSanPhamCT";
     var dataanh = ViewBag.listanh;
+    var lstanh = ViewBag.anhsp;
 }
 
 <script src="~/library/plugins/jquery/jquery.min.js"></script>
@@ -10,10 +11,48 @@
 <script type="text/javascript" src="~/js/site.js"></script>
 <link href="~/css/site.css" rel="stylesheet" />
 
+<style>
+    .image-row {
+        display: flex;
+        flex-wrap: wrap;
+    }
 
-<h1>UpdateSanPhamCT</h1>
+    .image-item {
+        margin: 5px;
+        flex-basis: calc(16.666% - 10px); /* Điều chỉnh độ rộng tùy ý để hiển thị 6 ảnh trên một dòng */
+    }
 
-<h4>SanPhamChiTiet</h4>
+    .selectable-image {
+        max-width: 100%;
+        height: auto;
+    }
+
+    .image-checkbox {
+        margin-right: 5px;
+    }
+
+    .selectable-image {
+        max-width: 50%; /* Thiết lập chiều rộng ảnh là 50% so với ảnh gốc */
+        height: auto;
+    }
+
+    .image-item {
+        position: relative;
+        display: inline-block;
+        margin: 10px;
+    }
+/*
+    .delete-button {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        background-color: #f00;
+        color: #fff;
+        padding: 5px 10px;
+        border: none;
+        cursor: pointer;
+    }*/
+</style>
 <hr />
 <div>
     <div>
@@ -31,23 +70,11 @@
                     <input asp-for="MaSp" class="form-control" readonly />
                 </div>
             </div>
-            @*      <div class="form-group row">
-            <label for="IDSP" class="control-label col-3">Tên sản phẩm</label>
-            <div class="col-9">
-            <select id="IDSP" class="select2bs4" multiple="multiple" data-placeholder="Select a State" style="width: 100%;">
-            @foreach (var item in ViewBag.SanPham as IEnumerable<SelectListItem>)
-            {
-            <option value="@item.Value">@item.Text</option>
-            }
-            </select>
-            @Html.ValidationMessageFor(model => model.IDSP, "", new { @class = "text-danger" })
-            </div>
-            </div>*@
             <div class="form-group row">
                 <label for="IDSP" class="control-label col-3">Tên sản phẩm</label>
                 <div class="col-9 ">
                     @Html.DropDownList("IDSP", ViewBag.SanPham as IEnumerable<SelectListItem>, "", new { @class = "form-control" })
-                   @* @Html.DropDownListFor(m => m.IDSP, (IEnumerable<SelectListItem>)ViewBag.SanPham, new { @class = "form-control" })*@
+                    @* @Html.DropDownListFor(m => m.IDSP, (IEnumerable<SelectListItem>)ViewBag.SanPham, new { @class = "form-control" })*@
                     @Html.ValidationMessageFor(model => model.IDSP, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -82,8 +109,32 @@
                 </div>
             </div>
 
+            @*bắt đầu *@
+            <div class="form-group row">
+                <label for="IdAnh" class="control-label col-3">Ảnh sản phẩm</label>
+                <div class="col-9 row">
+                    <input type="text" id="imageFilename" name="imageFilename" class="form-control" />
+                    <button type="button" class="btn btn-primary col-2" style="margin-top:8px;" data-bs-toggle="modal" data-bs-target="#myModal">
+                        Chọn ảnh
+                    </button>
+                </div>
+                <div class="col-3"></div>
+                <div class="col-9">
+                    @foreach (var img in lstanh)
+                    {
+                        <div class="image-item">
+                            <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = img.Connect })" width="30%" height="30%" alt="Image" class="selectable-image" data-image-id="@img.Id" data-image-filename="@img.Connect" />
+                            <a href="@Url.Action("XoaAnhSanPham","QuanTri",new { idsanpham = Model.Id , idanh = img.Id})" class="text-muted px-1 delete-button">
+                                <i class="fas fa-times" style="color: #ff0000;"></i>
+                            </a>
+                        </div>
+                       
+                    }
+                </div>
+            </div>
+            <!-- The Modal -->
             <div class="modal" id="myModal">
-                <div class="modal-dialog custom-modal">
+                <div class="modal-dialog modal-xl">
                     <div class="modal-content">
                         <!-- Modal Header -->
                         <div class="modal-header">
@@ -97,19 +148,25 @@
                                 @foreach (var image in dataanh)
                                 {
                                     <div class="image-item">
+
                                         <input type="checkbox" class="image-checkbox" data-image-filename="@image.Connect" />
                                         <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = image.Connect })" alt="Image" class="selectable-image" data-image-id="@image.Id" data-image-filename="@image.Connect" />
                                     </div>
                                 }
                             </div>
                         </div>
+
+                        <!-- Modal footer -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" id="selectImageBtn">Select</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="selectImageBtn">Select</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                </div>
             </div>
+            @*kết thúc*@
+
 
             @* Kêt thúc form anh*@
             <div class="form-group row">
@@ -140,7 +197,7 @@
                     Trạng thái
                 </div>
                 <div class="col-9">
-                    <select name="SelectedStatus" class="form-control" id="statusSelect" >
+                    <select name="SelectedStatus" class="form-control" id="statusSelect">
                         <option value="1">Còn hàng</option>
                         <option value="0">Hết hàng</option>
                     </select>
@@ -148,7 +205,7 @@
                         @Html.TextBoxFor(m => m.status, new { @class = "form-control", @id = "selectedStatus" })
                     </div>
                     <span asp-validation-for="status" class="text-danger"></span>
-                </div>          
+                </div>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
@@ -166,56 +223,78 @@
             var selectedValue = this.value; // Lấy giá trị được chọn trong select
             document.getElementById("selectedStatus").value = selectedValue; // Đặt giá trị vào TextBoxFor
         });
-        <script>
-            $(document).ready(function () {
-                var selectedImages = [];
-                // Lắng nghe sự kiện click trên checkbox để chọn hoặc bỏ chọn
-                $(".image-checkbox").on("click", function () {
-                    var imageId = $(this).data("image-id");
-                    var imageFilename = $(this).data("image-filename");
-                    if ($(this).prop("checked")) {
-                        // Nếu checkbox được chọn, thêm ảnh vào danh sách đã chọn
-                        selectedImages.push({ Id: imageId, Connect: imageFilename });
+        $(document).ready(function () {
+            var selectedImages = [];
+            // Lắng nghe sự kiện click trên checkbox để chọn hoặc bỏ chọn
+            $(".image-checkbox").on("click", function () {
+                var imageId = $(this).data("image-id");
+                var imageFilename = $(this).data("image-filename");
+                if ($(this).prop("checked")) {
+                    // Nếu checkbox được chọn, thêm ảnh vào danh sách đã chọn
+                    selectedImages.push({ Id: imageId, Connect: imageFilename });
+                } else {
+                    // Nếu checkbox bị bỏ chọn, loại bỏ ảnh khỏi danh sách đã chọn
+                    selectedImages = selectedImages.filter(function (image) {
+                        return image.Id !== imageId;
+                    });
+                }
+            });
+            //$(".selectable-image").on("load", function () {
+            //    var imageId = $(this).data("image-id");
+            //    var imageFilename = $(this).data("image-filename");
+
+            //     Kiểm tra xem ảnh đã được chọn hay chưa
+            //    if (selectedImages.some(image => image.Id === imageId)) {
+            //         Nếu đã chọn, không cần làm gì
+
+            //    } else {
+            //         Nếu chưa chọn, thêm ảnh vào danh sách đã chọn
+            //        selectedImages.push({ Id: imageId, Connect: imageFilename });
+
+            //         Rút gọn đường dẫn ảnh chỉ hiển thị phần tên tệp
+            //        var lastIndex = imageFilename.lastIndexOf("\\");
+            //        var shortImageFilename = "...\\" + imageFilename.substring(lastIndex + 1);
+
+            //         Cập nhật giá trị của trường input với đường dẫn ảnh đã rút gọn
+            //        var currentInputValue = $("#imageFilename").val();
+            //        if (currentInputValue === "") {
+            //            $("#imageFilename").val(shortImageFilename);
+            //        } else {
+            //            $("#imageFilename").val(currentInputValue + "," + shortImageFilename);
+            //        }
+            //    }
+            //});
+            // Lắng nghe sự kiện click vào nút mở modal
+            $("#selectImageBtn").on("click", function () {
+                // Rút gọn và hiển thị tên ảnh đã chọn trong trường nhập
+                $("#imageFilename").val(selectedImages.map(function (image) {
+                    var lastIndex = image.Connect.lastIndexOf("\\");
+                    if (lastIndex !== -1) {
+                        return "...\\" + image.Connect.substring(lastIndex + 1);
                     } else {
-                        // Nếu checkbox bị bỏ chọn, loại bỏ ảnh khỏi danh sách đã chọn
-                        selectedImages = selectedImages.filter(function (image) {
-                            return image.Id !== imageId;
-                        });
+                        return image.Connect;
+                    }
+                }).join(", "));
+
+
+                var selectedFilenames = selectedImages.map(function (image) {
+                    return image.Connect;
+                });
+
+                // Gửi danh sách tên ảnh lên controller thông qua AJAX
+                $.ajax({
+                    type: "POST", // Sử dụng phương thức POST
+                    url: "/QuanTri/LuuAnh", // Thay thế ControllerName và ActionName bằng tên thực của controller và action của bạn
+                    contentType: "application/json; charset=utf-8", // Chỉ định loại dữ liệu gửi lên là JSON
+                    data: JSON.stringify(selectedFilenames), // Dữ liệu gửi lên controller dưới dạng JSON
+                    success: function (data) {
+                        // Xử lý phản hồi từ controller nếu cần
+                    },
+                    error: function () {
+                        // Xử lý lỗi nếu có
                     }
                 });
-
-                // Lắng nghe sự kiện click vào nút mở modal
-                $("#selectImageBtn").on("click", function () {
-                    // Rút gọn và hiển thị tên ảnh đã chọn trong trường nhập
-                    $("#imageFilename").val(selectedImages.map(function (image) {
-                        var lastIndex = image.Connect.lastIndexOf("\\");
-                        if (lastIndex !== -1) {
-                            return "...\\" + image.Connect.substring(lastIndex + 1);
-                        } else {
-                            return image.Connect;
-                        }
-                    }).join(", "));
-
-
-                    var selectedFilenames = selectedImages.map(function (image) {
-                        return image.Connect;
-                    });
-
-                    // Gửi danh sách tên ảnh lên controller thông qua AJAX
-                    $.ajax({
-                        type: "POST", // Sử dụng phương thức POST
-                        url: "/QuanTri/LuuAnh", // Thay thế ControllerName và ActionName bằng tên thực của controller và action của bạn
-                        contentType: "application/json; charset=utf-8", // Chỉ định loại dữ liệu gửi lên là JSON
-                        data: JSON.stringify(selectedFilenames), // Dữ liệu gửi lên controller dưới dạng JSON
-                        success: function (data) {
-                            // Xử lý phản hồi từ controller nếu cần
-                        },
-                        error: function () {
-                            // Xử lý lỗi nếu có
-                        }
-                    });
-                });
             });
-
+        });
     </script>
 }

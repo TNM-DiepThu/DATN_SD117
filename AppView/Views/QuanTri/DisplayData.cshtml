@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<AppData.ViewModal.SanPhamChiTietVM.SanPhamChiTietViewModel>
 @{
-
+    var anhs = ViewBag.hienanh;
 }
 @if (TempData["ErrorMessage"] != null)
 {
@@ -30,8 +30,8 @@
             <th>
                 @Html.DisplayNameFor(model => model.Size)
             </th>
-            <th>
-               @* @Html.DisplayNameFor(model => model.Oneanh)*@
+            <th style="width:300px;">
+                Ảnh sản phẩm
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.SoLuong)
@@ -71,7 +71,11 @@
                     @Html.DisplayFor(modelItem => item.Size)
                 </td>
                 <td>
-                    @*<img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = item.Oneanh })" alt="Image" width="70%" height="70%" />*@
+                    @foreach (var path in anhs)
+                    {
+                        <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = path })" alt="Image" width="30%" height="30%" />
+                    }
+                    
                 </td>
 
                 <td>

@@ -72,6 +72,16 @@ namespace AppAPI.Controllers
             };
             return _anhsv.Add(anh);
         }
+        [HttpPost("[action]")]
+        public bool ThemAnhChoSanPham(Guid IDSpct , Guid IDAnh)
+        {
+            AnhSanPham anh = new AnhSanPham()
+            {
+               Idanh = IDAnh,
+               IdSanPhamChiTiet = IDSpct,
+            };
+            return anhSanPhamService.AddAnhChoSanPham(anh);
+        }
 
         [HttpGet("[action]")]
         public List<SanPhamChiTietViewModel> GetAllAnhSanPhamCt()
@@ -89,7 +99,6 @@ namespace AppAPI.Controllers
             }
 
             return products.ToList();
-
 
         }
     }

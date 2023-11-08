@@ -10,67 +10,76 @@ using System.Threading.Tasks;
 
 namespace AppData.Serviece.Implements
 {
-   
-        public class HoaDonCTService<T> : IHoaDonCTService<T> where T : class
+
+    public class HoaDonCTService : IHoaDonCTService
+    {
+        public MyDbContext _dbContext;
+
+        public HoaDonCTService()
         {
-            public MyDbContext _dbContext;
-            public DbSet<T> _dbSet;
-            public HoaDonCTService(MyDbContext dbContext, DbSet<T> dbSet)
-            {
-                _dbContext = dbContext;
-                this._dbSet = dbSet;
-            }
-            public bool AddItem(T item)
-            {
-                try
-                {
-                    _dbSet.Add(item);
-                    _dbContext.SaveChanges();
-                    return true;
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
-            }
+            _dbContext = new MyDbContext();
 
-            public bool EditItem(T item)
-            {
-                try
-                {
-                    _dbSet.Update(item);
-                    _dbContext.SaveChanges();
-                    return true;
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
-            }
-
-            public IEnumerable<T> GetAll()
-            {
-                return _dbSet.ToList();
-            }
-
-        public HoaDonChiTiet GetByID(Guid id)
-        {
-            return _dbContext.hoaDonChiTiets.FirstOrDefault(c => c.Id == id);
         }
 
-        public bool RemoveItem(T item)
+        public bool AddItem(HoaDonChiTiet hdct)
+        {
+            try
             {
-                try
+                _dbContext.hoaDonChiTiets.Add(hdct);
+                _dbContext.SaveChanges();
+                return true;
+
+            } catch
+            {
+                return false;
+            }
+        }
+
+        public bool EditItem(HoaDonChiTiet hdct)
+        {
+            try
+            {
+                HoaDonChiTiet hoaDonChiTiet = _dbContext.hoaDonChiTiets.FirstOrDefault(c => c.Id == hdct.Id);
+                if(hoaDonChiTiet == null)
                 {
-                    _dbSet.Remove(item);
+                    return false;
+                } else
+                {
+                    _dbContext.hoaDonChiTiets.Update(hoaDonChiTiet);
                     _dbContext.SaveChanges();
                     return true;
                 }
-                catch (Exception)
+            } catch
+            {
+                return false;
+            }
+        }
+
+        public IEnumerable<HoaDonChiTiet> GetAllByIdHd(Guid ID)
+        {
+            return _dbContext.hoaDonChiTiets.Where(c => c.IDHD == ID).ToList();
+        }
+
+        public bool RemoveItemById(HoaDonChiTiet hdct)
+        {
+            try
+            {
+                HoaDonChiTiet hoaDonChiTiet = _dbContext.hoaDonChiTiets.FirstOrDefault(c => c.Id == hdct.Id);
+                if (hoaDonChiTiet != null)
+                {
+                    _dbContext.hoaDonChiTiets.Remove(hoaDonChiTiet);
+                    _dbContext.SaveChanges();
+                    return true;
+                }
+                else
                 {
                     return false;
                 }
+            } catch
+            {
+                return false;
             }
+           
         }
-    
+    }
 }

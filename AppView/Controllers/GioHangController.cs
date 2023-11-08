@@ -1,4 +1,5 @@
-﻿using AppData.model;
+﻿using AppData.data;
+using AppData.model;
 using AppData.Serviece.Implements;
 using AppData.Serviece.Interfaces;
 using AppData.ViewModal.GioHangChiTietViewModel;
@@ -19,12 +20,15 @@ namespace AppView.Controllers
     {
         HttpClient _client = new HttpClient();
         private readonly IGioHangCTService ghctservice;
-        //private readonly INguoiDungServiece _nguoiDungServiece;
+        private readonly MyDbContext _context;
 
-        public GioHangController(/*INguoiDungServiece nguoiDungServiece*/)
+
+        public GioHangController()
         {
             //_nguoiDungServiece = nguoiDungServiece;
             ghctservice = new GioHangCTService();
+            _context = new MyDbContext();
+
         }
 
         // GET: GioHangController
@@ -42,23 +46,24 @@ namespace AppView.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> GetGioHangChiTiet()
+        public async Task<ActionResult> GetGioHangChiTiet(GioHang gh)
         {
             ClaimsPrincipal claimsPrincipal = HttpContext.User;
-
             var userlogin = HttpContext.User;
             var email = userlogin.FindFirstValue(ClaimTypes.Email);
-            //NguoiDungVM user = await _nguoiDungServiece.GetAllAsync().;
-            string url = $"https://localhost:7214/api/GioHangCT/GetAllFullGioHangChiTiet?IDnguoiDung=911a9476-05be-4a4f-8325-2ea61766e2a0";
+            var user = _context.Users.FirstOrDefault(c => c.Email == email);
+            string url = $"https://localhost:7214/api/GioHangCT/GetAllFullGioHangChiTiet?IDnguoiDung={user.Id}";
             var repos = await _client.GetAsync(url);
             var data = await repos.Content.ReadAsStringAsync();
             List<GioHangChiTietViewModel> lstghct = JsonConvert.DeserializeObject<List<GioHangChiTietViewModel>>(data);
             return View(lstghct);
+
+
         }
         // GET: GioHangController/Create
         public async Task<ActionResult> CreateGioHang(GioHang gh)
         {
-            string url = $"https://localhost:7214/api/GioHang/Create?{gh.GhiChu}";
+            string url = $"https://localhost:7214/api/GioHang/Create?{gh.Id}";
 
 
             var obj = JsonConvert.SerializeObject(gh);
@@ -73,7 +78,15 @@ namespace AppView.Controllers
                 return View("CreateGioHang");
             }
         }
+        public Guid IDNguoiDung()
+        {
+            ClaimsPrincipal claimsPrincipal = HttpContext.User;
 
+            var userlogin = HttpContext.User;
+            var email = userlogin.FindFirstValue(ClaimTypes.Email);
+            var user = _context.Users.FirstOrDefault(c => c.Email == email);
+            return user.Id;
+        }
         // POST: GioHangController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -186,8 +199,9 @@ namespace AppView.Controllers
         [HttpPost]
         public ActionResult DecreaseButton(Guid id, int soluong)
         {
-            var idnguoidung = Guid.Parse("911a9476-05be-4a4f-8325-2ea61766e2a0");
-            GioHangChiTiet ghct = ghctservice.GetAllGioHangTheoNguoiDungDangNhap(idnguoidung).FirstOrDefault(c => c.Id == id);
+            Guid Idnguoidung = IDNguoiDung();
+            //var idnguoidung = Guid.Parse("911a9476-05be-4a4f-8325-2ea61766e2a0");
+            GioHangChiTiet ghct = ghctservice.GetAllGioHangTheoNguoiDungDangNhap(Idnguoidung).FirstOrDefault(c => c.Id == id);
             if (ghct != null)
             {
                 if (soluong > 0)
@@ -203,8 +217,9 @@ namespace AppView.Controllers
         [HttpPost]
         public ActionResult IncreaseButton(Guid id, int soluong)
         {
-            var idnguoidung = Guid.Parse("911a9476-05be-4a4f-8325-2ea61766e2a0");
-            GioHangChiTiet ghct = ghctservice.GetAllGioHangTheoNguoiDungDangNhap(idnguoidung).FirstOrDefault(c => c.Id == id);
+            Guid Idnguoidung = IDNguoiDung();
+            //var idnguoidung = Guid.Parse("911a9476-05be-4a4f-8325-2ea61766e2a0");
+            GioHangChiTiet ghct = ghctservice.GetAllGioHangTheoNguoiDungDangNhap(Idnguoidung).FirstOrDefault(c => c.Id == id);
             soluong++;
             if (ghct != null)
             {
@@ -214,14 +229,14 @@ namespace AppView.Controllers
             return RedirectToAction("GetGioHangChiTiet");
         }
 
-        [HttpGet]
-        [HttpPost]
-        public int LayIDthanhPho(int idthanhpho)
-        {
-            string json = JsonConvert.SerializeObject(idthanhpho);
-            HttpContext.Session.SetString("IDThongtinThanhPho", json);
-            return idthanhpho;
-        }
+        //[HttpGet]
+        //[HttpPost]
+        //public int LayIDthanhPho(int idthanhpho)
+        //{
+        //    string json = JsonConvert.SerializeObject(idthanhpho);
+        //    HttpContext.Session.SetString("IDThongtinThanhPho", json);
+        //    return idthanhpho;
+        //}
         [HttpGet]
         [HttpPost]
         public int LayThongTinQuanHuyen(int idquanhuyen)
@@ -232,13 +247,12 @@ namespace AppView.Controllers
         }
         [HttpGet]
         [HttpPost]
-        public async Task<ActionResult> ThanhToan()
+        public async Task<ActionResult> ThanhToan(int idthanhpho, int idquanhuyen)
         {
             string token = "be8ee160-008a-11ee-a281-3aa62a37e0a5";
             _client.DefaultRequestHeaders.Add("token", token);
             var urlTinhThanhPho = "https://online-gateway.ghn.vn/shiip/public-api/master-data/province";
             HttpResponseMessage response = await _client.GetAsync(urlTinhThanhPho);
-
             // lấy ID tỉnh
             if (response.IsSuccessStatusCode)
             {
@@ -268,16 +282,16 @@ namespace AppView.Controllers
             }
 
             //Lấy tất cả quyện huyện theo ID tỉnh
-            string IDtinh_thanhpho = HttpContext.Session.GetString("IDThongtinThanhPho");
-           
-            if(IDtinh_thanhpho != null)
-            {
-                ThongTinThanhPho thongtin = JsonConvert.DeserializeObject<ThongTinThanhPho>(IDtinh_thanhpho);
+            //string IDtinh_thanhpho = HttpContext.Session.GetString("IDThongtinThanhPho");
 
-                HttpResponseMessage response1 = await _client.GetAsync($"https://online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id={thongtin.Id}");
+            if (idthanhpho != null)
+            {
+                //ThongTinThanhPho thongtin = JsonConvert.DeserializeObject<ThongTinThanhPho>(IDtinh_thanhpho);
+
+                HttpResponseMessage response1 = await _client.GetAsync($"https://online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id={idthanhpho}");
                 if (response1.IsSuccessStatusCode)
                 {
-                    var jsonData = await response.Content.ReadAsStringAsync();
+                    var jsonData = await response1.Content.ReadAsStringAsync();
 
                     JObject jsonObject = JObject.Parse(jsonData);
 
@@ -289,12 +303,12 @@ namespace AppView.Controllers
                     {
                         foreach (JObject district in districtArray)
                         {
-                            if (thongtin.Id == Convert.ToInt32(district["ProvinceID"]))
+                            if (idthanhpho == Convert.ToInt32(district["ProvinceID"]))
                             {
-                                ThongTinQuanHuyen thongTinQuanHuyen = new ThongTinQuanHuyen();
-                                thongTinQuanHuyen.Id = Convert.ToInt32(district["DistrictID"]);
-                                thongTinQuanHuyen.Name = Convert.ToString(district["DistrictName"]);
-                                thongtinquanhuyen.Add(thongTinQuanHuyen);
+                                ThongTinQuanHuyen QuanHuyen = new ThongTinQuanHuyen();
+                                QuanHuyen.Id = Convert.ToInt32(district["DistrictID"]);
+                                QuanHuyen.Name = Convert.ToString(district["DistrictName"]);
+                                thongtinquanhuyen.Add(QuanHuyen);
                             }
                         }
                     }
@@ -304,7 +318,7 @@ namespace AppView.Controllers
                     }
                     ViewBag.thongtinhuyen = thongtinquanhuyen;
                 }
-            } 
+            }
             return View();
         }
     }

@@ -51,6 +51,10 @@ namespace AppData.Serviece.Implements
         {
             return _dbContext.hoaDons.ToList();
         }
+        public List<HoaDon> GetAllByIDNguoiDung(Guid IDnguoidung)
+        {
+            return _dbContext.hoaDons.Where(c => c.IdNguoiDunh == IDnguoidung).ToList();
+        }
 
         public HoaDon GetByID(Guid id)
         {
@@ -66,6 +70,118 @@ namespace AppData.Serviece.Implements
                 return true;
             }
             catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateChoLayHang(Guid id)
+        {
+            try
+            {
+                var Hoadon = _dbContext.hoaDons.FirstOrDefault(c => c.Id == id);
+                Hoadon.status = 2;
+                _dbContext.hoaDons.Update(Hoadon);
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception e) 
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateDaLayHang(Guid id)
+        {
+            try
+            {
+                var Hoadon = _dbContext.hoaDons.FirstOrDefault(c => c.Id == id);
+                Hoadon.status = 3;
+                _dbContext.hoaDons.Update(Hoadon);
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateDaThanhToan(Guid id)
+        {
+            try
+            {
+                var Hoadon = _dbContext.hoaDons.FirstOrDefault(c => c.Id == id);
+                Hoadon.status = 4;
+                _dbContext.hoaDons.Update(Hoadon);
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateDaXacNhan(Guid id)
+        {
+            try
+            {
+                var Hoadon = _dbContext.hoaDons.FirstOrDefault(c => c.Id == id);
+                Hoadon.status = 1;
+                _dbContext.hoaDons.Update(Hoadon);
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateHDCho(Guid id)
+        {
+            try
+            {
+                var Hoadon = _dbContext.hoaDons.FirstOrDefault(c => c.Id == id);
+                Hoadon.status = 7;
+                _dbContext.hoaDons.Update(Hoadon);
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateDaNhanHang(Guid id)
+        {
+            try
+            {
+                var Hoadon = _dbContext.hoaDons.FirstOrDefault(c => c.Id == id);
+                Hoadon.status = 6;
+                _dbContext.hoaDons.Update(Hoadon);
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        public bool UpdateHuy(Guid id)
+        {
+            try
+            {
+                var Hoadon = _dbContext.hoaDons.FirstOrDefault(c => c.Id == id);
+                Hoadon.status = 2;
+                _dbContext.hoaDons.Update(Hoadon);
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
             {
                 return false;
             }
