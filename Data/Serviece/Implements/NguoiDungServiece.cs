@@ -81,10 +81,15 @@ namespace AppData.Serviece.Implements
             };
         }
       
-        public async Task<Guid> CreateAsync(NguoiDungVM nguoiDung)
+        public async Task<bool> CreateAsync(NguoiDungVM nguoiDung)
         {
 
+            var emailExists = await _userManager.FindByEmailAsync(nguoiDung.Email);
 
+            if (emailExists != null)
+            {
+                return false;
+            }
             var user = new NguoiDung
             {
                 Id = Guid.NewGuid(),
@@ -116,7 +121,7 @@ namespace AppData.Serviece.Implements
                 if (addToRoleResult.Succeeded)
                 {
                     await _dbContext.SaveChangesAsync();
-                    return user.Id;
+                    return true;
                 }
                 else
                 {
@@ -131,7 +136,7 @@ namespace AppData.Serviece.Implements
             }
         }
 
-        public async Task<Guid> CreateNVAsync(NguoiDungVM nguoiDung)
+        public async Task<bool> CreateNVAsync(NguoiDungVM nguoiDung)
         {
             var user = new NguoiDung
             {
@@ -164,7 +169,7 @@ namespace AppData.Serviece.Implements
                 if (addToRoleResult.Succeeded)
                 {
                     await _dbContext.SaveChangesAsync();
-                    return user.Id;
+                    return true;
                 }
                 else
                 {
