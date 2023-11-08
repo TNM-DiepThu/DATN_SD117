@@ -138,6 +138,12 @@ namespace AppData.Serviece.Implements
 
         public async Task<bool> CreateNVAsync(NguoiDungVM nguoiDung)
         {
+            var emailExists = await _userManager.FindByEmailAsync(nguoiDung.Email);
+
+            if (emailExists != null)
+            {
+                return false;
+            }
             var user = new NguoiDung
             {
                 Id = Guid.NewGuid(),
