@@ -27,7 +27,7 @@ namespace AppData.Configuration
             builder.Property(x => x.QuanHuyen).HasColumnType("nvarchar(100)");
             builder.Property(x => x.Tinh).HasColumnType("nvarchar(100)");
             builder.Property(x => x.DiaChi).HasColumnType("nvarchar(100)");
-            builder.Property(x => x.GhiChu).HasColumnType("nvarchar(100)");
+            builder.Property(x => x.GhiChu).HasColumnType("nvarchar(255)");
             builder.Property(x => x.status).HasColumnType("int");
             builder.HasOne(x => x.NguoiDung).WithMany(x => x.hoaDons).HasForeignKey(x => x.IdNguoiDunh).OnDelete(DeleteBehavior.Restrict); ;
             builder.HasOne(x => x.voucherDetail).WithMany(x => x.hoaDons).HasForeignKey(x => x.IdVoucherDetail).OnDelete(DeleteBehavior.Restrict).IsRequired(false); 
