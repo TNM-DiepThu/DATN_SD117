@@ -16,7 +16,7 @@ namespace AppAPI.Controllers
     [ApiController]
     public class HoaDonCTController : ControllerBase
     {
-        private readonly IHoaDonCTService<HoaDonChiTiet> _hoaDonCTService;
+        private readonly IHoaDonCTService _hoaDonCTService;
         private MyDbContext _dbContext = new MyDbContext();
         private readonly ISanPhamChiTietServiece sanPhamChiTietServiece;
         private readonly IComboChiTietService comboChiTietService;
@@ -27,21 +27,15 @@ namespace AppAPI.Controllers
             hdct = _dbContext.hoaDonChiTiets;
             sanPhamChiTietServiece = new SanPhamChiTietServiece();
             comboChiTietService = new ComBoChiTietService();
-            HoaDonCTService<HoaDonChiTiet> all = new HoaDonCTService<HoaDonChiTiet>(_dbContext, hdct);
-            _hoaDonCTService = all;
+            _hoaDonCTService = new HoaDonCTService();
+
         }
         [HttpGet("[action]")]
-        public HoaDonChiTiet GetByID(Guid Id)
+        public IEnumerable< HoaDonChiTiet> GetByID(Guid Id)
         {
-            return _hoaDonCTService.GetByID(Id);
+            return _hoaDonCTService.GetAllByIdHd(Id);
         }
         // GET: api/<HoaDonCTController>
-        [HttpGet("[action]")]
-        public IEnumerable<HoaDonChiTiet> GetHoaDonCT(Guid IDHD)
-        {
-            return _hoaDonCTService.GetAll().Where(c => c.IDHD == IDHD).ToList();
-        }
-
 
         // POST api/<HoaDonCTController>
         [HttpPost("[action]")]
@@ -74,7 +68,7 @@ namespace AppAPI.Controllers
         [HttpPut("[action]")]
         public bool UpdateHoaDonCT(Guid id, int soluong, decimal gia, int trangthai, Guid idhd, Guid? idcomboct, Guid? idspct)
         {
-            HoaDonChiTiet hdct = _hoaDonCTService.GetAll().First(c => c.Id == id);
+            HoaDonChiTiet hdct = _hoaDonCTService.GetAllByIdHd(idhd).First(c => c.Id == id);
             if (idcomboct == null)
             {
                 hdct.SoLuong = soluong;
@@ -105,10 +99,10 @@ namespace AppAPI.Controllers
 
         // DELETE api/<HoaDonCTController>/5
         [HttpDelete("[action]")]
-        public bool Delete(Guid id)
+        public bool Delete(HoaDonChiTiet hdct)
         {
-            var hdct = _hoaDonCTService.GetAll().First(c => c.Id == id);
-            if (_hoaDonCTService.RemoveItem(hdct))
+            var hdct1 = _hoaDonCTService.GetAllByIdHd(hdct.IDHD).First(c => c.Id == hdct.Id);
+            if (_hoaDonCTService.RemoveItemById(hdct))
             {
                 return true;
             }

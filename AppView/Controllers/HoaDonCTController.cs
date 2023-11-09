@@ -50,10 +50,7 @@ namespace AppView.Controllers
             }
             else
             {
-                
-
                 return View();
-
             }
 
         }

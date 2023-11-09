@@ -5,29 +5,22 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-
 using Newtonsoft.Json;
-
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AppData.Serviece.ViewModeService;
-
 using Bill.Serviece.Interfaces;
 using Bill.Serviece.Implements;
 using System.Collections.Generic;
 using OfficeOpenXml;
-
 using System.ComponentModel;
 using LicenseContext = OfficeOpenXml.LicenseContext;
 using Microsoft.DotNet.Scaffolding.Shared.Messaging;
 using AppData.Serviece.Interfaces;
 using AppData.Serviece.Implements;
-
 using X.PagedList;
 using Microsoft.VisualStudio.Web.CodeGeneration;
-
-
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using ZXing;
 using ZXing.QrCode;
@@ -37,6 +30,7 @@ using Microsoft.AspNetCore.Components.RenderTree;
 using ZXing.Rendering;
 using ZXing.Common;
 using System.Collections;
+using System.Security.Claims;
 
 namespace AppView.Controllers
 {
@@ -60,6 +54,7 @@ namespace AppView.Controllers
         private readonly SanPhamViewModelService sanphanviewmodel;
         private readonly IWebHostEnvironment _hostingEnvironment;
         private static List<SanPhamChiTiet> _tempProducts;
+        private static List<string> _tempAnh;
         public static List<SanPhamChiTietViewModel> _temspctvm;
         public readonly List<Anh> anhSanPhams = new List<Anh>();
         private readonly List<string> path = new List<string>();
@@ -509,7 +504,7 @@ namespace AppView.Controllers
             var respon = _client.GetAsync(url).Result;
             var datalist = respon.Content.ReadAsStringAsync().Result;
             List<SanPhamChiTietViewModel> list = JsonConvert.DeserializeObject<List<SanPhamChiTietViewModel>>(datalist);
-          
+
             foreach (var item in list)
             {
                 string infor = "Mã Sản phẩm :" + item.MaSp + " Tên: " + item.TenSP + " Màu sắc :" + item.MauSac + "Chất liệu: " + item.ChatLieu + " Size :" + item.Size;
@@ -736,41 +731,6 @@ namespace AppView.Controllers
                 // return View(listbyname);
             }
         }
-       
-        //public void GenerateQRCode(Guid id)
-        //{
-        //    // Truy xuất thông tin đối tượng dựa trên ID
-        //    SanPhamChiTietViewModel spct = _spctViewModel.GetById(id);
-        //    if (spct != null)
-        //    {
-        //        string infor = "Mã Sản phẩm :" + spct.MaSp + " Tên: " + spct.TenSP + " Màu sắc :" + spct.MauSac + "Chất liệu: " + spct.ChatLieu + " Size :" + spct.Size;
-        //        BarcodeWriter<Bitmap> barcodeWriter = new BarcodeWriter<Bitmap>();
-        //        barcodeWriter.Format = BarcodeFormat.QR_CODE;
-
-        //        // Cấu hình các thuộc tính của mã QR code (kích thước, margin, ...)
-        //        barcodeWriter.Options = new QrCodeEncodingOptions
-        //        {
-        //            Width = 200,
-        //            Height = 200,
-        //            Margin = 0
-        //        };
-
-        //        // Tạo mã QR code từ dữ liệu đầu vào
-        //        Bitmap qrCodeBitmap = barcodeWriter.Write(infor);
-
-        //        // Chuyển đổi Bitmap thành mảng byte
-        //        //byte[] imageBytes;
-        //        using (MemoryStream stream = new MemoryStream())
-        //        {
-        //            qrCodeBitmap.Save(stream, ImageFormat.Png);
-        //            spct.QRCode = stream.ToArray();
-        //        }
-        //    }
-        //    // string json = JsonConvert.DeserializeObject(spct);
-
-
-        //}
-        // Kết thúc 
 
         [HttpGet]
         public ActionResult GellByIDSanPhamCT(Guid id, int quantity)
@@ -906,6 +866,13 @@ namespace AppView.Controllers
             ViewBag.MauSac = new SelectList(_context.mauSacs.ToList().Where(c => c.status == 1).OrderBy(c => c.TenMauSac), "Id", "TenMauSac");
             ViewBag.Size = new SelectList(_context.sizes.ToList().Where(c => c.status == 1).OrderBy(c => c.SizeName), "Id", "SizeName");
 
+            string urlanhsp = $"https://localhost:7214/api/SanPhamChiTiet/GetByIDSPCTVM?id={spct.Id}";
+            var responanhsp = _client.GetAsync(urlanhsp).Result;
+            var dataanhsp = responanhsp.Content.ReadAsStringAsync().Result;
+            SanPhamChiTietViewModel lstspctvm = JsonConvert.DeserializeObject<SanPhamChiTietViewModel>(dataanhsp);
+
+            ViewBag.anhsp = lstspctvm.Images;
+
             string urldetail = $"https://localhost:7214/api/SanPhamChiTiet/GetByID?Id={spct.Id}";
             var respon1 = _client.GetAsync(urldetail).Result;
             var data1 = respon1.Content.ReadAsStringAsync().Result;
@@ -926,11 +893,19 @@ namespace AppView.Controllers
             HttpResponseMessage httpResponseMessage = await _client.PostAsync(urltest, content);
             if (httpResponseMessage.IsSuccessStatusCode)
             {
+                string anhSanPhamsJson = HttpContext.Session.GetString("anhSanPhams");
+                List<Anh> anhSanPham1s = JsonConvert.DeserializeObject<List<Anh>>(anhSanPhamsJson);
+                AnhSanPham anhSanPham = new AnhSanPham();
+                foreach (var idanh in anhSanPham1s)
+                {
+                    anhSanPham.IdSanPhamChiTiet = spct.Id;
+                    anhSanPham.Idanh = idanh.Id;
+                    _ianhsanpham.AddAnhChoSanPham(anhSanPham);
+                }
                 return RedirectToAction("GellAllSanPhamCT", "QuanTri");
             }
             else
             {
-
                 return View(lstsize);
             }
         }
@@ -1027,57 +1002,69 @@ namespace AppView.Controllers
         }
         public IActionResult Themsanphamctvaogiohang(SanPhamChiTietViewModel spctvm)
         {
-            var spct = _spctViewModel.GetAll().FirstOrDefault(C => C.TenSP == spctvm.TenSP && C.MauSac == spctvm.MauSac && C.Size == spctvm.Size);
-            var IDMau = _mausacservice.GetAll().FirstOrDefault(c => c.TenMauSac == spctvm.MauSac).Id;
-            var IDSize = sizeServiece.GetAll().FirstOrDefault(c => c.SizeName == spctvm.Size).Id;
-            var IDSP = _sanphamservice.GetAll().FirstOrDefault(c => c.TenSanPham == spctvm.TenSP).Id;
-            var soluong = spctvm.SoLuong;
-            Guid IDNguoiDung = new Guid("911a9476-05be-4a4f-8325-2ea61766e2a0");
-            string url = $"https://localhost:7214/api/SanPhamChiTiet/ThemSPCTVaoGioHang?idnguoidung={IDNguoiDung}&idSP={IDSP}&IdMau={IDMau}&IdSize={IDSize}&soluong={soluong}";
-            GioHangChiTiet ghct = new GioHangChiTiet()
-            {
-                IdGioHang = new Guid("911a9476-05be-4a4f-8325-2ea61766e2a0"),
-                IdSanPhamChiTiet = spct.Id,
-                DonGia = spct.GiaBan,
-                IdComboChiTiet = null,
-                SoLuong = soluong
-            };
-            var obj = JsonConvert.SerializeObject(ghct);
-            StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
-            HttpResponseMessage httpResponseMessage = _client.PostAsync(url, content).Result;
-            if (httpResponseMessage.IsSuccessStatusCode)
-            {
-                var result = httpResponseMessage.Content.ReadAsStringAsync().Result;
-                if (result == "Thêm Thành công.")
-                {
-                    return RedirectToAction("GetGioHangChiTiet", "GioHang");
-                }
-                else if (result == "Sản phẩm đã hết hàng. Mời bạn chọn sản phẩm khác.")
-                {
-                    TempData["ErrorMessage"] = "Sản phẩm này đang hết hàng. Mời bạn chọn sản phẩm khác.";
-                    return RedirectToAction("GellByIDSanPhamCT", new { id = spct.Id });
-                }
-                else if (result == "Bạn chưa chọn màu. Mời bạn chọn màu.")
-                {
-                    TempData["ErrorMessage"] = "Bạn chưa chọn màu. Mời bạn chọn màu.";
-                    return RedirectToAction("GellByIDSanPhamCT", new { id = spct.Id });
-                }
-                else if (result == "Bạn chưa chọn size. Mời bạn chọn size.")
-                {
-                    TempData["ErrorMessage"] = "Bạn chưa chọn size. Mời bạn chọn size.";
-                    return RedirectToAction("GellByIDSanPhamCT", new { id = spct.Id });
-                }
-                else
-                {
-                    return RedirectToAction("GetGioHangChiTiet", "GioHang");
+            ClaimsPrincipal claimsPrincipal = HttpContext.User;
 
-                }
+            var userlogin = HttpContext.User;
+            var email = userlogin.FindFirstValue(ClaimTypes.Email);
+            var user = _context.Users.FirstOrDefault(c => c.Email == email);
+
+            var spct = _spctViewModel.GetAll().FirstOrDefault(C => C.TenSP == spctvm.TenSP && C.MauSac == spctvm.MauSac && C.Size == spctvm.Size);
+            if (spct == null)
+            {
+                TempData["ErrorMessage"] = "Sản phẩm này đã hết.";
+                return RedirectToAction("GellByIDSanPhamCT", new { id = spct.Id });
             }
             else
             {
-                return RedirectToAction("GellByIDSanPhamCT", new { id = spct.Id });
-            }
+                var IDMau = _mausacservice.GetAll().FirstOrDefault(c => c.TenMauSac == spctvm.MauSac).Id;
+                var IDSize = sizeServiece.GetAll().FirstOrDefault(c => c.SizeName == spctvm.Size).Id;
+                var IDSP = _sanphamservice.GetAll().FirstOrDefault(c => c.TenSanPham == spctvm.TenSP).Id;
+                var soluong = spctvm.SoLuong;
 
+                string url = $"https://localhost:7214/api/SanPhamChiTiet/ThemSPCTVaoGioHang?idnguoidung={user.Id}&idSP={IDSP}&IdMau={IDMau}&IdSize={IDSize}&soluong={soluong}";
+                GioHangChiTiet ghct = new GioHangChiTiet()
+                {
+                    IdGioHang = new Guid("911a9476-05be-4a4f-8325-2ea61766e2a0"),
+                    IdSanPhamChiTiet = spct.Id,
+                    DonGia = spct.GiaBan,
+                    IdComboChiTiet = null,
+                    SoLuong = soluong
+                };
+                var obj = JsonConvert.SerializeObject(ghct);
+                StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
+                HttpResponseMessage httpResponseMessage = _client.PostAsync(url, content).Result;
+                if (httpResponseMessage.IsSuccessStatusCode)
+                {
+                    var result = httpResponseMessage.Content.ReadAsStringAsync().Result;
+                    if (result == "Thêm Thành công.")
+                    {
+                        return RedirectToAction("GetGioHangChiTiet", "GioHang");
+                    }
+                    else if (result == "Sản phẩm đã hết hàng. Mời bạn chọn sản phẩm khác.")
+                    {
+                        TempData["ErrorMessage"] = "Sản phẩm này đang hết hàng. Mời bạn chọn sản phẩm khác.";
+                        return RedirectToAction("GellByIDSanPhamCT", new { id = spct.Id });
+                    }
+                    else if (result == "Bạn chưa chọn màu. Mời bạn chọn màu.")
+                    {
+                        TempData["ErrorMessage"] = "Bạn chưa chọn màu. Mời bạn chọn màu.";
+                        return RedirectToAction("GellByIDSanPhamCT", new { id = spct.Id });
+                    }
+                    else if (result == "Bạn chưa chọn size. Mời bạn chọn size.")
+                    {
+                        TempData["ErrorMessage"] = "Bạn chưa chọn size. Mời bạn chọn size.";
+                        return RedirectToAction("GellByIDSanPhamCT", new { id = spct.Id });
+                    }
+                    else
+                    {
+                        return RedirectToAction("GetGioHangChiTiet", "GioHang");
+                    }
+                }
+                else
+                {
+                    return RedirectToAction("GellByIDSanPhamCT", new { id = spct.Id });
+                }
+            }
         }
         [HttpPost]
         public async Task<IActionResult> UploadExcelFile(IFormFile excelFile)
@@ -1099,7 +1086,8 @@ namespace AppView.Controllers
                         // Tạo danh sách để lưu trữ dữ liệu
                         List<SanPhamChiTietViewModel> products = new List<SanPhamChiTietViewModel>();
                         List<SanPhamChiTiet> lstspct = new List<SanPhamChiTiet>();
-
+                        List<string> lstanhsp = new List<string>();
+                        string[] pathimages;
                         // Bắt đầu từ dòng thứ 2 (để bỏ qua tiêu đề)
                         for (int row = 2; row <= rowCount; row++)
                         {
@@ -1117,29 +1105,36 @@ namespace AppView.Controllers
                                 MoTa = worksheet.Cells[row, 9].Value.ToString()
 
                             };
+
+                            string cellvalue = worksheet.Cells[row, 6].Value.ToString();
+                            string[] cellvalueanh = cellvalue.Split(',');
+
+                            lstanhsp.Add(string.Join(",", cellvalueanh));
+                           
                             products.Add(product);
 
-                            SanPhamChiTiet spct = new SanPhamChiTiet()
-                            {
-                                IDSP = _sanphamservice.GetAll().FirstOrDefault(c => c.TenSanPham == worksheet.Cells[row, 1].Value.ToString()).Id,
-                                IdDanhMuc = _danhmucservice.GetAll().FirstOrDefault(c => c.TenDanhMuc == worksheet.Cells[row, 2].Value.ToString()).Id,
-                                IdMauSac = _mausacservice.GetAll().FirstOrDefault(c => c.TenMauSac == worksheet.Cells[row, 4].Value.ToString()).Id,
-                                IdSize = sizeServiece.GetAll().FirstOrDefault(c => c.SizeName == worksheet.Cells[row, 5].Value.ToString()).Id,
-                                //IdAnh = anhservice.GetAll().FirstOrDefault(c => c.Connect == worksheet.Cells[row, 6].Value.ToString()).Id,
-                                IdChatLieu = _chatlieuservice.GetAll().FirstOrDefault(c => c.TenChatLieu == worksheet.Cells[row, 3].Value.ToString()).Id,
-                                SoLuong = Convert.ToInt32(worksheet.Cells[row, 7].Value),
-                                GiaBan = Convert.ToDecimal(worksheet.Cells[row, 8].Value),
-                                MoTa = worksheet.Cells[row, 9].Value.ToString(),
-                            };
-                            lstspct.Add(spct);
+                            //SanPhamChiTiet spct = new SanPhamChiTiet()
+                            //{
+                            //    IDSP = _sanphamservice.GetAll().FirstOrDefault(c => c.TenSanPham == worksheet.Cells[row, 1].Value.ToString()).Id,
+                            //    IdDanhMuc = _danhmucservice.GetAll().FirstOrDefault(c => c.TenDanhMuc == worksheet.Cells[row, 2].Value.ToString()).Id,
+                            //    IdMauSac = _mausacservice.GetAll().FirstOrDefault(c => c.TenMauSac == worksheet.Cells[row, 4].Value.ToString()).Id,
+                            //    IdSize = sizeServiece.GetAll().FirstOrDefault(c => c.SizeName == worksheet.Cells[row, 5].Value.ToString()).Id,
+                            //    //IdAnh = anhservice.GetAll().FirstOrDefault(c => c.Connect == worksheet.Cells[row, 6].Value.ToString()).Id,
+                            //    IdChatLieu = _chatlieuservice.GetAll().FirstOrDefault(c => c.TenChatLieu == worksheet.Cells[row, 3].Value.ToString()).Id,
+                            //    SoLuong = Convert.ToInt32(worksheet.Cells[row, 7].Value),
+                            //    GiaBan = Convert.ToDecimal(worksheet.Cells[row, 8].Value),
+                            //    MoTa = worksheet.Cells[row, 9].Value.ToString(),
+                            //};
+                            //lstspct.Add(spct);
                         }
 
                         string productListJson = JsonConvert.SerializeObject(products);
-
+                        string anhlistJson = JsonConvert.SerializeObject(lstanhsp);
+                        _tempAnh = lstanhsp;
                         _tempProducts = lstspct;
                         _temspctvm = products;
                         TempData["Products"] = productListJson;
-
+                        TempData["Anhs"] = anhlistJson;
 
 
                         // Ở đây, bạn có danh sách "products" chứa dữ liệu từ tệp Excel
@@ -1151,13 +1146,42 @@ namespace AppView.Controllers
             }
             return RedirectToAction("GellAllSanPhamCT");
         }
+
+        [HttpGet]
+        public IActionResult XoaAnhSanPham(Guid idsanpham , Guid idanh)
+        {
+
+            return RedirectToAction("UpdateSanPhamCT", new { id = idsanpham });
+        }
+
+
         public IActionResult DisplayData()
         {
             // Lấy danh sách sản phẩm từ TempData
             string productListJson = TempData["Products"] as string;
+            string anhlistjson = TempData["Anhs"] as string;
+            List<string[]> manglon = new List<string[]>();
+            List<string[]> mangnho = new List<string[]>();
+
+            List<string> mangChuoi = JsonConvert.DeserializeObject<List<string>>(anhlistjson);
+
 
             var products = JsonConvert.DeserializeObject<List<SanPhamChiTietViewModel>>(productListJson);
-
+            for(int i = 0; i < mangChuoi.Count ; i++)
+            {
+                if (mangChuoi[i].Contains(","))
+                {
+                    string[] Chuoitach = mangChuoi[i].Split(',');
+                    mangnho.Add(Chuoitach);
+                    //manglon.Add(mangnho[]);
+                }
+                else
+                {
+                    //manglon.Add(mangChuoi[i]);
+                }
+            }
+            var anhs = JsonConvert.DeserializeObject<List<Anh>>(anhlistjson);
+            ViewBag.hienanh = anhs;
             return View(products);
         }
         [HttpPost]
@@ -1169,8 +1193,8 @@ namespace AppView.Controllers
                 {
                     for (int i = 0; i < _tempProducts.Count(); i++)
                     {
-                        //string url2 = $"https://localhost:7214/api/SanPhamChiTiet/CreateSanPhamChiTiet?iddm={_tempProducts[i].IdDanhMuc}&idcl={_tempProducts[i].IdChatLieu}&idms={_tempProducts[i].IdMauSac}&idsize={_tempProducts[i].IdSize}&idanh={_tempProducts[i].IdAnh}&idsp={_tempProducts[i].IDSP}&masp={"SP" + Convert.ToString(_sanphamchitietservice.GetAll().Count() + 1)}&soluong={_tempProducts[i].SoLuong}&gia={_tempProducts[i].GiaBan}&mota={_tempProducts[i].MoTa}";
-                        string url2 = "";
+                        string url2 = $"https://localhost:7214/api/SanPhamChiTiet/CreateSanPhamChiTiet?iddm={_tempProducts[i].IdDanhMuc}&idcl={_tempProducts[i].IdChatLieu}&idms={_tempProducts[i].IdMauSac}&idsize={_tempProducts[i].IdSize}&&idsp={_tempProducts[i].IDSP}&masp={"SP" + Convert.ToString(_sanphamchitietservice.GetAll().Count() + 1)}&soluong={_tempProducts[i].SoLuong}&gia={_tempProducts[i].GiaBan}&mota={_tempProducts[i].MoTa}";
+                        //string url2 = "";
                         var obj = JsonConvert.SerializeObject(_tempProducts[i]);
                         StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
                         HttpResponseMessage httpResponseMessage = _client.PostAsync(url2, content).Result;
@@ -1184,6 +1208,17 @@ namespace AppView.Controllers
                             else if (error == "Sản phẩm đã tồn tại")
                             {
                                 TempData["ErrorMessage"] = "Sản phẩm bạn nhập " + _sanphamservice.GetAll().Where(c => c.Id == _tempProducts[i].IDSP).Select(c => c.TenSanPham) + " đã có trong danh sách sản phẩm.";
+                            } else
+                            {
+                                string anhSanPhamsJson = HttpContext.Session.GetString("anhSanPhams");
+                                List<Anh> anhSanPham1s = JsonConvert.DeserializeObject<List<Anh>>(anhSanPhamsJson);
+                                AnhSanPham anhSanPham = new AnhSanPham();
+                                foreach (var idanh in anhSanPham1s)
+                                {
+                                    anhSanPham.IdSanPhamChiTiet = _sanphamchitietservice.GetAll().OrderByDescending(c => c.MaSp).First().Id;
+                                    anhSanPham.Idanh = idanh.Id;
+                                    _ianhsanpham.AddAnhChoSanPham(anhSanPham);
+                                }
                             }
                         }
                     }

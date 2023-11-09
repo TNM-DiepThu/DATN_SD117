@@ -34,9 +34,15 @@ namespace AppAPI.Controllers
             return _hoaDonService.GetAll();
         }
 
+        [HttpGet("[action]")]
+        public IEnumerable<HoaDon> GetAllHoaDonByIDnguoiDung(Guid id)
+        {
+            return _hoaDonService.GetAllByIDNguoiDung(id);
+        }
+
         // POST api/<HoaDonController>
         [HttpPost("[action]")]
-        public bool CreateHoaDon(DateTime ngaytao, int soluong, decimal tongtien, decimal tienvanchuyen, DateTime ngaygiao, DateTime ngaynhan, string nguoinhan, string sdt, string quanhuyen, string tinh, string diachi, DateTime ngaythanhtoan, string ghichu,  Guid idnguoidung, Guid idvoucherdetail, Guid idhttt)
+        public bool CreateHoaDon(DateTime ngaygiao, DateTime ngaynhan, string nguoinhan, string sdt, string quanhuyen, string tinh, string diachi, DateTime ngaythanhtoan, string? ghichu,  Guid idnguoidung, Guid? idvoucherdetail, Guid idhttt)
         {
             HoaDon hd = new HoaDon();
             hd.Id = Guid.NewGuid();
@@ -44,10 +50,10 @@ namespace AppAPI.Controllers
             hd.IdVoucherDetail = idvoucherdetail;
             hd.IDHTTT = idhttt;
             hd.MaHD = Convert.ToString(hd.Id).Substring(0, 8).ToUpper();
-            hd.NgayTao = ngaytao;
-            hd.SoLuong = soluong;
-            hd.TongTien = tongtien;
-            hd.TienVanChuyen = tienvanchuyen;
+            hd.NgayTao = DateTime.Now;
+            hd.SoLuong = 0;
+            hd.TongTien = 0;
+            hd.TienVanChuyen = 0;
             hd.NgayGiao = ngaygiao;
             hd.NgayNhan = ngaynhan;
             hd.NguoiNhan = nguoinhan;
@@ -63,14 +69,14 @@ namespace AppAPI.Controllers
 
         // PUT api/<HoaDonController>/5
         [HttpPut("[action]")]
-        public bool UpdateHoaDon(Guid id,  DateTime ngaygiao, DateTime ngaynhan, string nguoinhan, string sdt, string quanhuyen, string tinh, string diachi, DateTime ngaythanhtoan, string? ghichu,   Guid idvoucherdetail, Guid idhttt)
+        public bool UpdateHoaDon( int sl , decimal tienvanchuyen, decimal tongtien , Guid id,  DateTime ngaygiao, DateTime ngaynhan, string nguoinhan, string sdt, string quanhuyen, string tinh, string diachi, DateTime ngaythanhtoan, string? ghichu, int trangthai,  Guid? idvoucherdetail, Guid idhttt)
         {
             var hd = _hoaDonService.GetAll().First(c => c.Id == id);
           
             hd.NgayTao = DateTime.Now;
-            hd.SoLuong = 0;
-            hd.TongTien = 0;
-            hd.TienVanChuyen = 0;
+            hd.SoLuong = sl;
+            hd.TongTien = tongtien;
+            hd.TienVanChuyen = tienvanchuyen;
             hd.NgayGiao = ngaygiao;
             hd.NgayNhan = ngaynhan;
             hd.NguoiNhan = nguoinhan;
@@ -80,7 +86,7 @@ namespace AppAPI.Controllers
             hd.DiaChi = diachi;
             hd.NgayThanhToan = ngaythanhtoan;
             hd.GhiChu = ghichu;
-            hd.status = 1;
+            hd.status = trangthai;
             //hd.IdNguoiDunh = idnguoidung;
             hd.IdVoucherDetail = idvoucherdetail;
             hd.IDHTTT = idhttt;
@@ -93,6 +99,44 @@ namespace AppAPI.Controllers
         {
             var hd = _hoaDonService.GetAll().First(c => c.Id == id);
             return _hoaDonService.RemoveItem(hd);
+        }
+
+        [HttpPut("[action]")]
+        public bool UpdateDaXacNhan(Guid idhb)
+        {
+            return _hoaDonService.UpdateDaXacNhan(idhb);
+        }
+        [HttpPut("[action]")]
+        public bool UpdateChoLayHang(Guid idhb)
+        {
+            return _hoaDonService.UpdateChoLayHang(idhb);
+        }
+        [HttpPut("[action]")]
+        public bool UpdateDaLayhang(Guid idhb)
+        {
+            return _hoaDonService.UpdateDaLayHang(idhb);
+        }
+        [HttpPut("[action]")]
+        public bool UpdateDaThanhToan(Guid idhb)
+        {
+            return _hoaDonService.UpdateDaThanhToan(idhb);
+        }
+        [HttpPut("[action]")]
+        public bool UpdateHuyHang (Guid idhb )
+        {
+            return _hoaDonService.UpdateHuy(idhb);
+        }
+
+        [HttpPut("[action]")]
+        public bool UpdateDaNhanHang(Guid idhb)
+        {
+            return _hoaDonService.UpdateDaNhanHang(idhb);
+        }
+
+        [HttpPut("[action]")]
+        public bool UpdateHoaDonCho(Guid idhb)
+        {
+            return _hoaDonService.UpdateHDCho(idhb);
         }
     }
 }

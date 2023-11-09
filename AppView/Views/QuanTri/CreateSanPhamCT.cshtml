@@ -124,15 +124,15 @@
                 <label for="IdAnh" class="control-label col-3">Ảnh sản phẩm</label>
                 <div class="col-9 row">
                     <input type="text" id="imageFilename" name="imageFilename" class="form-control" />
-                    <button type="button" class="col-2 btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">
+                    <button type="button" class="btn btn-primary col-2" style="margin-top:8px;" data-bs-toggle="modal" data-bs-target="#myModal">
                         Chọn ảnh
                     </button>
+
                 </div>
             </div>
-
             <!-- The Modal -->
             <div class="modal" id="myModal">
-                <div class="modal-dialog custom-modal">
+                <div class="modal-dialog modal-xl">
                     <div class="modal-content">
                         <!-- Modal Header -->
                         <div class="modal-header">
@@ -152,14 +152,16 @@
                                 }
                             </div>
                         </div>
+
+                        <!-- Modal footer -->
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" id="selectImageBtn">Select</button>
+                            <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="selectImageBtn">Select</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                </div>
             </div>
-
             @*kết thúc*@
 
             <div class="form-group row">

@@ -8,13 +8,12 @@ using System.Threading.Tasks;
 namespace AppData.Serviece.Interfaces
 {
     
-        public interface IHoaDonCTService<T>
+        public interface IHoaDonCTService
         {
-            public IEnumerable<T> GetAll();
-            public bool AddItem(T item);
-            public bool RemoveItem(T item);
-            public bool EditItem(T item);
-            public HoaDonChiTiet GetByID(Guid id);
+            public IEnumerable<HoaDonChiTiet> GetAllByIdHd(Guid ID);
+            public bool AddItem(HoaDonChiTiet hdct);
+            public bool RemoveItemById(HoaDonChiTiet hdct);
+            public bool EditItem(HoaDonChiTiet hdct);
     }
     
 }
