@@ -89,7 +89,7 @@ else
             {
                 <tr>
                     <td>
-                        @Html.DisplayFor(modelItem => item.MaHD)
+                        <a href="@Url.Action("GetAllHoaDonCTByIDHD","HoaDon",new { Idhb = item.Id})">@Html.DisplayFor(modelItem => item.MaHD)</a>
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.NgayTao)

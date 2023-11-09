@@ -45,10 +45,10 @@
 </style>
 <hr />
 <h4>SanPhamChiTiet</h4>
-@*@if (TempData["ErrorMessage"] != null)
+@if (TempData["ErrorMessage"] != null)
 {
     <div class="alert alert-danger">@TempData["ErrorMessage"] </div>
-}*@
+}
 <div>
     <div>
         <form method="post" enctype="multipart/form-data" asp-controller="QuanTri" asp-action="UploadExcelFile">

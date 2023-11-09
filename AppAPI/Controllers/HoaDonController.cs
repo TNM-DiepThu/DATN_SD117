@@ -31,13 +31,13 @@ namespace AppAPI.Controllers
         [HttpGet("get-hoadon")]
         public IEnumerable<HoaDon> GetAllHoaDon()
         {
-            return _hoaDonService.GetAll();
+            return _hoaDonService.GetAll().OrderByDescending(c => c.NgayTao);
         }
 
         [HttpGet("[action]")]
         public IEnumerable<HoaDon> GetAllHoaDonByIDnguoiDung(Guid id)
         {
-            return _hoaDonService.GetAllByIDNguoiDung(id);
+            return _hoaDonService.GetAllByIDNguoiDung(id).OrderByDescending(c => c.NgayTao);
         }
 
         // POST api/<HoaDonController>

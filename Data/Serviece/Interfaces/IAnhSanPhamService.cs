@@ -12,5 +12,6 @@ namespace AppData.Serviece.Interfaces
         public bool AddAnhChoSanPham(AnhSanPham anhSanPham) ;
         public List<AnhSanPham> GetAllAnhChoSanPham();
         public List<AnhSanPham> GetAllAnhChoSanPhamBySP(Guid idsanpham);
+        public bool RemoveAnhSp(Guid idanh, Guid idsp);
     }
 }

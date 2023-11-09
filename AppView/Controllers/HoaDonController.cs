@@ -1,5 +1,6 @@
 ﻿using AppData.data;
 using AppData.model;
+using AppData.ViewModal.HoaDon;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
@@ -23,18 +24,17 @@ namespace AppView.Controllers
         {
             _logger = logger;
             _context = new MyDbContext();
-            _context = new MyDbContext();
            
         }
         [HttpGet]
         public async Task<ActionResult> GetAllHD()
         {
-           /* string url = "https://localhost:7214/api/HoaDon/get-hoadon";
+            string url = "https://localhost:7214/api/HoaDon/get-hoadon";
             var respon = _client.GetAsync(url).Result;
             var data = respon.Content.ReadAsStringAsync().Result;
-            List<HoaDon> lsthoadon = JsonConvert.DeserializeObject<List<HoaDon>>(data);*/
-            var response = await _client.GetFromJsonAsync<List<HoaDon>>($"https://localhost:7214/api/HoaDon/get-hoadon");
-            return View(response);
+            List<HoaDon> lsthoadon = JsonConvert.DeserializeObject<List<HoaDon>>(data);
+            //var response = await _client.GetFromJsonAsync<List<HoaDon>>($"https://localhost:7214/api/HoaDon/get-hoadon");
+            return View(lsthoadon);
             //return View(lsthoadon);
            
         }
@@ -51,11 +51,18 @@ namespace AppView.Controllers
         public async Task<ActionResult> GetAllHDById()
         {
             Guid IDnguoidung = IDNguoiDung();
-            string url = $"https://localhost:7214/api/HoaDon/GetAllHoaDonByIDnguoiDung?id={IDnguoidung}";
-            var respone = await _client.GetAsync(url);
-            var data = await respone.Content.ReadAsStringAsync();
-            List<HoaDon> lsthd = JsonConvert.DeserializeObject<List<HoaDon>>(data);
-            return View(lsthd);
+            if(IDnguoidung != null)
+            {
+                string url = $"https://localhost:7214/api/HoaDon/GetAllHoaDonByIDnguoiDung?id={IDnguoidung}";
+                var respone = await _client.GetAsync(url);
+                var data = await respone.Content.ReadAsStringAsync();
+                List<HoaDon> lsthd = JsonConvert.DeserializeObject<List<HoaDon>>(data);
+                return View(lsthd);
+            }
+           else
+            {
+                return RedirectToAction("LoginJWT", "Login");
+            }
         }
         [HttpGet]
         [HttpPost]
@@ -78,7 +85,24 @@ namespace AppView.Controllers
 
             }
         }
+        [HttpGet]
+        public async Task<ActionResult> GetAllHoaDonCTByIDHD(Guid idhd)
+        {
+            string url = $"https://localhost:7214/api/HoaDonCT/GetByHDCTByID?Idhb={idhd}";
+            var repones = await _client.GetAsync(url);
+            var data = await repones.Content.ReadAsStringAsync();
+            List<HoaDonCTViewModel> lsthdct = JsonConvert.DeserializeObject<List<HoaDonCTViewModel>>(data);
 
+
+            string urlhodon = $"https://localhost:7214/api/HoaDon/GetByID?Id={idhd}";
+            var reponeshodon = await _client.GetAsync(urlhodon);
+            var datahodon = await reponeshodon.Content.ReadAsStringAsync();
+            HoaDon hoaDon = JsonConvert.DeserializeObject<HoaDon>(datahodon);
+
+            ViewBag.hoadon = hoaDon;
+
+            return View(lsthdct);
+        }
         [HttpGet]
         [HttpPost]
         public async Task<ActionResult> UpdateHoaDon(HoaDon hoadon)
@@ -114,18 +138,17 @@ namespace AppView.Controllers
         //Tính tiền ship
         public decimal TinhTienShip(Guid IdHd , string Quan_Huyen , string Tinh_Thanhpho)
         {
-
             return 0;
         }
 
-        [HttpPost]
+        [HttpPut]
         public IActionResult UpdateDaXacNhan(HoaDon hd)
         {
             string url = $"https://localhost:7214/api/HoaDon/UpdateDaXacNhan?idhb={hd.Id}";
             var respons = _client.GetAsync(url).Result;
             var obj = JsonConvert.SerializeObject(hd);
             StringContent stringContent = new StringContent(obj, Encoding.UTF8, "application/json");
-            HttpResponseMessage httpResponseMessage = _client.PostAsync(url, stringContent).Result;
+            HttpResponseMessage httpResponseMessage = _client.PutAsync(url, stringContent).Result;
             if(httpResponseMessage.IsSuccessStatusCode)
             {
                 return RedirectToAction("GetAllHD","HoaDon");
@@ -135,14 +158,14 @@ namespace AppView.Controllers
                 return RedirectToAction("GetAllHD", "HoaDon");
             }
         }
-        [HttpPost]
+        [HttpPut]
         public IActionResult UpdateChoLayHang(HoaDon hd)
         {
             string url = $"https://localhost:7214/api/HoaDon/UpdateChoLayHang?idhb={hd.Id}";
             var respons = _client.GetAsync(url).Result;
             var obj = JsonConvert.SerializeObject(hd);
             StringContent stringContent = new StringContent(obj, Encoding.UTF8, "application/json");
-            HttpResponseMessage httpResponseMessage = _client.PostAsync(url, stringContent).Result;
+            HttpResponseMessage httpResponseMessage = _client.PutAsync(url, stringContent).Result;
             if (httpResponseMessage.IsSuccessStatusCode)
             {
                 return RedirectToAction("GetAllHD", "HoaDon");
@@ -152,14 +175,14 @@ namespace AppView.Controllers
                 return RedirectToAction("GetAllHD", "HoaDon");
             }
         }
-        [HttpPost]
+        [HttpPut]
         public IActionResult UpdateDaLayHang(HoaDon hd)
         {
             string url = $"https://localhost:7214/api/HoaDon/UpdateDaLayhang?idhb={hd.Id}";
             var respons = _client.GetAsync(url).Result;
             var obj = JsonConvert.SerializeObject(hd);
             StringContent stringContent = new StringContent(obj, Encoding.UTF8, "application/json");
-            HttpResponseMessage httpResponseMessage = _client.PostAsync(url, stringContent).Result;
+            HttpResponseMessage httpResponseMessage = _client.PutAsync(url, stringContent).Result;
             if (httpResponseMessage.IsSuccessStatusCode)
             {
                 return RedirectToAction("GetAllHD", "HoaDon");
@@ -169,14 +192,14 @@ namespace AppView.Controllers
                 return RedirectToAction("GetAllHD", "HoaDon");
             }
         }
-        [HttpPost]
+        [HttpPut]
         public IActionResult UpdateHuy(HoaDon hd)
         {
             string url = $"https://localhost:7214/api/HoaDon/UpdateHuyHang?idhb={hd.Id}";
             var respons = _client.GetAsync(url).Result;
             var obj = JsonConvert.SerializeObject(hd);
             StringContent stringContent = new StringContent(obj, Encoding.UTF8, "application/json");
-            HttpResponseMessage httpResponseMessage = _client.PostAsync(url, stringContent).Result;
+            HttpResponseMessage httpResponseMessage = _client.PutAsync(url, stringContent).Result;
             if (httpResponseMessage.IsSuccessStatusCode)
             {
                 return RedirectToAction("GetAllHD", "HoaDon");
@@ -186,14 +209,14 @@ namespace AppView.Controllers
                 return RedirectToAction("GetAllHD", "HoaDon");
             }
         }
-        [HttpPost]
+        [HttpPut]
         public IActionResult UpdateDaNhanHang(HoaDon hd)
         {
             string url = $"https://localhost:7214/api/HoaDon/UpdateDaNhanHang?idhb={hd.Id}";
             var respons = _client.GetAsync(url).Result;
             var obj = JsonConvert.SerializeObject(hd);
             StringContent stringContent = new StringContent(obj, Encoding.UTF8, "application/json");
-            HttpResponseMessage httpResponseMessage = _client.PostAsync(url, stringContent).Result;
+            HttpResponseMessage httpResponseMessage = _client.PutAsync(url, stringContent).Result;
             if (httpResponseMessage.IsSuccessStatusCode)
             {
                 return RedirectToAction("GetAllHD", "HoaDon");
@@ -203,14 +226,14 @@ namespace AppView.Controllers
                 return RedirectToAction("GetAllHD", "HoaDon");
             }
         }
-        [HttpPost]
+        [HttpPut]
         public IActionResult UpdateDaThanhToan(HoaDon hd)
         {
             string url = $"https://localhost:7214/api/HoaDon/UpdateDaThanhToan?idhb={hd.Id}";
             var respons = _client.GetAsync(url).Result;
             var obj = JsonConvert.SerializeObject(hd);
             StringContent stringContent = new StringContent(obj, Encoding.UTF8, "application/json");
-            HttpResponseMessage httpResponseMessage = _client.PostAsync(url, stringContent).Result;
+            HttpResponseMessage httpResponseMessage = _client.PutAsync(url, stringContent).Result;
             if (httpResponseMessage.IsSuccessStatusCode)
             {
                 return RedirectToAction("GetAllHD", "HoaDon");

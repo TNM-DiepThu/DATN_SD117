@@ -101,5 +101,10 @@ namespace AppAPI.Controllers
             return products.ToList();
 
         }
+        [HttpDelete("[action]")]
+        public bool RemoveAnh(Guid idsp , Guid idanh)
+        {
+            return anhSanPhamService.RemoveAnhSp(idanh, idsp);    
+        }
     }
 }

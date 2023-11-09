@@ -59,10 +59,6 @@
                     <a asp-area="" asp-controller="" asp-action="" class="nav-link">Home</a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a asp-area="" asp-controller="GioHang" asp-action="GetGioHangChiTiet" class="nav-link">GetGioHangChiTiet</a>
-                </li>
-
-                <li class="nav-item d-none d-sm-inline-block">
                     <a asp-area="" asp-controller="" asp-action="" class="nav-link">Contact</a>
                 </li>
             </ul>
@@ -102,21 +98,32 @@
                             </li>
                         </ul>
                     </div>
+                 
                 }
                 else if (User.Identity != null && User.Identity.IsAuthenticated && sessionJWT != null)
                 {
-                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <li class="nav-item dropdown">
+                        <a id="dropdownSubMenu1" href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle">Tài khoản</a>
+                        <ul aria-labelledby="dropdownSubMenu1" class="dropdown-menu border-0 shadow">
+                           @* <li><a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="LoginJWT">Đăng nhập/Đăng ký</a></li>*@
+                            <li><a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="LoginJWT">Thông tin cá nhân</a></li>
+                            <li><a class="nav-link text-dark" asp-area="" asp-controller="GioHang" asp-action="GetGioHangChiTiet">Giỏ hàng</a></li>
+                            <li><a class="nav-link text-dark" asp-area="" asp-controller="HoaDon" asp-action="GetAllHDById">Hóa đơn</a></li>
+                            <li><a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="LoginJWT">Voucher</a></li>
+                        </ul>
+                    </li>
+                   @* <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                         <ul class="navbar-nav flex-grow-1" style="flex-direction:row-reverse">
 
-                            
+
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="DoiMatKhau" asp-route-id="@id">Đổi mật khẩu</a>
-                            </li>  
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Login" asp-action="Logout">Logout</a>
-                            </li>                           
+                            </li>
                         </ul>
-                    </div>
+                    </div>*@
                 }
             </ul>
         </nav>
@@ -146,7 +153,7 @@
                     {
                         <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                             <ul class="navbar-nav flex-grow-1" style="flex-direction:row-reverse ; padding-right:10px;">
-                               
+
                                 <li class="nav-item">
                                     <a class="nav-link text-dark"><span>@ten</span></a>
                                 </li>

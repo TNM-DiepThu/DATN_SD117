@@ -36,7 +36,7 @@
                         <span class="badge badge-secondary badge-pill">2</span>
                     </h4>
                     <ul class="list-group mb-3">
-                        <input type="hidden" name="sanphamgiohang[1][sp_ma]" value="2">
+                       @* <input type="hidden" name="sanphamgiohang[1][sp_ma]" value="2">
                         <input type="hidden" name="sanphamgiohang[1][gia]" value="11800000.00">
                         <input type="hidden" name="sanphamgiohang[1][soluong]" value="2">
 
@@ -46,7 +46,7 @@
                                 <small class="text-muted">11800000.00 x 2</small>
                             </div>
                             <span class="text-muted">23600000</span>
-                        </li>
+                        </li>*@
                         <input type="hidden" name="sanphamgiohang[2][sp_ma]" value="4">
                         <input type="hidden" name="sanphamgiohang[2][gia]" value="14990000.00">
                         <input type="hidden" name="sanphamgiohang[2][soluong]" value="8">
@@ -104,8 +104,8 @@
                                 </div>
                             </div>
                             <div class="col-md-6 row">
-                                <label for="kh_diachi">Quận Huyện: </label>
-                                <select id="provinceDropdown" class="form-control col-md-11">
+                                <label for="quanhuyen">Quận Huyện: </label>
+                                <select id="districtDropdown" class="form-control col-md-11">
                                     <option value="">Chọn Quận huyện</option>
                                     @if (districts != null)
                                     {
@@ -113,6 +113,7 @@
                                         {
                                             <option value="@district.Id" data-url="@Url.Action("ThanhToan", "GioHang", new { idquanhuyen = district.Id })">@district.Name</option>
                                         }
+                                        
                                     }
                                 </select>
                                 <a id="searchButton" class="col-md-1" style="margin-top:3px;"><i class="fas fa-search" style="color: #005eff;"></i></a>
@@ -205,7 +206,7 @@
                     url: url,
                     method: "POST",
                     contentType: "application/json; charset=utf-8",
-                    data: { idthanhpho: selectedId },
+                    data: JSON.stringify({ idthanhpho: selectedId }),
                     success: function (data) {
                         if (data == "success") {
                             alert("Lấy ID thành công: " + selectedId);
@@ -220,4 +221,6 @@
             }
         });
     });
+    console.log(@ViewBag.thongtinhuyen);
 </script>
+
