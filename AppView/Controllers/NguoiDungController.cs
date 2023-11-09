@@ -247,6 +247,51 @@ namespace AppView.Controllers
 
             return RedirectToAction("EditNV", new { Id = id });
         }
+        [HttpGet]
+        public async Task<IActionResult> PicAvatar(Guid Id)
+        {
+            var response = await _httpClient.GetFromJsonAsync<NguoiDungEditVM>($"https://localhost:7214/api/NguoiDung/GetById/{Id}");
+            return View(response);
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PicAvatar(Guid id, IFormFile imageFile)
+        {
+            // Lấy thông tin người dùng từ cơ sở dữ liệu dựa trên id
+            NguoiDung nguoiDung = await GetNguoiDungByIdAsync(id);
+
+            if (nguoiDung == null)
+            {
+                return NotFound();
+            }
+
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                string uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+                string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "avatar");
+                string imagePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var stream = new FileStream(imagePath, FileMode.Create))
+                {
+                    await imageFile.CopyToAsync(stream);
+                }
+
+                nguoiDung.Anh = uniqueFileName;
+
+                // Lưu thông tin người dùng vào cơ sở dữ liệu bằng UserManager
+                var result = await _userManager.UpdateAsync(nguoiDung);
+                if (!result.Succeeded)
+                {
+                    // Xử lý lỗi, ví dụ: result.Errors
+                    // Điều hướng hoặc thông báo lỗi
+                    return View("Error");
+                }
+            }
+
+            return RedirectToAction("NguoiDungView", new { Id = id });
+        }
+
 
     }
 }

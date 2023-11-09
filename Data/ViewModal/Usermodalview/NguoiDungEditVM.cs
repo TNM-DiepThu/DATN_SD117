@@ -12,11 +12,11 @@ namespace AppData.ViewModal.Usermodalview
 
         public Guid? Id { get; set; }
         public string Email { get; set; }
-        public string username { get; set; }
+        public string? username { get; set; }
         public string TenNguoiDung { get; set; }
         public string CCCD { get; set; }
         public string SDT { get; set; }
-        public string MatKhau { get; set; }
+        public string? MatKhau { get; set; }
         public string QuanHuyen { get; set; }
         public string ThanhPho { get; set; }
         public string DiaChi { get; set; }

@@ -18,7 +18,7 @@ namespace AppData.Configuration
             builder.Property(x => x.NgayTao).HasColumnType("DateTime");
             builder.Property(x => x.NgayGiao).HasColumnType("DateTime");
             builder.Property(x => x.NgayNhan).HasColumnType("DateTime");
-            builder.Property(x => x.NgayThanhToan).HasColumnType("DateTime");
+            builder.Property(x => x.NgayThanhToan).HasColumnType("DateTime").IsRequired(false);
             builder.Property(x => x.SoLuong).HasColumnType("int");
             builder.Property(x => x.TongTien).HasColumnType("decimal");
             builder.Property(x => x.TienVanChuyen).HasColumnType("decimal");

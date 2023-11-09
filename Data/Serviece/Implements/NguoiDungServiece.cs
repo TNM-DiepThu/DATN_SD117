@@ -196,11 +196,11 @@ namespace AppData.Serviece.Implements
             if (user == null)
                 return;
             user.Email = nguoiDung.Email;
-            user.UserName = nguoiDung.username; 
+            //user.UserName = nguoiDung.username; 
             user.TenNguoiDung = nguoiDung.TenNguoiDung;
             user.CCCD = nguoiDung.CCCD;
             user.SDT = nguoiDung.SDT;
-            user.MatKhau = nguoiDung.MatKhau;
+            //user.MatKhau = nguoiDung.MatKhau;
             user.QuanHuyen = nguoiDung.QuanHuyen;
             user.ThanhPho = nguoiDung.ThanhPho;
             user.DiaChi = nguoiDung.DiaChi;
