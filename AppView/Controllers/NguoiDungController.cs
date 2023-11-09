@@ -94,7 +94,8 @@ namespace AppView.Controllers
         public async Task<IActionResult> EditNguoiDung(Guid Id)
         {
             var response = await _httpClient.GetFromJsonAsync<NguoiDungEditVM>($"https://localhost:7214/api/NguoiDung/GetById/{Id}");
-            return View(response);
+            
+            return View(response); 
 
         }
         [HttpPost]
@@ -103,6 +104,12 @@ namespace AppView.Controllers
             var roleJson = JsonConvert.SerializeObject(UserUpdateVM);
             HttpContent content = new StringContent(roleJson, Encoding.UTF8, "application/json");
             var response = await _httpClient.PutAsync($"https://localhost:7214/api/NguoiDung/Edit/{Id}", content);
+
+            
+
+            // Truyền đường dẫn ảnh tới view thông qua ViewBag hoặc Model
+            // Nếu sử dụng ViewBag
+                                              // Hoặc sử dụng Model để truyền dữ liệu tới view
             if (response.IsSuccessStatusCode)
             {
                 return RedirectToAction("NguoiDungView", "NguoiDung");
@@ -115,6 +122,7 @@ namespace AppView.Controllers
         public async Task<IActionResult> EditNV(Guid Id)
         {
             var response = await _httpClient.GetFromJsonAsync<NguoiDungEditVM>($"https://localhost:7214/api/NguoiDung/GetById/{Id}");
+            ViewBag.ImagePath = response.Anh;
             return View(response);
 
         }

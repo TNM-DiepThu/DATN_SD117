@@ -23,6 +23,7 @@ namespace AppData.ViewModal.Usermodalview
         public DateTime NgaySinh { get; set; }
         public int GioiTinh { get; set; }
         public int status { get; set; }
+        public string? Anh {  get; set; } 
 
         public IFormFile? ImageFile { get; set; }
     }
