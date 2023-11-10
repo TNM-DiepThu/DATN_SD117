@@ -22,6 +22,7 @@ namespace AppData.Serviece.Interfaces
         Task<IEnumerable<NguoiDungVM>> GetAllKH();
         Task DoiMatKhau(Guid id, DoiMatKhauVM nguoiDung);
         Task<DoiMatKhauVM> GetByIdDMK(Guid id);
-
+        Task<IEnumerable<NguoiDungVM>> TimKiemNV(string seachVM);
+        Task<IEnumerable<NguoiDungVM>> TimKiemKH(string seachVM);
     }
 }

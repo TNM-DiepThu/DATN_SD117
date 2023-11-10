@@ -299,6 +299,91 @@ namespace AppView.Controllers
 
             return RedirectToAction("NguoiDungView", new { Id = id });
         }
+        [HttpGet]
+        public async Task<IActionResult> SearchByNameOrCCCD(string? nameOrCCCD)
+        {
+
+            try
+            {
+                if (string.IsNullOrEmpty(nameOrCCCD))
+                {
+                    // Xử lý trường hợp nếu nameOrCCCD là null hoặc rỗng
+                    return RedirectToAction("GetAllNV");
+                }
+
+                using (HttpClient client = new HttpClient())
+                {
+                    var encodedNameOrCCCD = Uri.EscapeDataString(nameOrCCCD);
+                    var response = await client.GetFromJsonAsync<List<NguoiDungVM>>($"https://localhost:7214/api/NguoiDung/SeachByNameorCCCD?seachVM={encodedNameOrCCCD}");
+
+                    if (response != null && response.Any())
+                    {
+                        return View("GetAllNV", response);
+                    }
+                    else
+                    {
+                        return RedirectToAction("GetAllNV");
+                    }
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                return View("Error", ex.Message);
+            }
+            catch (JsonException ex)
+            {
+                return View("Error", ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return View("Error", ex.Message);
+            }
+
+        }
+        [HttpGet]
+        public async Task<IActionResult> SearchByNameOrCCCDKH(string? nameOrCCCD)
+        {
+
+            try
+            {
+                if (string.IsNullOrEmpty(nameOrCCCD))
+                {
+                    // Xử lý trường hợp nếu nameOrCCCD là null hoặc rỗng
+                    return RedirectToAction("NguoiDungView");
+                }
+
+                using (HttpClient client = new HttpClient())
+                {
+                    var encodedNameOrCCCD = Uri.EscapeDataString(nameOrCCCD);
+                    var response = await client.GetFromJsonAsync<List<NguoiDungVM>>($"https://localhost:7214/api/NguoiDung/SeachByNameorCCCDKH?seachVM={encodedNameOrCCCD}");
+
+                    if (response != null && response.Any())
+                    {
+                        return View("NguoiDungView", response);
+                    }
+                    else
+                    {
+                        return RedirectToAction("NguoiDungView");
+                    }
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                return View("Error", ex.Message);
+            }
+            catch (JsonException ex)
+            {
+                return View("Error", ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return View("Error", ex.Message);
+            }
+
+        }
+
+
+
 
 
     }

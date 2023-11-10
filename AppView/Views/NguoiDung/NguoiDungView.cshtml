@@ -22,6 +22,13 @@
 </style>
 <button type="button" class="btn btn-outline-primary"> <a asp-action="CreateNguoiDung">Thêm người dùng</a></button>
 <br />
+<form method="get" action="@Url.Action("SearchByNameOrCCCDKH", "NguoiDung")">
+    <div class="input-group mb-3">
+        <input type="text" name="nameOrCCCD" class="form-control" placeholder="Nhập tên hoặc CCCD" aria-describedby="button-addon2">
+        <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Tìm kiếm</button>
+    </div>
+</form>
+<br />
 <table class="table table-bordered">
     <thead>
         <tr>

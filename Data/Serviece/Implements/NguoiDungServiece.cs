@@ -42,7 +42,7 @@ namespace AppData.Serviece.Implements
                 id = user.Id,
                 Anh = user.Anh,
                 TenNguoiDung = user.TenNguoiDung,
-                username = user.UserName,             
+                username = user.UserName,
                 CCCD = user.CCCD,
                 Email = user.Email,
                 SDT = user.SDT,
@@ -80,7 +80,7 @@ namespace AppData.Serviece.Implements
                 status = user.status
             };
         }
-      
+
         public async Task<bool> CreateAsync(NguoiDungVM nguoiDung)
         {
 
@@ -221,8 +221,8 @@ namespace AppData.Serviece.Implements
             return new DoiMatKhauVM
             {
                 Id = user.Id,
-                oldpass = user.MatKhau,               
-                                            
+                oldpass = user.MatKhau,
+
             };
         }
 
@@ -261,8 +261,8 @@ namespace AppData.Serviece.Implements
 
         public async Task<LoginResponesVM> LoginWithJWT(LoginRequestVM loginRequest)
         {
-            var user = await _userManager.FindByEmailAsync(loginRequest.Username) ?? await _userManager.FindByNameAsync(loginRequest.Username); 
-            
+            var user = await _userManager.FindByEmailAsync(loginRequest.Username) ?? await _userManager.FindByNameAsync(loginRequest.Username);
+
             if (user == null) return new LoginResponesVM
             {
                 Successful = false,
@@ -312,7 +312,10 @@ namespace AppData.Serviece.Implements
         public async Task<IEnumerable<NguoiDungVM>> GetAllNV()
         {
             var users = await _userManager.GetUsersInRoleAsync("NhanVien");
-            var sortedUsers = users.OrderBy(user => user.TenNguoiDung);
+            var sortedUsers = users
+        .OrderByDescending(user => user.status == 1) // Đặt những người dùng có status = 1 lên đầu
+        .ThenBy(user => user.TenNguoiDung)  // Sắp xếp theo TenNguoiDung từ A đến Z
+        .ThenByDescending(user => user.status == 0); // Đặt những người dùng có status = 0 xuống cuối
 
             return sortedUsers.Select(user => new NguoiDungVM
             {
@@ -336,7 +339,12 @@ namespace AppData.Serviece.Implements
         public async Task<IEnumerable<NguoiDungVM>> GetAllKH()
         {
             var users = await _userManager.GetUsersInRoleAsync("KhachHang");
-            return users.Select(user => new NguoiDungVM
+            var sortedUsers = users
+        .OrderByDescending(user => user.status == 1) // Đặt những người dùng có status = 1 lên đầu
+        .ThenBy(user => user.TenNguoiDung)  // Sắp xếp theo TenNguoiDung từ A đến Z
+        .ThenByDescending(user => user.status == 0); // Đặt những người dùng có status = 0 xuống cuối
+
+            return sortedUsers.Select(user => new NguoiDungVM
             {
                 id = user.Id,
                 username = user.UserName,
@@ -354,5 +362,68 @@ namespace AppData.Serviece.Implements
                 status = user.status
             });
         }
+        public async Task<IEnumerable<NguoiDungVM>> TimKiemNV(string seachVM)
+        {
+            var usersWithRole = await _userManager.GetUsersInRoleAsync("NhanVien");
+            if (seachVM == null || string.IsNullOrEmpty(seachVM))
+            {
+                // Trả về toàn bộ danh sách nếu không có thông tin tìm kiếm
+                return usersWithRole.Select(user => ConvertToNguoiDungVM(user));
+            }
+
+            // Thực hiện tìm kiếm theo tên hoặc CCCD
+            var searchResult = await _dbContext.Users
+                .Where(user =>
+                    EF.Functions.Like(user.TenNguoiDung, $"%{seachVM}%") ||
+                    EF.Functions.Like(user.CCCD, $"%{seachVM}%"))
+                .ToListAsync();
+
+            return searchResult.Select(user => ConvertToNguoiDungVM(user));
+        }
+
+        public async Task<IEnumerable<NguoiDungVM>> TimKiemKH(string seachVM)
+        {
+            var usersWithRole = await _userManager.GetUsersInRoleAsync("KhachHang");
+            if (seachVM == null || string.IsNullOrEmpty(seachVM))
+            {
+                // Trả về toàn bộ danh sách nếu không có thông tin tìm kiếm
+                return usersWithRole.Select(user => ConvertToNguoiDungVM(user));
+            }
+
+            // Thực hiện tìm kiếm theo tên hoặc CCCD
+            var searchResult = await _dbContext.Users
+                .Where(user =>
+                    EF.Functions.Like(user.TenNguoiDung, $"%{seachVM}%") ||
+                    EF.Functions.Like(user.CCCD, $"%{seachVM}%"))
+                .ToListAsync();
+
+            return searchResult.Select(user => ConvertToNguoiDungVM(user));
+        }
+
+        private NguoiDungVM ConvertToNguoiDungVM(NguoiDung user)
+        {
+            // Thực hiện chuyển đổi từ NguoiDung sang NguoiDungVM ở đây
+            // Ví dụ:
+            return new NguoiDungVM
+            {
+                id = user.Id,
+                username = user.UserName,
+                TenNguoiDung = user.TenNguoiDung,
+                Anh = user.Anh,
+                CCCD = user.CCCD,
+                Email = user.Email,
+                SDT = user.SDT,
+                MatKhau = user.MatKhau,
+                QuanHuyen = user.QuanHuyen,
+                ThanhPho = user.ThanhPho,
+                DiaChi = user.DiaChi,
+                GioiTinh = user.GioiTinh,
+                NgaySinh = user.NgaySinh,
+                status = user.status
+            };
+        }
+
+
+
     }
 }

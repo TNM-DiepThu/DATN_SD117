@@ -114,5 +114,39 @@ namespace AppAPI.Controllers
             var result = await _nguoiDungService.LoginWithJWT(loginRequest);
             return Ok(result.Token);
         }
+
+        [HttpGet("SeachByNameorCCCD")]
+        public async Task<ActionResult<IEnumerable<NguoiDungVM>>> SeachByNameorCCCD([FromQuery] string seachVM)
+        {
+            
+                var result = await _nguoiDungService.TimKiemNV(seachVM);
+
+                if (result.Any())
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return Ok(result);
+                }
+            
+            
+        }
+        [HttpGet("SeachByNameorCCCDKH")]
+        public async Task<ActionResult<IEnumerable<NguoiDungVM>>> SeachByNameorCCCDKH([FromQuery] string seachVM)
+        {
+            var result = await _nguoiDungService.TimKiemKH(seachVM);
+
+            if (result.Any())
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return Ok(result);
+            }
+        }
+
+
     }
 }

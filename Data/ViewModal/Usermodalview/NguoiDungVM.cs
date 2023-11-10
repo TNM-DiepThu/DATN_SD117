@@ -9,6 +9,7 @@ namespace AppData.ViewModal.Usermodalview
 {
     public class NguoiDungVM
     {
+        public string? nameOrCCCD { get; set; }
         public IFormFile? ImageFile { get; set; }
         public Guid id { get; set; }
         public string? Anh { get; set; }

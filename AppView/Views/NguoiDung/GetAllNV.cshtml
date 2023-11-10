@@ -1,7 +1,12 @@
 ﻿@model IEnumerable<AppData.ViewModal.Usermodalview.NguoiDungVM>
+@using AppData.ViewModal.Usermodalview;
+var seachModel = new SeachVM();
+
 
 @{
     ViewData["Title"] = "Danh sách khách hàng";
+    var seachModel = new SeachVM();
+
 }
 
 <h1>Danh sách nhân viên</h1>
@@ -23,6 +28,12 @@
 <button type="button" class="btn btn-outline-primary"> <a asp-action="CreateNV">Thêm nhân viên</a></button>
 <br />
 
+<form method="get" action="@Url.Action("SearchByNameOrCCCD", "NguoiDung")">
+    <div class="input-group mb-3">
+        <input type="text" name="nameOrCCCD" class="form-control" placeholder="Nhập tên hoặc CCCD" aria-describedby="button-addon2">
+        <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Tìm kiếm</button>
+    </div>
+</form>
 <table class="table table-bordered">
     <thead>
         <tr>
@@ -66,8 +77,12 @@
         </tr>
     </thead>
     <tbody>
+       
         @foreach (var item in Model)
+        { if (item != null)
         {
+          
+        }
             <tr>
                 <td>
                     <img src="~/avatar/@item.Anh" alt="Hình ảnh" width="50px" height="50px">
@@ -116,7 +131,7 @@
                         <a href="@Url.Action("EditNV", "NguoiDung", new { id = item.id })" style="width: 15px; height: 15px;">
                             <i class="fas fa-pen" style="color: #007bff;"></i>
                         </a>
-                        <form method="post" action="@Url.Action("Delete", "NguoiDung", new { id = item.id })">
+                        <form method="post" action="@Url.Action("DeleteNV", "NguoiDung", new { id = item.id })">
                             @Html.AntiForgeryToken()
                             <a href="javascript:void(0);" onclick="if (confirm('Bạn có chắc muốn xóa người dùng này?')) { this.closest('form').submit(); }" style="width: 15px; height: 15px;">
                                 <i class="fas fa-trash" style="color: #ff0000;"></i>
