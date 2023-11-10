@@ -34,7 +34,27 @@ $(function () {
         theme: 'bootstrap4'
     })
 });
-
+$(document).ready(function () {
+    $("#colorNameTextBox").change(function () {
+        var idcolor = $('#colorNameTextBox').val(selectedColorName);;
+        $.ajax({
+            url: "QuanTri/IDmausac",
+            method: "POST",
+            contentType: "application/json; charset=utf-8",
+            data: { idcolor: idcolor },
+            success: function (data) {
+                if (data == "success") {
+                    alert("Lấy ID thành công: " + idcolor);
+                } else {
+                    alert("Lấy ID thất bại");
+                }
+            },
+            error: function () {
+                alert("Có lỗi xảy ra");
+            }
+        })
+    });
+});
 
 
 // Write your JavaScript code.

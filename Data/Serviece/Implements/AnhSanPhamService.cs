@@ -28,6 +28,19 @@ namespace AppData.Serviece.Implements
                 return false;
             }
         }
+        public bool RemoveAnhSp(Guid idanh, Guid idsp)
+        {
+            try
+            {
+                AnhSanPham anhsanpham = _context.anhSanPhams.FirstOrDefault(c => c.Idanh == idanh && c.IdSanPhamChiTiet == idsp);
+                _context.anhSanPhams.Remove(anhsanpham);
+                _context.SaveChanges();
+                return true;
+            }  catch
+            {
+                return false;
+            }
+        }
 
         public List<AnhSanPham> GetAllAnhChoSanPham()
         {

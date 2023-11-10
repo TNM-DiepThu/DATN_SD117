@@ -1,0 +1,120 @@
+﻿@model IEnumerable<AppData.ViewModal.HoaDon.HoaDonCTViewModel>
+
+@{
+    ViewData["Title"] = "GetAllHoaDonCTByIDHD";
+    var hoadon = ViewBag.hoadon;
+}
+
+<form>
+
+    <div class="row">
+        <div class="col-6 row">
+            <div class="col-4">
+                <b>Mã hóa đơn:</b>
+            </div>
+            <div class="col-8">
+                <b>@hoadon.MaHD</b>
+            </div>
+        </div>
+        <div class="col-6 row">
+            <div class="col-4">
+                <b>Ngày tạo:</b>
+            </div>
+            <div class="col-8">
+                <b>@hoadon.NgayTao</b>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6 row">
+            <div class="col-4">
+                <b>Người nhận:</b>
+            </div>
+            <div class="col-8">
+                @hoadon.NguoiNhan
+            </div>
+        </div>
+        <div class="col-6 row">
+            <div class="col-4">
+                Email:
+            </div>
+            <div class="col-8">
+                
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6 row">
+            <div class="col-4">
+                Số điện thoại:
+            </div>
+            <div class="col-8">
+                @hoadon.SDT
+            </div>
+        </div>
+        <div class="col-6 row">
+            <div class="col-4">
+                Địa chỉ:
+            </div>
+            <div class="col-8">
+                @hoadon.DiaChi
+            </div>
+        </div>
+    </div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                @*  <th>
+                @Html.DisplayNameFor(model => model.IDhdCt)
+                </th>
+                <th>
+                @Html.DisplayNameFor(model => model.IDHd)
+                </th>
+                <th>
+                @Html.DisplayNameFor(model => model.IDhdCt)*@
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TenSP)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.SoLuong)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TiemGiam)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.GiaGoc)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    @*<td>
+                @Html.DisplayFor(modelItem => item.IDhdCt)
+                </td>
+                <td>
+                @Html.DisplayFor(modelItem => item.IDHd)
+                </td>
+                <td>
+                @Html.DisplayFor(modelItem => item.IDSpct)
+                </td>*@
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TenSP)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SoLuong)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TiemGiam)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.GiaGoc)
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</form>

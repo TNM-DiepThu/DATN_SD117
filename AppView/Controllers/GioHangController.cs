@@ -251,65 +251,67 @@ namespace AppView.Controllers
         {
             string token = "be8ee160-008a-11ee-a281-3aa62a37e0a5";
             _client.DefaultRequestHeaders.Add("token", token);
-            var urlTinhThanhPho = "https://online-gateway.ghn.vn/shiip/public-api/master-data/province";
-            HttpResponseMessage response = await _client.GetAsync(urlTinhThanhPho);
-            // lấy ID tỉnh
-            if (response.IsSuccessStatusCode)
+            if (idthanhpho == 0)
             {
-                var provinces = await response.Content.ReadAsStringAsync();
-
-                JObject jsonObject = JObject.Parse(provinces);
-
-                // Lấy danh sách tỉnh/thành phố từ đối tượng JSON
-                JArray provinceArray = (JArray)jsonObject["data"];
-
-                List<ThongTinThanhPho> thongtintp = new List<ThongTinThanhPho>();
-                if (provinceArray != null)
+                var urlTinhThanhPho = "https://online-gateway.ghn.vn/shiip/public-api/master-data/province";
+                HttpResponseMessage response = await _client.GetAsync(urlTinhThanhPho);
+                // lấy ID tỉnh
+                if (response.IsSuccessStatusCode)
                 {
-                    foreach (JObject province in provinceArray)
+                    var provinces = await response.Content.ReadAsStringAsync();
+
+                    JObject jsonObject = JObject.Parse(provinces);
+
+                    // Lấy danh sách tỉnh/thành phố từ đối tượng JSON
+                    JArray provinceArray = (JArray)jsonObject["data"];
+
+                    List<ThongTinThanhPho> thongtintp = new List<ThongTinThanhPho>();
+                    if (provinceArray != null)
                     {
-                        ThongTinThanhPho thongTinThanhPho = new ThongTinThanhPho();
-                        thongTinThanhPho.Id = Convert.ToInt32(province["ProvinceID"]);
-                        thongTinThanhPho.Name = Convert.ToString(province["ProvinceName"]);
-                        thongtintp.Add(thongTinThanhPho);
+                        foreach (JObject province in provinceArray)
+                        {
+                            ThongTinThanhPho thongTinThanhPho = new ThongTinThanhPho();
+                            thongTinThanhPho.Id = Convert.ToInt32(province["ProvinceID"]);
+                            thongTinThanhPho.Name = Convert.ToString(province["ProvinceName"]);
+                            thongtintp.Add(thongTinThanhPho);
+                        }
                     }
+                    else
+                    {
+                        thongtintp = null;
+                    }
+                    ViewBag.thongtin = thongtintp;
                 }
-                else
-                {
-                    thongtintp = null;
-                }
-                ViewBag.thongtin = thongtintp;
+
             }
 
             //Lấy tất cả quyện huyện theo ID tỉnh
             //string IDtinh_thanhpho = HttpContext.Session.GetString("IDThongtinThanhPho");
 
-            if (idthanhpho != null)
+            else if (idthanhpho > 0)
             {
                 //ThongTinThanhPho thongtin = JsonConvert.DeserializeObject<ThongTinThanhPho>(IDtinh_thanhpho);
 
                 HttpResponseMessage response1 = await _client.GetAsync($"https://online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id={idthanhpho}");
                 if (response1.IsSuccessStatusCode)
                 {
-                    var jsonData = await response1.Content.ReadAsStringAsync();
+                    var jsonData1 = await response1.Content.ReadAsStringAsync();
 
-                    JObject jsonObject = JObject.Parse(jsonData);
+                    JObject jsonObject1 = JObject.Parse(jsonData1);
 
                     // Lấy danh sách tỉnh/thành phố từ đối tượng JSON
-                    JArray districtArray = (JArray)jsonObject["data"];
+                    JArray districtArray = (JArray)jsonObject1["data"];
 
                     List<ThongTinQuanHuyen> thongtinquanhuyen = new List<ThongTinQuanHuyen>();
                     if (districtArray != null)
                     {
                         foreach (JObject district in districtArray)
                         {
-                            if (idthanhpho == Convert.ToInt32(district["ProvinceID"]))
-                            {
-                                ThongTinQuanHuyen QuanHuyen = new ThongTinQuanHuyen();
-                                QuanHuyen.Id = Convert.ToInt32(district["DistrictID"]);
-                                QuanHuyen.Name = Convert.ToString(district["DistrictName"]);
-                                thongtinquanhuyen.Add(QuanHuyen);
-                            }
+
+                            ThongTinQuanHuyen QuanHuyen = new ThongTinQuanHuyen();
+                            QuanHuyen.Id = Convert.ToInt32(district["DistrictID"]);
+                            QuanHuyen.Name = Convert.ToString(district["DistrictName"]);
+                            thongtinquanhuyen.Add(QuanHuyen);
                         }
                     }
                     else

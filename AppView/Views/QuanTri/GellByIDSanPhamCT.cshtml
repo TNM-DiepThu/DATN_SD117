@@ -5,19 +5,22 @@
     var listMauSac = ViewBag.lstmausac;
     var listSize = ViewBag.listSize;
     var idsp = ViewBag.IDSP;
+
+    var giamin = ViewBag.giamin;
+    var giamax = ViewBag.giamax;
 }
 
 <script type="text/javascript" src="~/library/plugins/jquery/jquery.min.js"></script>
-<script type="text/javascript" src="~/js/sanphamchitiet/sanphamchitiet.js"></script>
 <link type="text/css" href="~/adminlte-3.2.0/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
 <script type="text/javascript" src="~/js/site.js"></script>
 <script type="text/javascript" src="~/adminlte-3.2.0/plugins/bootstrap/js/bootstrap.bundle.js"></script>
+
 @if (TempData["ErrorMessage"] != null)
 {
     <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
 }
 <script type="text/javascript" src="~/adminlte-3.2.0/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<form  asp-controller="QuanTri" asp-action="Themsanphamctvaogiohang" method="post">
+<form asp-controller="QuanTri" asp-action="Themsanphamctvaogiohang" method="post">
     <section class="content">
         <!-- Default box -->
         <div class="card card-solid">
@@ -26,10 +29,10 @@
                     <div class="col-12 col-sm-6">
                         <h3 class="d-inline-block d-sm-none">LOWA Men’s Renegade GTX Mid Hiking Boots Review</h3>
                         <div class="col-12">
-                            <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = Model.Images[0].Connect })" class="product-image" alt="Product Image" />
+                            <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = Model.Images[0].Connect })" class="product-image" alt="Product Image" style="max-width:85%;" />
                             @*<img src="https://pos.nvncdn.net/778773-105877/ps/20230713_WcskjVVYHE.jpeg" class="product-image" alt="Product Image">*@
                         </div>
-                       
+
                         <div class="col-12 product-image-thumbs">
                             <div class="product-image-thumb"><img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = Model.Images[1].Connect })" alt="Product Image"></div>
                             @for (var i = 2; i < Model.Images.Count; i++)
@@ -43,7 +46,7 @@
                         <input asp-for="TenSP" style="display:none;" value="@Model.TenSP" />
                         <br />
                         <!--IDsanpham-->
-                        <label style="display:none;">@idsp</label>
+                        <input asp-for="Id" style="display:none;">@Model.Id</input>
                         <p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terr.</p>
                         <hr>
                         <h4>Available Colors</h4>
@@ -61,9 +64,9 @@
                             }
                         </div>
                         <br />
-                        <input asp-for="MauSac" type="text" id="colorNameTextBox" placeholder="Selected Color Name" value="" style="display:none;" readonly>
+                        <input asp-for="MauSac" type="text" id="colorNameTextBox" placeholder="Selected Color Name" value=""  readonly>
 
-                     @*   <input type="text" id="colorIdTextBox" placeholder="Selected Color ID" readonly>*@
+                        @*   <input type="text" id="colorIdTextBox" placeholder="Selected Color ID" readonly>*@
                         <br />
                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
                             @foreach (var size in listSize)
@@ -79,12 +82,20 @@
                         <!-- Lấy id size -->
                         <input asp-for="Size" type="text" id="sizeNameTextBox" placeholder="Selected Size Name" style="display:none;" value="" readonly>
 
-                       @* <input type="text" id="sizeIdTextBox" placeholder="Selected Size ID" readonly>*@
+                        @* <input type="text" id="sizeIdTextBox" placeholder="Selected Size ID" readonly>*@
                         <br />
 
                         <div class="bg-gray py-2 px-3 mt-4">
                             <h2 class="mb-0">
-                                @Model.GiaBan VND
+                                @if (giamin > 0 && giamax > 0)
+                                {
+                                    <p> @giamin - @giamax VNĐ </p>
+                                }
+                                else
+                                {
+                                    <p> @giamax VNĐ </p>
+                                }
+
                             </h2>
                             <h4 class="mt-0">
                                 <small>Số lượng: @Model.SoLuong</small>
@@ -144,25 +155,55 @@
 @section Scripts {
     <script>
         $(document).ready(function () {
-            // Attach a click event handler to the radio buttons with name "color_option"
-            $('input[name="color_option"]').click(function () {
-                // Get the data-color-id attribute value of the selected radio button
-                var selectedColorName = $(this).siblings('#colorName').text();
+            $("input[name='color_option']").on("change", function () {
+                var selectedColorId = $("input[name='color_option']:checked").data("color-id");
+                var selectedColorName = $("input[name='color_option']:checked").siblings("span").text();
 
-                // Update the value of the input field with the selected color name
-                $('#colorNameTextBox').val(selectedColorName);
+                $("#colorNameTextBox").val(selectedColorName);
+
+                // Send an AJAX request to the controller action
+                $.ajax({
+                    url: '/QuanTri/IDmausac',
+                    type: 'POST',
+                    data: JSON.stringify(selectedColorName),
+                    contentType: 'application/json',
+                    success: function (data) {
+                        // Handle the response from the controller, which will contain the ID
+                        console.log("ID of the color is: " + data);
+                    },
+                    error: function (error) {
+                        // Handle any errors here
+                        console.log("Error: " + error);
+                    }
+                });
             });
         });
+
         $(document).ready(function () {
-            // Attach a click event handler to the radio buttons with name "size_option"
-            $('input[name="size_option"]').click(function () {
-                // Get the data-size-id attribute value of the selected radio button
-                var selectedSizeName = $(this).siblings('#sizeName').text();
+            $("input[type='radio']").on("change", function () {
+                var selectedSizeId = $("input[name='size_option']:checked").data("size-id");
+                var selectedSizeName = $("input[name='size_option']:checked").siblings("span").text();
 
-                // Update the value of the input field with the selected size name
-                $('#sizeNameTextBox').val(selectedSizeName);
+                $("#sizeNameTextBox").val(selectedSizeName);
+
+                // Send an AJAX request to the controller action
+                $.ajax({
+                    url: '/QuanTri/IdSize',
+                    type: 'POST',
+                    data: JSON.stringify(selectedSizeName),
+                    contentType: 'application/json',
+                    success: function (data) {
+                        // Handle the response from the controller, which will contain the ID
+                        console.log("ID of the color is: " + data);
+                    },
+                    error: function (error) {
+                        // Handle any errors here
+                        console.log("Error: " + error);
+                    }
+                });
             });
         });
+        
         var valueTextBox = document.getElementById('valueTextBox');
         var increaseButton = document.getElementById('increaseButton');
         var decreaseButton = document.getElementById('decreaseButton');
@@ -185,6 +226,9 @@
             valueTextBox.value = value;
             //soluong = value;
         }
+
+
+
     </script>
 }
 

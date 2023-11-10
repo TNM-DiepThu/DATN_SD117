@@ -3,6 +3,8 @@ using AppData.model;
 using AppData.Serviece;
 using AppData.Serviece.Implements;
 using AppData.Serviece.Interfaces;
+using AppData.Serviece.ViewModeService;
+using AppData.ViewModal.HoaDon;
 using Bill.Serviece.Implements;
 using Bill.Serviece.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +23,7 @@ namespace AppAPI.Controllers
         private readonly ISanPhamChiTietServiece sanPhamChiTietServiece;
         private readonly IComboChiTietService comboChiTietService;
         private DbSet<HoaDonChiTiet> hdct;
+        private readonly HoaDonChiTietViewModelService _hdctviewmodel;
 
         public HoaDonCTController()
         {
@@ -28,13 +31,20 @@ namespace AppAPI.Controllers
             sanPhamChiTietServiece = new SanPhamChiTietServiece();
             comboChiTietService = new ComBoChiTietService();
             _hoaDonCTService = new HoaDonCTService();
+            _hdctviewmodel = new HoaDonChiTietViewModelService();
 
         }
         [HttpGet("[action]")]
-        public IEnumerable< HoaDonChiTiet> GetByID(Guid Id)
+        public IEnumerable<HoaDonChiTiet> GetByID(Guid Id)
         {
             return _hoaDonCTService.GetAllByIdHd(Id);
         }
+        [HttpGet("[action]")]
+        public List<HoaDonCTViewModel> GetByHDCTByID(Guid Idhb)
+        {
+            return _hdctviewmodel.GetAllHoaDonChiTiet(Idhb);
+        }
+
         // GET: api/<HoaDonCTController>
 
         // POST api/<HoaDonCTController>
