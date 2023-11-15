@@ -49,8 +49,9 @@ namespace AppData.Serviece.ViewModeService
                                    IDSpct = a.IdSPCT,
                                    TenSP = _spctvmservice.GetAll().FirstOrDefault(c => c.Id == a.IdSPCT).TenSP,
                                    SoLuong = a.SoLuong,
-                                   GiaGoc = a.Gia,
-                                   TiemGiam = 0,
+                                   GiaGoc = b.GiaBan,
+                                   TienGiamGia = 0,
+                                   GiaBan = b.GiaBan,
                                };
                     newlist.AddRange(list);
                 }
@@ -66,8 +67,9 @@ namespace AppData.Serviece.ViewModeService
                                    IDSpct = a.IdSPCT,
                                    TenSP = _comboCTService.GetAllComBoChiTiet().FirstOrDefault(c => c.Id == a.IdCombo).TenComBo,
                                    SoLuong = a.SoLuong,
-                                   GiaGoc = a.Gia,
-                                   TiemGiam = a.Gia - (a.Gia * b.GiaTrịGiam),
+                                   GiaGoc = b.GiaGoc,
+                                   TienGiamGia = b.TienGiamGia,
+                                   GiaBan = b.ThanhTienComBo,
                                };
                     newlist.AddRange(list);
                 }

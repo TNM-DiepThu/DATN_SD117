@@ -1171,7 +1171,6 @@ namespace AppView.Controllers
                                 MoTa = worksheet.Cells[row, 8].Value.ToString()
 
                             };
-
                             products.Add(product);
                             try
                             {

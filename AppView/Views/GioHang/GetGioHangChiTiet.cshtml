@@ -118,7 +118,7 @@
                                     <div class="col-md-4">
                                         <div class="mt-3">
                                             <p class="text-muted mb-2">Giá sản phẩm</p>
-                                            <h5 class="mb-0 mt-2"><span class="text-muted me-2"><del class="font-size-16 fw-normal">@item.TienGiamGia VND</del></span>@item.GiaSanPham VND</h5>
+                                            <h5 class="mb-0 mt-2"><span class="text-muted me-2"><del class="font-size-16 fw-normal">@item.TienGiamGia.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</del></span>@item.GiaSanPham.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</h5>
                                         </div>
                                     </div>
                                     <div class="col-md-5">
@@ -134,7 +134,7 @@
                                     <div class="col-md-3">
                                         <div class="mt-3">
                                             <p class="text-muted mb-2">Total</p>
-                                            <h5>@Total</h5>
+                                            <h5>@Total.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</h5>
                                         </div>
                                     </div>
                                 </div>
@@ -158,17 +158,17 @@
                                     <tbody>
                                         <tr>
                                             <td>Tổng tiền :</td>
-                                            <td class="text-end">@Model.Sum(m => (double) m.Soluong * (double) m.GiaSanPham) VND</td>
+                                            <td class="text-end">@Model.Sum(m => (double) m.Soluong * (double) m.GiaSanPham).ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</td>
                                         </tr>
                                         <tr>
                                             <td>Tiền giảm giá : </td>
-                                            <td class="text-end">- @Model.Sum(m => (double) m.TienGiamGia) VND</td>
+                                            <td class="text-end">- @Model.Sum(m => (double) m.TienGiamGia).ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</td>
                                         </tr>
                                         <tr class="bg-light">
                                             <th>Thành tiền :</th>
                                             <td class="text-end">
                                                 <span class="fw-bold">
-                                            <td class="text-end">@ThanhTien VND</td>
+                                            <td class="text-end">@ThanhTien.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</td>
                                             </span>
                                             </td>
                                         </tr>

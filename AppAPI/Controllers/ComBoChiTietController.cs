@@ -19,11 +19,13 @@ namespace AppAPI.Controllers
         private readonly ComBoChiTietViewModelService _combochitietViewModel;
         private readonly IComboChiTietService CbChiTiet;
         private readonly ISanPhamChiTietServiece sanPhamChiTietServiece;
+        private readonly SanPhamChiTietViewModelService _spctmv;
         public ComBoChiTietController()
         {
             Cb = new ComboService();
             CbChiTiet = new ComBoChiTietService();
             _combochitietViewModel = new ComBoChiTietViewModelService();
+            _spctmv = new SanPhamChiTietViewModelService();
             sanPhamChiTietServiece = new SanPhamChiTietServiece();
 
 
@@ -34,32 +36,104 @@ namespace AppAPI.Controllers
         {
             return CbChiTiet.GetAll();
         }
-        [HttpPost("Create")]
-        public bool Create(int soluongsanpham, decimal giatien, Guid IDcombo, Guid IDCTSP)
+        [HttpPost("[action]")]
+        public string Create(int soluongsanpham, string tencombo, Guid IDcombo, Guid IDCTSP, int soluongcombo)
         {
-            ComboChiTiet comboct = new ComboChiTiet()
+            var spct = sanPhamChiTietServiece.GetAll().FirstOrDefault(c => c.Id == IDCTSP);
+
+            var combo = Cb.GetAll().FirstOrDefault(c => c.Id == IDcombo);
+            try
             {
-                Id = Guid.NewGuid(),
-                SoLuongSanPham = soluongsanpham,
-                GiaBan = giatien,
-                IdCombo = Cb.GetAll().FirstOrDefault(c => c.Id == IDcombo).Id,
-            };
-            return CbChiTiet.Add(comboct);
+                if (soluongsanpham * soluongcombo > spct.SoLuong)
+                {
+                    return "Số lượng nhiều hơn số lượng sản phẩm.";
+                }
+                else if (soluongsanpham == 0)
+                {
+                    return "Bạn chưa nhập số lượng.";
+                }
+                else if (spct.SoLuong == 0 && spct.status == 0)
+                {
+                    return "Sản phẩm đã hết.";
+                }
+                else
+                {
+                    ComboChiTiet comboct = new ComboChiTiet()
+                    {
+                        Id = Guid.NewGuid(),
+                        SoLuongSanPham = soluongsanpham,
+                        SoLuongCombo = soluongcombo,
+                        TenCombo = tencombo,
+                        GiaGoc = (soluongsanpham * spct.GiaBan),
+                        TienGiamGia = (soluongsanpham * spct.GiaBan * combo.PhanTramGiam / 100),
+                        GiaBan = (soluongsanpham * spct.GiaBan) - (soluongsanpham * spct.GiaBan * combo.PhanTramGiam / 100),
+                        IdCombo = combo.Id,
+                        IdSPCT = spct.Id,
+                    };
+                    CbChiTiet.Add(comboct);
+
+                    spct.SoLuong = spct.SoLuong - comboct.SoLuongSanPham;
+                    sanPhamChiTietServiece.Edit(spct.Id, spct);
+                    return "Thêm thành công";
+                }
+            }
+            catch
+            {
+                return "Lỗi. Mời bạn thao tác lại.";
+            }
+
         }
-        [HttpDelete("Delete/{Id}")]
+        [HttpDelete("[action]")]
 
         public bool DeleteAsync(Guid Id)
         {
-            var result = CbChiTiet.Del(Id);
-            return result;
+            return CbChiTiet.Del(Id);
         }
 
-        [HttpPut("Update/{id}")]
+        [HttpPut("[action]")]
 
-        public bool UpdateAsync(Guid id, [FromBody] ComboChiTiet p)
+        public string UpdateAsync(Guid id, int soluongsanpham, string tencombo, Guid IDcombo, Guid IDCTSP, int soluongcombo)
         {
-            var result = CbChiTiet.Edit(id, p);
-            return result;
+            var spct = sanPhamChiTietServiece.GetAll().FirstOrDefault(c => c.Id == IDCTSP);
+
+            var combo = Cb.GetAll().FirstOrDefault(c => c.Id == IDcombo);
+            try
+            {
+                if (soluongsanpham * soluongcombo > spct.SoLuong)
+                {
+                    return "Số lượng nhiều hơn số lượng sản phẩm.";
+                }
+                else if (soluongsanpham == 0)
+                {
+                    return "Bạn chưa nhập số lượng.";
+                }
+                else if (spct.SoLuong == 0 && spct.status == 0)
+                {
+                    return "Sản phẩm đã hết.";
+                }
+                else
+                {
+                    var comboct = CbChiTiet.GetAll().FirstOrDefault(c => c.Id == id);
+                    comboct.SoLuongSanPham = soluongsanpham;
+                    comboct.SoLuongCombo = soluongcombo;
+                    comboct.TenCombo = tencombo;
+                    comboct.GiaGoc = (soluongsanpham * spct.GiaBan);
+                    comboct.TienGiamGia = (soluongsanpham * spct.GiaBan * combo.PhanTramGiam / 100);
+                    comboct.GiaBan = (soluongsanpham * spct.GiaBan) - (soluongsanpham * spct.GiaBan * combo.PhanTramGiam / 100);
+                    comboct.IdCombo = combo.Id;
+                    comboct.IdSPCT = spct.Id;
+
+                    CbChiTiet.Edit(comboct.Id, comboct);
+
+                    spct.SoLuong = spct.SoLuong - comboct.SoLuongSanPham;
+                    sanPhamChiTietServiece.Edit(spct.Id, spct);
+                    return "Sửa thành công";
+                }
+            }
+            catch
+            {
+                return "Lỗi. Mời bạn thao tác lại.";
+            }
         }
         [HttpGet("[action]")]
         public List<ComBoChiTietViewModel> GetallFullComboCt()

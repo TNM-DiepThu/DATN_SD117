@@ -80,11 +80,14 @@
                     @Html.DisplayNameFor(model => model.SoLuong)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.TiemGiam)
-                </th>
-                <th>
                     @Html.DisplayNameFor(model => model.GiaGoc)
                 </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TienGiamGia)
+                </th>
+               <th>
+                    @Html.DisplayNameFor(model => model.GiaBan)
+               </th>
                 <th></th>
             </tr>
         </thead>
@@ -108,11 +111,14 @@
                         @Html.DisplayFor(modelItem => item.SoLuong)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.TiemGiam)
-                    </td>
-                    <td>
                         @Html.DisplayFor(modelItem => item.GiaGoc)
                     </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TienGiamGia)
+                    </td>
+                   <td>
+                        @Html.DisplayFor(modelItem => item.GiaBan)
+                   </td>
                 </tr>
             }
         </tbody>

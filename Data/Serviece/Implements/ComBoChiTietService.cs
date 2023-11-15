@@ -23,15 +23,7 @@ namespace AppData.Serviece.Implements
         {
             try
             {
-                var comboCT = new ComboChiTiet()
-                {
-                    Id = Guid.NewGuid(),
-                    SoLuongSanPham = p.SoLuongSanPham,
-                    GiaBan = p.GiaBan,
-                    IdCombo = comBoSer.GetAll().FirstOrDefault(c => c.Id == p.IdCombo).Id,
-
-                };
-                _context.comboChiTiets.Add(comboCT);
+                _context.comboChiTiets.Add(p);
                 _context.SaveChanges();
                 return true;
             }
@@ -46,28 +38,23 @@ namespace AppData.Serviece.Implements
         {
             try
             {
-                var list = _context.comboChiTiets.ToList();
-                var obj = list.FirstOrDefault(c => c.Id == id);
-                _context.comboChiTiets.Remove(obj);
+                var obj = _context.comboChiTiets.FirstOrDefault(c => c.Id == id);
+                obj.TrangThai = 0;
+                _context.comboChiTiets.Update(obj);
                 _context.SaveChanges();
                 return true;
             }
             catch (Exception)
             {
-
                 return false;
             }
         }
 
         public bool Edit(Guid id, ComboChiTiet p)
         {
-            var listobj = _context.comboChiTiets.ToList();
-            var obj = listobj.FirstOrDefault(c => c.Id == id);
-
-            obj.SoLuongSanPham = p.SoLuongSanPham;
-            obj.GiaBan = p.GiaBan;
-            obj.IdCombo = comBoSer.GetAll().FirstOrDefault(c => c.Id == p.IdCombo).Id;
-            _context.comboChiTiets.Update(obj);
+            var listobj = _context.comboChiTiets.FirstOrDefault(c => c.Id == id);
+            listobj = p;
+            _context.comboChiTiets.Update(listobj);
             _context.SaveChanges();
             return true;
         }

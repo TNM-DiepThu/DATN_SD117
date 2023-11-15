@@ -22,13 +22,11 @@ namespace AppView.Controllers
         private readonly IGioHangCTService ghctservice;
         private readonly MyDbContext _context;
 
-
         public GioHangController()
         {
             //_nguoiDungServiece = nguoiDungServiece;
             ghctservice = new GioHangCTService();
             _context = new MyDbContext();
-
         }
 
         // GET: GioHangController
@@ -37,7 +35,15 @@ namespace AppView.Controllers
             return View();
 
         }
+        public Guid IDNguoiDung()
+        {
+            ClaimsPrincipal claimsPrincipal = HttpContext.User;
 
+            var userlogin = HttpContext.User;
+            var email = userlogin.FindFirstValue(ClaimTypes.Email);
+            var user = _context.Users.FirstOrDefault(c => c.Email == email);
+            return user.Id;
+        }
         // GET: GioHangController/Details/5
         public async Task<ActionResult> GetallGH()
         {
@@ -48,11 +54,8 @@ namespace AppView.Controllers
         [HttpGet]
         public async Task<ActionResult> GetGioHangChiTiet(GioHang gh)
         {
-            ClaimsPrincipal claimsPrincipal = HttpContext.User;
-            var userlogin = HttpContext.User;
-            var email = userlogin.FindFirstValue(ClaimTypes.Email);
-            var user = _context.Users.FirstOrDefault(c => c.Email == email);
-            string url = $"https://localhost:7214/api/GioHangCT/GetAllFullGioHangChiTiet?IDnguoiDung={user.Id}";
+            var idnguoidung = IDNguoiDung();
+            string url = $"https://localhost:7214/api/GioHangCT/GetAllFullGioHangChiTiet?IDnguoiDung={idnguoidung}";
             var repos = await _client.GetAsync(url);
             var data = await repos.Content.ReadAsStringAsync();
             List<GioHangChiTietViewModel> lstghct = JsonConvert.DeserializeObject<List<GioHangChiTietViewModel>>(data);
@@ -78,15 +81,7 @@ namespace AppView.Controllers
                 return View("CreateGioHang");
             }
         }
-        public Guid IDNguoiDung()
-        {
-            ClaimsPrincipal claimsPrincipal = HttpContext.User;
 
-            var userlogin = HttpContext.User;
-            var email = userlogin.FindFirstValue(ClaimTypes.Email);
-            var user = _context.Users.FirstOrDefault(c => c.Email == email);
-            return user.Id;
-        }
         // POST: GioHangController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -239,19 +234,19 @@ namespace AppView.Controllers
         //}
         [HttpGet]
         [HttpPost]
-        public int LayThongTinQuanHuyen(int idquanhuyen)
-        {
-            string json = JsonConvert.SerializeObject(idquanhuyen);
-            HttpContext.Session.SetString("IDThongtinThanhPho", json);
-            return idquanhuyen;
-        }
-        [HttpGet]
-        [HttpPost]
-        public async Task<ActionResult> ThanhToan(int idthanhpho, int idquanhuyen)
+        public async Task<ActionResult> ThanhToan(int IdThanhPho, int IdQuanHuyen)
         {
             string token = "be8ee160-008a-11ee-a281-3aa62a37e0a5";
+
+            var idnguoidung = IDNguoiDung();
+            string url = $"https://localhost:7214/api/GioHangCT/GetAllFullGioHangChiTiet?IDnguoiDung={idnguoidung}";
+            var repos = await _client.GetAsync(url);
+            var data = await repos.Content.ReadAsStringAsync();
+            List<GioHangChiTietViewModel> lstghct = JsonConvert.DeserializeObject<List<GioHangChiTietViewModel>>(data);
+
+            ViewBag.GioHang = lstghct;
             _client.DefaultRequestHeaders.Add("token", token);
-            if (idthanhpho == 0)
+            if (IdThanhPho == 0)
             {
                 var urlTinhThanhPho = "https://online-gateway.ghn.vn/shiip/public-api/master-data/province";
                 HttpResponseMessage response = await _client.GetAsync(urlTinhThanhPho);
@@ -276,23 +271,12 @@ namespace AppView.Controllers
                             thongtintp.Add(thongTinThanhPho);
                         }
                     }
-                    else
-                    {
-                        thongtintp = null;
-                    }
                     ViewBag.thongtin = thongtintp;
                 }
-
             }
-
-            //Lấy tất cả quyện huyện theo ID tỉnh
-            //string IDtinh_thanhpho = HttpContext.Session.GetString("IDThongtinThanhPho");
-
-            else if (idthanhpho > 0)
+            else
             {
-                //ThongTinThanhPho thongtin = JsonConvert.DeserializeObject<ThongTinThanhPho>(IDtinh_thanhpho);
-
-                HttpResponseMessage response1 = await _client.GetAsync($"https://online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id={idthanhpho}");
+                HttpResponseMessage response1 = await _client.GetAsync($"https://online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id={IdThanhPho}");
                 if (response1.IsSuccessStatusCode)
                 {
                     var jsonData1 = await response1.Content.ReadAsStringAsync();
@@ -307,21 +291,24 @@ namespace AppView.Controllers
                     {
                         foreach (JObject district in districtArray)
                         {
-
                             ThongTinQuanHuyen QuanHuyen = new ThongTinQuanHuyen();
-                            QuanHuyen.Id = Convert.ToInt32(district["DistrictID"]);
+                            QuanHuyen.ID = Convert.ToInt32(district["DistrictID"]);
                             QuanHuyen.Name = Convert.ToString(district["DistrictName"]);
                             thongtinquanhuyen.Add(QuanHuyen);
                         }
                     }
-                    else
-                    {
-                        thongtinquanhuyen = null;
-                    }
                     ViewBag.thongtinhuyen = thongtinquanhuyen;
+                    return View();
                 }
             }
             return View();
+        }
+
+        [HttpPost]
+        [HttpGet]
+        public void TinhTienShip(int IdThanhPho, int IdQuanHuyen)
+        {
+
         }
     }
 }

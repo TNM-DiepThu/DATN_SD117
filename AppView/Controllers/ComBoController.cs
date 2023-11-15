@@ -55,7 +55,7 @@ namespace AppView.Controllers
 
         public async Task<ActionResult> CreateComBO(Combo combo)
         {
-            string url = $"https://localhost:7214/api/Combo/Create?Ten={combo.TenCombo}&mota={combo.MoTaCombo}&giatien={combo.TienGiamGia}";
+            string url = $"https://localhost:7214/api/Combo/Create?Ten={combo.TenCombo}&mota={combo.MoTaCombo}&giatien={combo.PhanTramGiam}";
 
 
             var obj = JsonConvert.SerializeObject(combo);
@@ -141,7 +141,7 @@ namespace AppView.Controllers
             //HttpResponseMessage httpResponseMessage = await _client.PutAsync(url, content);
 
             //return RedirectToAction("GetlistComBO");
-            string apiurl = $"https://localhost:7214/api/Combo/Update/{id}?Ten={cb.TenCombo}&mota={cb.MoTaCombo}&giatien={cb.TienGiamGia}";
+            string apiurl = $"https://localhost:7214/api/Combo/Update/{id}?Ten={cb.TenCombo}&mota={cb.MoTaCombo}&giatien={cb.PhanTramGiam}";
 
             var obj = JsonConvert.SerializeObject(cb);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");

@@ -21,16 +21,7 @@ namespace AppData.Serviece.Implements
         {
             try
             {
-
-                Combo combo = new Combo()
-                {
-                    Id = Guid.NewGuid(),
-                    TenCombo = p.TenCombo,
-                    MoTaCombo = p.MoTaCombo,
-                    TienGiamGia = p.TienGiamGia,
-                    status = 1,
-                };
-                _context.combos.Add(combo);
+                _context.combos.Add(p);
                 _context.SaveChanges();
                 return true;
             }
@@ -60,13 +51,9 @@ namespace AppData.Serviece.Implements
         }
 
         public bool Edit(Guid id, Combo p)
-        {
-            var listobj = _context.combos.ToList();
-            var obj = listobj.FirstOrDefault(c => c.Id == id);
-            obj.TenCombo = p.TenCombo;
-            obj.MoTaCombo = p.MoTaCombo;
-            obj.TienGiamGia = p.TienGiamGia;
-            obj.status = p.status;
+        { 
+            var obj = _context.combos.FirstOrDefault(c => c.Id == id);
+            obj =  p;
             _context.combos.Update(obj);
             _context.SaveChangesAsync();
             return true;

@@ -11,7 +11,7 @@ namespace AppData.model
         public Guid Id { get; set; }
         public string TenCombo { get; set; }
         public string MoTaCombo { get; set; }
-        public decimal TienGiamGia { get; set; }
+        public decimal PhanTramGiam { get; set; }
         public int status { get; set; }
         public virtual ICollection<ComboChiTiet> ComboChiTiet { get; set; }
     }

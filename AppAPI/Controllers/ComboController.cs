@@ -28,14 +28,14 @@ namespace AppAPI.Controllers
             return comBoSer.GetAll();
         }
         [HttpPost("Create")]
-        public bool Create(string Ten, string mota, decimal giatien)
+        public bool Create(string Ten, string mota, decimal phantramgiam)
         {
             Combo combo = new Combo()
             {
                 Id = Guid.NewGuid(),
                 TenCombo = Ten,
                 MoTaCombo = mota,
-                TienGiamGia = giatien,
+                PhanTramGiam = phantramgiam,
                 status = 1,
             };
             if (comBoSer.GetAll().Any(c => c.TenCombo == Ten))
@@ -55,21 +55,12 @@ namespace AppAPI.Controllers
 
         [HttpPut("Update/{id}")]
 
-        public bool UpdateAsync(Guid id, string Ten, string mota, decimal giatien)
+        public bool UpdateAsync(Guid id, string Ten, string mota, decimal phantram)
         {
-            //Combo cb = comBoSer.GetAll().FirstOrDefault(c => c.Id == id);
-            //if (cb != null)
-            //{
-            //    cb.TenCombo = Ten;
-            //    cb.MoTaCombo = mota;
-            //    cb.TienGiamGia = giatien;
-
-            //}
-            //return comBoSer.Edit(cb);
             var cb = _dbContext.combos.FirstOrDefault(p => p.Id == id);
             cb.TenCombo = Ten;
             cb.MoTaCombo = mota;
-            cb.TienGiamGia = giatien;
+            cb.PhanTramGiam = phantram;
             _dbContext.combos.Update(cb);
             _dbContext.SaveChanges(); return true;
         }

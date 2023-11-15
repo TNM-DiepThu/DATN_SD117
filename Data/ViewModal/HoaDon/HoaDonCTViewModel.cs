@@ -14,7 +14,8 @@ namespace AppData.ViewModal.HoaDon
         public Guid? IDSpct { get ; set; }
         public string TenSP { get ; set; }
         public int SoLuong { get; set; }
-        public decimal GiaGoc { get; set; }   
-        public decimal TiemGiam { get; set; }
+        public decimal GiaGoc { get; set; } 
+        public decimal TienGiamGia { get; set; }
+        public decimal GiaBan { get; set; }
     }
 }

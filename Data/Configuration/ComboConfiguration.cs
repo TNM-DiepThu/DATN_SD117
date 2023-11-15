@@ -16,7 +16,7 @@ namespace AppData.Configuration
             builder.HasKey(x => x.Id);
             builder.Property(x=>x.TenCombo).HasColumnType("nvarchar(100)");
             builder.Property(x=>x.MoTaCombo).HasColumnType("nvarchar(100)");
-            builder.Property(x=>x.TienGiamGia).HasColumnType("decimal");
+            builder.Property(x=>x.PhanTramGiam).HasColumnType("decimal");
             builder.Property(x=>x.status).HasColumnType("int");
         }
     }

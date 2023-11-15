@@ -10,9 +10,10 @@ namespace AppData.ViewModal.SanPhamChiTietVM
     {
         public Guid Id { get; set; }
         public string TenComBo { get; set; }
-        public string TenSp { get; set; }   
-        public decimal GiaGoc { get; set; }
-        public decimal GiaTrịGiam { get; set; }
+        public string TenSp { get; set; }
+        public int SoluongCombo { get; set; }
+        public decimal GiaGoc { get; set; }    
+        public decimal TienGiamGia { get; set; }
         public decimal ThanhTienComBo { get; set; }  
         public decimal SoluongSanpham { get; set; }
     }

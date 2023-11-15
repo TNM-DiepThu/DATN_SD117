@@ -212,7 +212,7 @@ else
                         @Html.DisplayFor(modelItem => item.SoLuong)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.GiaBan) VND
+                        @item.GiaBan.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))
                     </td>
                     @*<td>
                 @Html.DisplayFor(modelItem => item.MoTa)
