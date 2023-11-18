@@ -63,7 +63,7 @@ namespace AppAPI.Controllers
                         Id = Guid.NewGuid(),
                         SoLuongSanPham = soluongsanpham,
                         SoLuongCombo = soluongcombo,
-                        TenCombo = tencombo,
+                        TenComboct = tencombo,
                         GiaGoc = (soluongsanpham * spct.GiaBan),
                         TienGiamGia = (soluongsanpham * spct.GiaBan * combo.PhanTramGiam / 100),
                         GiaBan = (soluongsanpham * spct.GiaBan) - (soluongsanpham * spct.GiaBan * combo.PhanTramGiam / 100),
@@ -116,7 +116,7 @@ namespace AppAPI.Controllers
                     var comboct = CbChiTiet.GetAll().FirstOrDefault(c => c.Id == id);
                     comboct.SoLuongSanPham = soluongsanpham;
                     comboct.SoLuongCombo = soluongcombo;
-                    comboct.TenCombo = tencombo;
+                    comboct.TenComboct = tencombo;
                     comboct.GiaGoc = (soluongsanpham * spct.GiaBan);
                     comboct.TienGiamGia = (soluongsanpham * spct.GiaBan * combo.PhanTramGiam / 100);
                     comboct.GiaBan = (soluongsanpham * spct.GiaBan) - (soluongsanpham * spct.GiaBan * combo.PhanTramGiam / 100);
