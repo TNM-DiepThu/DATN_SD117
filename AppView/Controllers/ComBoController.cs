@@ -32,7 +32,6 @@ namespace AppView.Controllers
             _logger = logger;
             _hostingEnvironment = hostingEnvironment;
             _spctViewModel = new SanPhamChiTietViewModelService();
-
             _context = new MyDbContext();
         }
         [HttpGet]
@@ -45,14 +44,8 @@ namespace AppView.Controllers
             return View(lstCombo);
         }
 
-        //// GET: ComBoController/Details/5
-        //public ActionResult Details(int id)
-        //{
-        //    //https://localhost:7214/api/Combo/GetAll
-        //    return View();
-        //}
+        [HttpGet]
         [HttpPost]
-
         public async Task<ActionResult> CreateComBO(Combo combo)
         {
             string url = $"https://localhost:7214/api/Combo/Create?Ten={combo.TenCombo}&mota={combo.MoTaCombo}&giatien={combo.PhanTramGiam}";
@@ -71,12 +64,6 @@ namespace AppView.Controllers
             }
 
         }
-
-
-
-
-        // GET: ComBoController/Delete/5
-
         public async Task<ActionResult> DeleteCBAsync(Combo cb)
         {
             string url = $"https://localhost:7214/api/Combo/Delete/{cb.Id}";
@@ -85,37 +72,8 @@ namespace AppView.Controllers
             HttpResponseMessage httpResponseMessage = await _client.DeleteAsync(url);
 
             return RedirectToAction("GetlistComBO");
-            //string apiurl = $"https://localhost:7214/api/Combo/Delete/{cb.Id}";
-            //var httpClient = new HttpClient();
-            //var respone = httpClient.DeleteAsync(apiurl).Result;
-            //respone.EnsureSuccessStatusCode();
-
-            //return RedirectToAction("GetlistComBO");
 
         }
-
-        // POST: ComBoController/Delete/5
-        //[HttpGet]
-        //[HttpPost]
-
-
-        //public async Task<ActionResult> UpdateCB(Guid id, Combo cb)
-        //{
-        //    var roleJson = JsonConvert.SerializeObject(cb);
-        //    HttpContent content = new StringContent(roleJson, Encoding.UTF8, "application/json");
-        //    var response = await _client.PutAsync($"https://localhost:7214/api/Combo/Update/{id}", content);
-        //    var roles = await _client.GetFromJsonAsync<Combo>($"https://localhost:7214/api/Combo/GetbyID?id={id}");
-
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        return RedirectToAction(nameof(GetlistComBO));
-        //    }
-        //    else
-        //    {
-        //        return View(roles);
-        //    }
-
-        //}
         [HttpGet]
         public IActionResult UpdateCB(Guid Id)
         {
@@ -124,23 +82,12 @@ namespace AppView.Controllers
             var respone = _client.GetAsync(apiurl).Result;
             var data = respone.Content.ReadAsStringAsync().Result;
             var sp = JsonConvert.DeserializeObject<Combo>(data);
-
-
-
-
-
             return View(sp);
 
         }
         [HttpPost]
         public IActionResult UpdateCB(Guid id, Combo cb)
         {
-            //string url = $"https://localhost:7214/api/Combo/Update/{cb.Id}";
-            //var obj = JsonConvert.SerializeObject(cb);
-            //StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
-            //HttpResponseMessage httpResponseMessage = await _client.PutAsync(url, content);
-
-            //return RedirectToAction("GetlistComBO");
             string apiurl = $"https://localhost:7214/api/Combo/Update/{id}?Ten={cb.TenCombo}&mota={cb.MoTaCombo}&giatien={cb.PhanTramGiam}";
 
             var obj = JsonConvert.SerializeObject(cb);
@@ -157,24 +104,6 @@ namespace AppView.Controllers
 
 
         }
-        //public async Task<ActionResult> CreateComBOCT(Combo combo)
-        //{
-        //    string url = $"https://localhost:7214/api/Combo/Create";
-
-
-        //    var obj = JsonConvert.SerializeObject(combo);
-        //    StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
-        //    HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
-        //    if (httpResponseMessage.IsSuccessStatusCode)
-        //    {
-        //        return RedirectToAction("GellAll", "QuanTri");
-        //    }
-        //    else
-        //    {
-        //        return View("CreateComBO");
-        //    }
-
-        //}
         public IActionResult GetlistComBOCT()
         {
             string url = "https://localhost:7214/api/ComBoChiTiet/GetAll";
@@ -190,15 +119,6 @@ namespace AppView.Controllers
             var respone = httpClient.GetAsync(apiurl).Result;
             var data = respone.Content.ReadAsStringAsync().Result;
             var sp = JsonConvert.DeserializeObject<Combo>(data);
-
-            //string apiurl = $"https://localhost:7240/api/SanPham/{id}";
-            //var httpclient = new HttpClient();
-            //var resposne = httpclient.GetAsync(apiurl).Result;
-            //resposne.EnsureSuccessStatusCode();
-            //var data = resposne.Content.ReadAsStringAsync().Result;
-            //var sp=JsonConvert.DeserializeObject(data);
-
-
             return View(sp);
 
         }

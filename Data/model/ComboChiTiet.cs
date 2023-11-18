@@ -11,7 +11,7 @@ namespace AppData.model
         public Guid Id { get; set; }
         public Guid IdCombo { get; set; }
         public Guid IdSPCT { get; set; }
-        public string TenCombo { get; set; }
+        public string TenComboct { get; set; }
         public int SoLuongSanPham { get; set; }
         public int SoLuongCombo { get; set; }
         public decimal GiaGoc { get; set; }
