@@ -30,9 +30,9 @@ namespace AppView.Controllers
 
         public ComBoController()
         {
-            _client = new HttpClient();
-            _spctviewmodel = new SanPhamChiTietViewModelService();
-            _giohangService = new GioHangService();
+            _logger = logger;
+            _hostingEnvironment = hostingEnvironment;
+            _spctViewModel = new SanPhamChiTietViewModelService();
             _context = new MyDbContext();
 
         }
@@ -46,15 +46,8 @@ namespace AppView.Controllers
             return View(lstCombo);
         }
 
-        //// GET: ComBoController/Details/5
-        //public ActionResult Details(int id)
-        //{
-        //    //https://localhost:7214/api/Combo/GetAll
-        //    return View();
-        //}
         [HttpGet]
         [HttpPost]
-
         public async Task<ActionResult> CreateComBO(Combo combo)
         {
             string url = $"https://localhost:7214/api/Combo/Create?Ten={combo.TenCombo}&mota={combo.MoTaCombo}&phantramgiam={combo.PhanTramGiam}";
@@ -72,56 +65,16 @@ namespace AppView.Controllers
             }
 
         }
-
-        // GET: ComBoController/Delete/5
-        [HttpGet]
-        [HttpPut]
-        public ActionResult DeleteCB(Combo cb)
+        public async Task<ActionResult> DeleteCBAsync(Combo cb)
         {
             string url = $"https://localhost:7214/api/Combo/DeleteComBo?Id={cb.Id}";
             var obj = JsonConvert.SerializeObject(cb);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
-            HttpResponseMessage httpResponseMessage = _client.PutAsync(url, content).Result;
-            if (httpResponseMessage.IsSuccessStatusCode)
-            {
-                TempData["SuccessFull"] = "Thành công";
-                return RedirectToAction("GetlistComBO");
-            }
-            else
-            {
-                TempData["ErrorMessage"] = "Lỗi xóa";
-                return RedirectToAction("GetlistComBO");
-            }
+            HttpResponseMessage httpResponseMessage = await _client.DeleteAsync(url);
+
+            return RedirectToAction("GetlistComBO");
+
         }
-
-        [HttpGet]
-        [HttpPost]
-        public IActionResult UpdateCB(Combo combo)
-        {
-            string ApiDetail = $"https://localhost:7214/api/Combo/GetbyID?id={combo.Id}";
-            var repones = _client.GetAsync(ApiDetail).Result;
-            var data = repones.Content.ReadAsStringAsync().Result;
-            Combo comboDetail = JsonConvert.DeserializeObject<Combo>(data);
-
-            string Apiupdate = $"https://localhost:7214/api/Combo/Update/{combo.Id}?Ten={combo.TenCombo}&mota={combo.MoTaCombo}&phantram={combo.PhanTramGiam}";
-
-            var obj = JsonConvert.SerializeObject(combo);
-            StringContent stringContent = new StringContent(obj, Encoding.UTF8, "application/json");
-            HttpResponseMessage httpResponseMessage = _client.PostAsync(Apiupdate, stringContent).Result;
-            if (httpResponseMessage.IsSuccessStatusCode)
-            {
-                return RedirectToAction("GetlistComBO");
-            }
-            else
-            {
-                return View(comboDetail);
-            }
-        }
-
-
-        // Combo chi tiết
-
-
         [HttpGet]
         public IActionResult GetlistComBOCT()
         {
@@ -139,44 +92,14 @@ namespace AppView.Controllers
             var httpClient = new HttpClient();
             var respone = httpClient.GetAsync(apiurl).Result;
             var data = respone.Content.ReadAsStringAsync().Result;
-            ComBoChiTietViewModel sp = JsonConvert.DeserializeObject<ComBoChiTietViewModel>(data);
+            var sp = JsonConvert.DeserializeObject<Combo>(data);
             return View(sp);
-
-        }
-
-        [HttpGet]
-        [HttpPost]
-        public IActionResult UpdateComBoCT(ComboChiTiet cbct)
-        {
-            ViewBag.Combo = new SelectList(_context.combos.ToList().Where(c => c.status == 1).OrderBy(c => c.TenCombo), "Id", "TenCombo");
-            ViewBag.spct = new SelectList(_spctviewmodel.GetAll().Where(c => c.status == 1).OrderBy(c => c.TenSP), "Id", "TenSP");
-            string apiurlDetail = $"https://localhost:7214/api/ComBoChiTiet/GetByID?ID={cbct.Id}";
-            var httpClient = new HttpClient();
-            var respone = httpClient.GetAsync(apiurlDetail).Result;
-            var data = respone.Content.ReadAsStringAsync().Result;
-            ComboChiTiet sp = JsonConvert.DeserializeObject<ComboChiTiet>(data);
-
-            string urlupdate = $"https://localhost:7214/api/ComBoChiTiet/UpdateCombo?id={cbct.Id}&soluongsanpham={cbct.SoLuongSanPham}&tencombo={cbct.TenComboct}&IDcombo={cbct.IdCombo}&IDCTSP={cbct.IdSPCT}&soluongcombo={cbct.SoLuongCombo}&trangthai={cbct.TrangThai}";
-
-            var obj = JsonConvert.SerializeObject(cbct);
-            StringContent stringContent = new StringContent(obj, Encoding.UTF8, "application/json");
-            HttpResponseMessage httpResponseMessage = _client.PostAsync(urlupdate, stringContent).Result;
-            if (httpResponseMessage.IsSuccessStatusCode)
-            {
-                return RedirectToAction("GetlistComBOCT");
-            }
-            else
-            {
-                return View(sp);
-            }
-        }
 
         [HttpGet]
         [HttpPost]
         public ActionResult CreateComBoChiTiet(ComboChiTiet cbct)
         {
-            ViewBag.Combo = new SelectList(_context.combos.ToList().Where(c => c.status == 1).OrderBy(c => c.TenCombo), "Id", "TenCombo");
-            ViewBag.SPCT = new SelectList(_spctviewmodel.GetAll().ToList().Where(c => c.status == 1).OrderBy(c => c.TenSP), "Id", "TenSP");
+            string apiurl = $"https://localhost:7214/api/Combo/Update/{id}?Ten={cb.TenCombo}&mota={cb.MoTaCombo}&giatien={cb.PhanTramGiam}";
 
             string url = $"https://localhost:7214/api/ComBoChiTiet/Create?soluongsanpham={cbct.SoLuongSanPham}&tencombo={cbct.TenComboct}&IDcombo={cbct.IdCombo}&IDCTSP={cbct.IdSPCT}&soluongcombo={cbct.SoLuongCombo}";
             var obj = JsonConvert.SerializeObject(cbct);
@@ -191,38 +114,23 @@ namespace AppView.Controllers
                 return View();
             }
         }
-
-        [HttpGet]
-        [HttpPost]
-        public ActionResult ThemComBoVaoGioHang(ComboChiTiet cbct)
+        public IActionResult GetlistComBOCT()
         {
-            ClaimsPrincipal claimsPrincipal = HttpContext.User;
+            string url = "https://localhost:7214/api/ComBoChiTiet/GetAll";
+            var respon = _client.GetAsync(url).Result;
+            var data = respon.Content.ReadAsStringAsync().Result;
+            List<ComboChiTiet> lstCombo = JsonConvert.DeserializeObject<List<ComboChiTiet>>(data);
+            return View(lstCombo);
+        }
+        public IActionResult Detail(Guid id)
+        {
+            string apiurl = $"https://localhost:7214/api/Combo/{id}";
+            var httpClient = new HttpClient();
+            var respone = httpClient.GetAsync(apiurl).Result;
+            var data = respone.Content.ReadAsStringAsync().Result;
+            var sp = JsonConvert.DeserializeObject<Combo>(data);
+            return View(sp);
 
-            var userlogin = HttpContext.User;
-            var email = userlogin.FindFirstValue(ClaimTypes.Email);
-            var user = _context.Users.FirstOrDefault(c => c.Email == email);
-            var giohang = _giohangService.GetAll().FirstOrDefault(c => c.IdNguoiDung == user.Id);
-            string url = $"https://localhost:7214/api/ComBoChiTiet/ThemComBoVaoGioHang?idnguoidung={user.Id}&IDComboCt={cbct.Id}&SoLuong=1";
-            GioHangChiTiet gioHangChiTiet = new GioHangChiTiet()
-            {
-                Id = Guid.NewGuid(),
-                IdComboChiTiet = null,
-                IdGioHang = giohang.Id,
-                IdSanPhamChiTiet = null,
-                SoLuong = 1,
-            };
-
-            var obj = JsonConvert.SerializeObject(gioHangChiTiet);
-            StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
-            HttpResponseMessage httpResponseMessage = _client.PostAsync(url, content).Result;
-            if (httpResponseMessage.IsSuccessStatusCode)
-            {
-                return RedirectToAction("GetGioHangChiTiet", "GioHang");
-            }
-            else
-            {
-                return RedirectToAction("GetlistComBOCT", "ComBo");
-            }
         }
     }
 }

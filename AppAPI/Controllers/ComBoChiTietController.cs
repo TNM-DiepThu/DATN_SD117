@@ -69,10 +69,6 @@ namespace AppAPI.Controllers
                 {
                     return "Sản phẩm đã hết.";
                 }
-                else if (CbChiTiet.GetAll().Any(c => c.IdCombo == IDcombo && c.IdSPCT == IDCTSP))
-                {
-                    return "Combo đã tồm tại" + CbChiTiet.GetAll().FirstOrDefault(c => c.IdCombo == IDcombo && c.IdSPCT == IDCTSP).TenComboct;
-                }
                 else
                 {
                     ComboChiTiet comboct = new ComboChiTiet()
@@ -80,7 +76,7 @@ namespace AppAPI.Controllers
                         Id = Guid.NewGuid(),
                         SoLuongSanPham = soluongsanpham,
                         SoLuongCombo = soluongcombo,
-                        TenComboct = tencombo.Substring(0, Math.Min(tencombo.Length, 1000)),
+                        TenComboct = tencombo,
                         GiaGoc = (soluongsanpham * spct.GiaBan),
                         TienGiamGia = (soluongsanpham * spct.GiaBan * combo.PhanTramGiam / 100),
                         GiaBan = (soluongsanpham * spct.GiaBan) - (soluongsanpham * spct.GiaBan * combo.PhanTramGiam / 100),

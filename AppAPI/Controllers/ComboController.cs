@@ -21,14 +21,14 @@ namespace AppAPI.Controllers
         {
             comBoSer = new ComboService();
         }
-        [HttpGet("GetAll")]
+        [HttpGet("[action]")]
 
         public IEnumerable<Combo> GetAllAsync()
         {
             return comBoSer.GetAll();
         }
-        [HttpPost("Create")]
-        public bool Create(string Ten, string mota, decimal phantramgiam)
+        [HttpPost("[action]")]
+        public bool CreateCombo(string Ten, string mota, decimal phantramgiam)
         {
             Combo combo = new Combo()
             {
@@ -45,25 +45,27 @@ namespace AppAPI.Controllers
 
             return comBoSer.Add(combo);
         }
-        [HttpPut("[action]")]
-        public bool DeleteComBo(Guid Id)
+        [HttpPost("[action]")]
+
+        public bool DeleteCombo(Guid Id)
         {
-            var result = comBoSer.Del(Id);
-            return result;
+            var cb = comBoSer.GetAll().FirstOrDefault(c => c.Id == Id);
+            cb.status = 0;
+            return comBoSer.Edit(cb.Id, cb);
         }
 
-        [HttpPost("Update/{id}")]
-        public bool UpdateAsync(Guid id, string Ten, string mota, decimal phantram)
+        [HttpPut("[action]")]
+
+        public bool UpdateCombo(Guid id, string Ten, string mota, decimal phantram)
         {
             var cb = comBoSer.GetAll().FirstOrDefault(p => p.Id == id);
             cb.TenCombo = Ten;
             cb.MoTaCombo = mota;
             cb.PhanTramGiam = phantram;
-            _dbContext.combos.Update(cb);
-            _dbContext.SaveChanges(); return true;
+            return comBoSer.Edit(cb.Id, cb);
         }
         [HttpGet("[action]")]
-        public Combo GetbyID(Guid id)
+        public Combo GetbyIDComBo(Guid id)
         {
             return _dbContext.combos.FirstOrDefault(p => p.Id == id);
         }
