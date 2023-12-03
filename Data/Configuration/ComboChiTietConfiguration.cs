@@ -20,7 +20,7 @@ namespace AppData.Configuration
             builder.Property(x => x.TienGiamGia).HasColumnType("decimal");
             builder.Property(x => x.TrangThai).HasColumnType("int");
             builder.Property(x => x.SoLuongCombo).HasColumnType("int");
-            builder.Property(x => x.TenCombo).HasColumnType("nvarchar");
+            builder.Property(x => x.TenComboct).HasColumnType("nvarchar(1000)");
             builder.HasOne(x => x.combos).WithMany(x => x.ComboChiTiet).HasForeignKey(x => x.IdCombo).OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(x => x.SanPhamChiTiet).WithMany(x => x.comboChiTiets).HasForeignKey(x => x.IdSPCT).OnDelete(DeleteBehavior.Restrict);
         }

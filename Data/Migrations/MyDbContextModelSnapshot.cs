@@ -122,12 +122,12 @@ namespace AppData.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<decimal>("PhanTramGiam")
+                        .HasColumnType("decimal");
+
                     b.Property<string>("TenCombo")
                         .IsRequired()
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<decimal>("TienGiamGia")
-                        .HasColumnType("decimal");
 
                     b.Property<int>("status")
                         .HasColumnType("int");
@@ -146,13 +146,29 @@ namespace AppData.Migrations
                     b.Property<decimal>("GiaBan")
                         .HasColumnType("decimal");
 
+                    b.Property<decimal>("GiaGoc")
+                        .HasColumnType("decimal");
+
                     b.Property<Guid>("IdCombo")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("IdSPCT")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("SoLuongCombo")
+                        .HasColumnType("int");
+
                     b.Property<int>("SoLuongSanPham")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TenComboct")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<decimal>("TienGiamGia")
+                        .HasColumnType("decimal");
+
+                    b.Property<int>("TrangThai")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -263,14 +279,12 @@ namespace AppData.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("DiaChi")
-                        .IsRequired()
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("GhiChu")
-                        .IsRequired()
                         .HasColumnType("nvarchar(255)");
 
-                    b.Property<Guid>("IDHTTT")
+                    b.Property<Guid?>("IDHTTT")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("IdNguoiDunh")
@@ -283,10 +297,10 @@ namespace AppData.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime>("NgayGiao")
+                    b.Property<DateTime?>("NgayGiao")
                         .HasColumnType("DateTime");
 
-                    b.Property<DateTime>("NgayNhan")
+                    b.Property<DateTime?>("NgayNhan")
                         .HasColumnType("DateTime");
 
                     b.Property<DateTime>("NgayTao")
@@ -296,28 +310,24 @@ namespace AppData.Migrations
                         .HasColumnType("DateTime");
 
                     b.Property<string>("NguoiNhan")
-                        .IsRequired()
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("QuanHuyen")
-                        .IsRequired()
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("SDT")
-                        .IsRequired()
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int>("SoLuong")
+                    b.Property<int?>("SoLuong")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("TienVanChuyen")
+                    b.Property<decimal?>("TienVanChuyen")
                         .HasColumnType("decimal");
 
                     b.Property<string>("Tinh")
-                        .IsRequired()
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<decimal>("TongTien")
+                    b.Property<decimal?>("TongTien")
                         .HasColumnType("decimal");
 
                     b.Property<int>("status")
@@ -965,8 +975,7 @@ namespace AppData.Migrations
                     b.HasOne("AppData.model.HinhThucThanhToan", "HinhThucThanhToan")
                         .WithMany("HoaDons")
                         .HasForeignKey("IDHTTT")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("AppData.model.NguoiDung", "NguoiDung")
                         .WithMany("hoaDons")

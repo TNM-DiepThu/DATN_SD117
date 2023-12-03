@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,7 @@ namespace AppData.model
         public Guid Id { get; set; }
         public Guid IdCombo { get; set; }
         public Guid IdSPCT { get; set; }
-        public string TenCombo { get; set; }
+        public string TenComboct { get; set; }
         public int SoLuongSanPham { get; set; }
         public int SoLuongCombo { get; set; }
         public decimal GiaGoc { get; set; }

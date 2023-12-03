@@ -25,18 +25,22 @@ namespace AppData.Serviece.ViewModeService
         public List<ComBoChiTietViewModel> GetAllComBoChiTiet()
         {
             var combochitiet = from a in _comboctservice.GetAll()
-                               join b in _sanphamctviewmodelservice.GetAll() on a.IdSPCT equals b.Id
+                               join b in _sanphamctviewmodelservice.GetWithOneImage() on a.IdSPCT equals b.Id
                                join c in _conboservice.GetAll() on a.IdCombo equals c.Id
                                select new ComBoChiTietViewModel
                                {
                                    Id = a.Id,
-                                   TenComBo = c.TenCombo,
+                                   TenComBo = a.TenComboct,
                                    TenSp = b.TenSP,
+                                   MauSac = b.MauSac,
+                                   Size = b.Size,
                                    GiaGoc = a.GiaGoc,
+                                   PathAnh = b.Images != null ? b.Images[0].Connect : null,
                                    SoluongCombo = a.SoLuongCombo,
                                    SoluongSanpham = a.SoLuongSanPham,
                                    TienGiamGia = a.TienGiamGia,
                                    ThanhTienComBo = a.GiaBan,
+                                   TrangThai = a.TrangThai,
                                };
             return combochitiet.ToList();
         }
@@ -48,18 +52,22 @@ namespace AppData.Serviece.ViewModeService
                                select new ComBoChiTietViewModel
                                {
                                    Id = a.Id,
-                                   TenComBo = c.TenCombo,
+                                   TenComBo = a.TenComboct,
                                    TenSp = b.TenSP,
+                                   MauSac = b.MauSac,
+                                   Size = b.Size,
                                    GiaGoc = a.GiaGoc,
                                    SoluongCombo = a.SoLuongCombo,
+                                   PathAnh = b.Images != null ? b.Images[0].Connect : null,
                                    SoluongSanpham = a.SoLuongSanPham,
                                    TienGiamGia = a.TienGiamGia,
                                    ThanhTienComBo = a.GiaBan,
+                                   TrangThai = a.TrangThai,
                                };
             return combochitiet.Where(c => c.TenComBo.Contains(name)).ToList();
         }
 
-        public ComBoChiTietViewModel GetAllComBoChiTietByName(Guid Id)
+        public ComBoChiTietViewModel GetAllComBoChiTietByID(Guid Id)
         {
             var combochitiet = from a in _comboctservice.GetAll()
                                join b in _sanphamctviewmodelservice.GetAll() on a.IdSPCT equals b.Id
@@ -67,13 +75,17 @@ namespace AppData.Serviece.ViewModeService
                                select new ComBoChiTietViewModel
                                {
                                    Id = a.Id,
-                                   TenComBo = c.TenCombo,
+                                   TenComBo = a.TenComboct,
                                    TenSp = b.TenSP,
                                    GiaGoc = a.GiaGoc,
+                                   MauSac = b.MauSac,
+                                   Size = b.Size,
+                                   PathAnh = b.Images != null ? b.Images[0].Connect : null,
                                    SoluongCombo = a.SoLuongCombo,
                                    SoluongSanpham = a.SoLuongSanPham,
                                    TienGiamGia = a.TienGiamGia,
                                    ThanhTienComBo = a.GiaBan,
+                                   TrangThai = a.TrangThai,
                                };
             return combochitiet.FirstOrDefault(c => c.Id == Id);
         }

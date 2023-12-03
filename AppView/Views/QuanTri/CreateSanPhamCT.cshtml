@@ -5,19 +5,22 @@
     var dataanh = ViewBag.listanh;
     var lstmausac = ViewBag.MauSac;
 }
+<script type="text/javascript" src="~/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
 
 <script type="text/javascript" src="~/js/sanphamchitiet/sanphamchitiet.js"></script>
 <script type="text/javascript" src="~/js/site.js"></script>
 <link type="text/css" href="~/css/site.css" rel="stylesheet" />
-<script type="text/javascript" src="~/library/plugins/jquery/jquery.min.js"></script>
-<script type="text/javascript" src="~/library/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-<script type="text/javascript" src="~/library/plugins/select2/js/select2.full.min.js"></script>
-<script type="text/javascript" src="~/library/plugins/select2/js/select2.full.js"></script>
-<link type="text/css" href="~/library/plugins/select2/css/select2.min.css" rel="stylesheet" />
-<link type="text/css" href="~/library/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css" rel="stylesheet" />
-
-<link href="~/library/dist/css/adminlte.min.css" rel="stylesheet" />
-
+<!-- Bootstrap 4 -->
+<script type="text/javascript" src="~/AdminLTE-3.2.0/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- Select2 -->
+<script type="text/javascript" src="~/AdminLTE-3.2.0/plugins/select2/js/select2.full.min.js"></script>
+<!-- Font Awesome -->
+<link type="text/css" rel="stylesheet" href="~/AdminLTE-3.2.0/plugins/fontawesome-free/css/all.min.css">
+<!-- Select2 -->
+<link type="text/css" rel="stylesheet" href="~/AdminLTE-3.2.0/plugins/select2/css/select2.min.css">
+<link type="text/css" rel="stylesheet" href="~/AdminLTE-3.2.0/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+<!-- Theme style -->
+<link type="text/css" rel="stylesheet" href="~/library/dist/css/adminlte.min.css">
 <style>
     .image-row {
         display: flex;
@@ -43,8 +46,6 @@
         height: auto;
     }
 </style>
-<hr />
-<h4>SanPhamChiTiet</h4>
 @if (TempData["ErrorMessage"] != null)
 {
     <div class="alert alert-danger">@TempData["ErrorMessage"] </div>
@@ -84,19 +85,20 @@
                     @Html.ValidationMessageFor(model => model.IdDanhMuc, "", new { @class = "text-danger" })
                 </div>
             </div>
-            @* <div class="form-group row">
-            <label class="control-label col-3">Chất liệu</label>
-            <div class="col-9">
-            <select asp-for="IdChatLieu" class="select2 form-control" multiple="multiple">
-
-            @foreach (var item in ViewBag.ChatLieu as IEnumerable<SelectListItem>)
-            {
-            <option value="@item.Value">@item.Text</option>
-            }
-
-            </select>
+            <div class="form-group row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Chất liệu</label>
+                        <select class="ChatLieuDropDown" multiple="multiple" data-placeholder="Mời bạn chọn" style="width: 100%;">
+                            @foreach (var chatlieu in ViewBag.ChatLieu)
+                            {
+                                <option value="@chatlieu.Value">@chatlieu.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
             </div>
-            </div>*@
+            
             <div class="form-group row">
                 <label for="IdChatLieu" class="control-label col-3">Chất liệu</label>
                 <div class="col-9">
@@ -189,7 +191,7 @@
             </div>
             <div class="form-group">
                 <input type="submit" id="Idbtn" value="Create" class="btn btn-primary" onclick="return confirm('Bạn có chắc muốn Thêm sản phẩm này không ?');" />
-            </div>@**@
+            </div>
         </form>
     </div>
 </div>
@@ -197,8 +199,7 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-@section Scripts {
-    <script>
+    <script ty>
         $(document).ready(function () {
             var selectedImages = [];
             // Lắng nghe sự kiện click trên checkbox để chọn hoặc bỏ chọn
@@ -248,7 +249,9 @@
                 });
             });
         });
-
+        $(function () {
+            $('.ChatLieuDropDown').select2();
+        });
     </script>
-}
+
 

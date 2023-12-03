@@ -1,0 +1,58 @@
+﻿@model AppData.model.ComboChiTiet
+
+@{
+    ViewData["Title"] = "CreateComBoChiTiet";
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="CreateComBoChiTiet">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @*<div class="form-group">
+            <label asp-for="Id" class="control-label"></label>
+            <input asp-for="Id" class="form-control" />
+            <span asp-validation-for="Id" class="text-danger"></span>
+            </div>*@
+            <div class="form-group row">
+                <label class="control-label col-3">Tên Combo chi tiết</label>
+                <input asp-for="TenComboct" class="form-control col-9" />
+                <span asp-validation-for="TenComboct" class="text-danger"></span>
+            </div>
+            <div class="form-group row">
+                <label for="IdCombo" class="control-label col-3">ComBo</label>
+                <div class="col-9">
+                    @Html.DropDownList("IdCombo", ViewBag.Combo  as IEnumerable<SelectListItem>, "",new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.IdCombo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="IdSPCT" class="control-label col-3">Sản phẩm</label>
+                <div class="col-9">
+                    @Html.DropDownList("IdSPCT", ViewBag.SPCT as IEnumerable<SelectListItem>, "",new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.IdSPCT, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="control-label col-3">Số lượng sản phẩm/Combo</label>
+                <input asp-for="SoLuongSanPham" class="form-control col-9" />
+                <span asp-validation-for="SoLuongSanPham" class="text-danger"></span>
+            </div>
+            <div class="form-group row">
+                <label class="control-label col-3">Số lượng Combo</label>
+                <input asp-for="SoLuongCombo" class="form-control col-9" />
+                <span asp-validation-for="SoLuongCombo" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

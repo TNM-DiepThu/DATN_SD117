@@ -59,6 +59,11 @@ namespace AppAPI.Controllers
             return _spctViewModel.GetAll().OrderByDescending(c => c.MaSp);
         }
         [HttpGet("[action]")]
+        public IEnumerable<SanPhamChiTietViewModel> HienThiSanPhamVoiMotAnh()
+        {
+            return _spctViewModel.GetWithOneImage().OrderByDescending(c => c.MaSp);
+        }
+        [HttpGet("[action]")]
         public IEnumerable<SanPhamViewModel> GetAllSanPhamViewModel()
         {
             return _spViewModel.GetAllSanPham();

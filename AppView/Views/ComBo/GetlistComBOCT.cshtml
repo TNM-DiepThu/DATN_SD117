@@ -1,59 +1,153 @@
-﻿@model IEnumerable<AppData.model.ComboChiTiet>
+﻿@model IEnumerable<AppData.ViewModal.SanPhamChiTietVM.ComBoChiTietViewModel>
 
 @{
     ViewData["Title"] = "GetlistComBOCT";
 }
 
-<h1>GetlistComBOCT</h1>
+<script type="text/javascript" src="~/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
+<link rel="stylesheet" href="~/AdminLTE-3.2.0/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/AdminLTE-3.2.0/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/AdminLTE-3.2.0/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<!-- Theme style -->
+<link rel="stylesheet" href="~/Library/dist/css/adminlte.min.css">
+<!-- Bootstrap 4 -->
+<script type="text/javascript" src="~/AdminLTE-3.2.0/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- DataTables  & Plugins -->
+<script type="text/javascript" src="~/AdminLTE-3.2.0/plugins/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/AdminLTE-3.2.0/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript" src="~/AdminLTE-3.2.0/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="~/AdminLTE-3.2.0/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SoLuongSanPham)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.GiaBan)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdCombo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IdSPCT)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SoLuongSanPham)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.GiaBan)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdCombo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IdSPCT)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+
+<a asp-action="CreateComBoChiTiet" class="btn btn-default" style="margin-top:8px;"><i class="fas fa-plus-square" style="color: #005eff;"></i> Thêm</a>
+<div class="hold-transition sidebar-mini" style="margin-top:8px;">
+    <div class="wrapper">
+        <div >
+            <section class="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Danh sách Combo Chi Tiết</h3>
+                                </div>
+                                <div class="card-body">
+                                    <table id="example2" class="table table-bordered table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th style="display:none;">
+                                                    @Html.DisplayNameFor(model => model.Id)
+                                                </th>
+                                                <th>
+                                                    Tên ComBo Chi tiết
+                                                </th>
+                                                <th>
+                                                    Tên sản phẩm
+                                                </th>
+                                                <th style="width:150px">
+                                                    Ảnh sản phẩm
+                                                </th>
+                                                <th>
+                                                    Số lượng sản phẩm/Combo
+                                                </th>
+                                                <th>
+                                                    Số lượng Combo Chi tiết
+                                                </th>
+                                                <th>
+                                                    Gía gốc
+                                                </th>
+                                                <th>
+                                                    Tiền giảm giá
+                                                </th>
+                                                <th>
+                                                    Gía/Combo chi tiết
+                                                </th>
+                                                <th>
+                                                   Trạng thái
+                                                </th>
+                                                <th>Chọn</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <td style="display:none;">
+                                                        @Html.DisplayFor(modelItem => item.Id)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.TenComBo)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.TenSp)                                                       
+                                                    </td>         
+                                                    <td>
+                                                        <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = item.PathAnh })" alt="Image" width="50%" height="50%" />
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.SoluongSanpham)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.SoluongCombo)
+                                                    </td>
+                                                    <td>
+                                                        @item.GiaGoc.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))
+                                                    </td>
+                                                    <td>
+                                                        @item.TienGiamGia.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))
+                                                    </td>
+                                                    <td>
+                                                        @item.ThanhTienComBo.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))
+                                                    </td>
+                                                    <td>
+                                                        @if (item.TrangThai == 1)
+                                                        {
+                                                            <p>Hoạt động</p>
+                                                        }
+                                                        @if (item.TrangThai == 0)
+                                                        {
+                                                            <p>Không hoạt động</p>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        <a style="margin-right:5px" href="@Url.Action("DetailComboCT","ComBo",new { id = item.Id})">
+                                                            <i class="fas fa-eye" style="color: #005eff;"></i>
+                                                        </a>
+                                                        <a style="margin-right:5px" href="@Url.Action("UpdateComBoCT","ComBo",new { id = item.Id})">
+                                                            <i class="fas fa-edit" style="color: #005eff;"></i>
+                                                        </a>
+                                                        <a style="margin-right:5px" href="@Url.Action("DetailComboCT","ComBo",new { id = item.Id})" onclick="return confirm('Bạn có chắc muốn xóa Combo này?');">
+                                                            <i class="fas fa-trash" style="color: #ff0000;"></i>
+                                                        </a>
+                                                        <a style="margin-right:5px" href="@Url.Action("ThemComBoVaoGioHang","ComBo",new { Id = item.Id})">
+                                                            <i class="fas fa-cart-plus" style="color: #005eff;"></i>
+                                                        </a>  
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('#example2').DataTable({
+            "paging": true,
+            "lengthChange": false,
+            "searching": false,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "responsive": true,
+        });
+    });
+</script>
+
+

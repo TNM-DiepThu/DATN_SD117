@@ -37,6 +37,7 @@ namespace AppData.Serviece.ViewModeService
             _size = new SizeServiece();
             _danhmuc = new DanhMucServiece();
         }
+
         public List<SanPhamChiTietViewModel> GetAll()
         {
             //List<SanPhamChiTietViewModel> lstsp = new List<SanPhamChiTietViewModel>();
@@ -149,6 +150,48 @@ namespace AppData.Serviece.ViewModeService
 
             return products;
             //return spct.Where(c => c.TenSP.Contains(name)).ToList();
+        }
+
+        public List<SanPhamChiTietViewModel> GetWithOneImage()
+        {
+
+            var spct = from a in _spct.GetAll()
+                       join b in _sanpham.GetAll() on a.IDSP equals b.Id
+                       join c in _mausac.GetAll() on a.IdMauSac equals c.Id
+                       join d in _danhmuc.GetAll() on a.IdDanhMuc equals d.Id
+                       join e in _size.GetAll() on a.IdSize equals e.Id
+                       //join f in _anh.GetAll() on a.IdAnh equals f.Id
+                       join h in _chatlieu.GetAll() on a.IdChatLieu equals h.Id
+                       select new SanPhamChiTietViewModel
+                       {
+                           Id = a.Id,
+                           DanhMuc = d.TenDanhMuc,
+                           TenSP = b.TenSanPham,
+                           ChatLieu = h.TenChatLieu,
+                           MauSac = c.TenMauSac,
+                           Size = e.SizeName,
+                           //Anh = f.Connect,
+                           MaSp = a.MaSp,
+                           SoLuong = a.SoLuong,
+                           GiaBan = a.GiaBan,
+                           MoTa = a.MoTa,
+                           status = a.status,
+                       };
+
+            var products = spct.ToList();
+            foreach (var product in products)
+            {
+                // Lấy ảnh đầu tiên cho sản phẩm hoặc null nếu không có ảnh
+                var productImage = _context.anhSanPhams
+                    .Where(a => a.IdSanPhamChiTiet == product.Id)
+                    .Select(a => new Anh { Id = a.Idanh, Connect = a.Anh.Connect, status = a.Anh.status })
+                    .FirstOrDefault();
+
+                // Gán ảnh cho sản phẩm
+                product.Images = productImage != null ? new List<Anh> { productImage } : null;
+            }
+
+            return products;
         }
     }
 }

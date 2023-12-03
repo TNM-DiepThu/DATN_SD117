@@ -1,0 +1,98 @@
+﻿@model AppData.model.ComboChiTiet
+@{
+
+}
+<script type="text/javascript" src="~/library/plugins/jquery/jquery.min.js"></script>
+<div >
+    <div >
+        <form asp-action="UpdateComBoCT" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @* <div class="form-group">
+            <label asp-for="Id" class="control-label"></label>
+            <input asp-for="Id" class="form-control" />
+            <span asp-validation-for="Id" class="text-danger"></span>
+            </div>*@
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-3">
+                        <label asp-for="TenComboct" class="control-label"></label>
+                    </div>
+                    <div class="col-9">
+                        <input asp-for="TenComboct" class="form-control" />
+                        @*<span asp-validation-for="TenComboct" class="text-danger"></span>*@
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <label for="IdCombo" class="col-3">Loại Combo</label>
+                    <div class="col-9">
+                        @Html.DropDownList("IdCombo", ViewBag.Combo  as IEnumerable<SelectListItem>, "",new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.IdCombo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <label for="IdSPCT" class="col-3">Sản phẩm</label>
+                    <div class="col-9">
+                        @Html.DropDownList("IdSPCT", ViewBag.spct  as IEnumerable<SelectListItem>, "",new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.IdSPCT, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-3">
+                        <label> Sản phẩm/combo</label>
+                    </div>
+                    <div class="col-9">
+                        <input asp-for="SoLuongSanPham" class="form-control" />
+                        <span asp-validation-for="SoLuongSanPham" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-3">
+                        <label asp-for="SoLuongCombo" class="control-label"></label>
+                    </div>
+                    <div class="col-9">
+                        <input asp-for="SoLuongCombo" class="form-control" />
+                        <span asp-validation-for="SoLuongCombo" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="control-label col-3">
+                        <label>Trạng thái</label>
+                    </div>
+                    <div class="col-9">
+                        <select name="SelectedStatus" class="form-control" id="statusSelect">
+                            <option value="1">Còn hàng</option>
+                            <option value="0">Hết hàng</option>
+                        </select>
+                        <div>
+                            @Html.TextBoxFor(m => m.TrangThai, new { @class = "form-control", @id = "selectedStatus" })
+                        </div>
+                        <span asp-validation-for="TrangThai" style="display:none;" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts 
+{
+    <script type="text/javascript">
+        document.getElementById("statusSelect").addEventListener("change", function () {
+            var selectedValue = this.value; // Lấy giá trị được chọn trong select
+            document.getElementById("selectedStatus").value = selectedValue; // Đặt giá trị vào TextBoxFor
+        });
+    </script>
+}
+

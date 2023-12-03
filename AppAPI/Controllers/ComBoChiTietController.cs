@@ -18,6 +18,10 @@ namespace AppAPI.Controllers
         private readonly IComboService Cb;
         private readonly ComBoChiTietViewModelService _combochitietViewModel;
         private readonly IComboChiTietService CbChiTiet;
+        private readonly IGioHangCTService _gioHangCTService;
+        private readonly ISizeServiece _sizeService;
+        private readonly IMauSacServiece _mauSacServiece;
+        private readonly IGioHangService _giohangService;
         private readonly ISanPhamChiTietServiece sanPhamChiTietServiece;
         private readonly SanPhamChiTietViewModelService _spctmv;
         public ComBoChiTietController()
@@ -26,6 +30,10 @@ namespace AppAPI.Controllers
             CbChiTiet = new ComBoChiTietService();
             _combochitietViewModel = new ComBoChiTietViewModelService();
             _spctmv = new SanPhamChiTietViewModelService();
+            _sizeService = new SizeServiece();
+            _giohangService = new GioHangService();
+            _mauSacServiece = new MauSacServiece();
+            _gioHangCTService = new GioHangCTService();
             sanPhamChiTietServiece = new SanPhamChiTietServiece();
 
 
@@ -35,6 +43,11 @@ namespace AppAPI.Controllers
         public IEnumerable<ComboChiTiet> GetAllAsync()
         {
             return CbChiTiet.GetAll();
+        }
+        [HttpGet("[action]")]
+        public ComboChiTiet GetByID(Guid ID)
+        {
+            return CbChiTiet.GetById(ID);
         }
         [HttpPost("[action]")]
         public string Create(int soluongsanpham, string tencombo, Guid IDcombo, Guid IDCTSP, int soluongcombo)
@@ -56,6 +69,10 @@ namespace AppAPI.Controllers
                 {
                     return "Sản phẩm đã hết.";
                 }
+                else if (CbChiTiet.GetAll().Any(c => c.IdCombo == IDcombo && c.IdSPCT == IDCTSP))
+                {
+                    return "Combo đã tồm tại" + CbChiTiet.GetAll().FirstOrDefault(c => c.IdCombo == IDcombo && c.IdSPCT == IDCTSP).TenComboct;
+                }
                 else
                 {
                     ComboChiTiet comboct = new ComboChiTiet()
@@ -63,16 +80,17 @@ namespace AppAPI.Controllers
                         Id = Guid.NewGuid(),
                         SoLuongSanPham = soluongsanpham,
                         SoLuongCombo = soluongcombo,
-                        TenCombo = tencombo,
+                        TenComboct = tencombo.Substring(0, Math.Min(tencombo.Length, 1000)),
                         GiaGoc = (soluongsanpham * spct.GiaBan),
                         TienGiamGia = (soluongsanpham * spct.GiaBan * combo.PhanTramGiam / 100),
                         GiaBan = (soluongsanpham * spct.GiaBan) - (soluongsanpham * spct.GiaBan * combo.PhanTramGiam / 100),
                         IdCombo = combo.Id,
                         IdSPCT = spct.Id,
+                        TrangThai = 1
                     };
                     CbChiTiet.Add(comboct);
 
-                    spct.SoLuong = spct.SoLuong - comboct.SoLuongSanPham;
+                    spct.SoLuong = spct.SoLuong - (comboct.SoLuongSanPham * comboct.SoLuongCombo);
                     sanPhamChiTietServiece.Edit(spct.Id, spct);
                     return "Thêm thành công";
                 }
@@ -81,18 +99,19 @@ namespace AppAPI.Controllers
             {
                 return "Lỗi. Mời bạn thao tác lại.";
             }
-
         }
         [HttpDelete("[action]")]
 
         public bool DeleteAsync(Guid Id)
         {
-            return CbChiTiet.Del(Id);
+            var combo = _combochitietViewModel.GetAllComBoChiTiet().FirstOrDefault(c => c.Id == Id);
+            combo.TrangThai = 0;
+            return CbChiTiet.Del(combo.Id);
         }
 
-        [HttpPut("[action]")]
+        [HttpPost("[action]")]
 
-        public string UpdateAsync(Guid id, int soluongsanpham, string tencombo, Guid IDcombo, Guid IDCTSP, int soluongcombo)
+        public string UpdateCombo(Guid id, int soluongsanpham, string tencombo, Guid IDcombo, Guid IDCTSP, int soluongcombo, int trangthai)
         {
             var spct = sanPhamChiTietServiece.GetAll().FirstOrDefault(c => c.Id == IDCTSP);
 
@@ -114,18 +133,22 @@ namespace AppAPI.Controllers
                 else
                 {
                     var comboct = CbChiTiet.GetAll().FirstOrDefault(c => c.Id == id);
+
+                    spct.SoLuong = (comboct.SoLuongSanPham * comboct.SoLuongCombo) + spct.SoLuong; // lấy lại só lượng khi update
+
                     comboct.SoLuongSanPham = soluongsanpham;
                     comboct.SoLuongCombo = soluongcombo;
-                    comboct.TenCombo = tencombo;
+                    comboct.TenComboct = tencombo;
                     comboct.GiaGoc = (soluongsanpham * spct.GiaBan);
                     comboct.TienGiamGia = (soluongsanpham * spct.GiaBan * combo.PhanTramGiam / 100);
                     comboct.GiaBan = (soluongsanpham * spct.GiaBan) - (soluongsanpham * spct.GiaBan * combo.PhanTramGiam / 100);
                     comboct.IdCombo = combo.Id;
                     comboct.IdSPCT = spct.Id;
+                    comboct.TrangThai = trangthai;
 
                     CbChiTiet.Edit(comboct.Id, comboct);
 
-                    spct.SoLuong = spct.SoLuong - comboct.SoLuongSanPham;
+                    spct.SoLuong = spct.SoLuong - (comboct.SoLuongSanPham * comboct.SoLuongCombo);
                     sanPhamChiTietServiece.Edit(spct.Id, spct);
                     return "Sửa thành công";
                 }
@@ -144,6 +167,73 @@ namespace AppAPI.Controllers
         public List<ComBoChiTietViewModel> GetallFullComboCtByName(string name)
         {
             return _combochitietViewModel.GetAllComBoChiTietByName(name);
+        }
+        [HttpGet("[action]")]
+        public ComBoChiTietViewModel GetallFullComboCtByID(Guid id)
+        {
+            return _combochitietViewModel.GetAllComBoChiTietByID(id);
+        }
+        [HttpPost("[action]")]
+        public string ThemComBoVaoGioHang(Guid idnguoidung, Guid IDComboCt, int SoLuong)
+        {
+            if (_giohangService.GetAll().Any(c => c.IdNguoiDung == idnguoidung) == false)
+            {
+                _giohangService.Add(idnguoidung);
+            }
+            var checkCombo = _gioHangCTService.GetAllGioHangTheoNguoiDungDangNhap(idnguoidung).FirstOrDefault(c => c.IdComboChiTiet == IDComboCt);
+            if (checkCombo == null)
+            {
+                GioHangChiTiet gioHangChiTiet = new GioHangChiTiet()
+                {
+                    Id = Guid.NewGuid(),
+                    IdComboChiTiet = IDComboCt,
+                    IdSanPhamChiTiet = null,
+                    IdGioHang = _giohangService.GetAll().FirstOrDefault(c => c.IdNguoiDung == idnguoidung).Id,
+                    SoLuong = SoLuong,
+                    DonGia = _combochitietViewModel.GetAllComBoChiTiet().FirstOrDefault(c => c.Id == IDComboCt).ThanhTienComBo,
+                };
+                _gioHangCTService.Add(gioHangChiTiet);
+                return "Thêm mới thành công";
+            }
+            else
+            {
+                checkCombo.SoLuong = SoLuong;
+                _gioHangCTService.Edit(checkCombo.Id, checkCombo);
+                return "Tăng số lượng thành công";
+            }
+
+        }
+        [HttpGet("[action]")]
+        public List<MauSac> GetAllMauSacTheoTenSanPham(Guid idcomboct)
+        {
+            List<MauSac> lstmau = new List<MauSac>();
+            var combo = _combochitietViewModel.GetAllComBoChiTietByID(idcomboct);
+            var lstcomboct = _combochitietViewModel.GetAllComBoChiTiet().Where(c => c.TenComBo == combo.TenComBo).Distinct().Select(c => c.MauSac).ToList();
+            if(lstcomboct.Count > 0)
+            {
+                foreach(var c in lstcomboct)
+                {
+                    var mausac = _mauSacServiece.GetAll().FirstOrDefault(c => c.TenMauSac == c.TenMauSac);
+                    lstmau.Add(mausac);
+                }
+            }
+            return lstmau.ToList();
+        }
+        [HttpGet("[action]")]
+        public List<Size> GetAllSizeTheoTenSanPham(Guid idcomboct)
+        {
+            List<Size> lstsize = new List<Size>();
+            var combo = _combochitietViewModel.GetAllComBoChiTietByID(idcomboct);
+            var lstcomboct = _combochitietViewModel.GetAllComBoChiTiet().Where(c => c.TenComBo == combo.TenComBo).Distinct().Select(c => c.Size).ToList();
+            if (lstcomboct.Count > 0)
+            {
+                foreach (var c in lstcomboct)
+                {
+                    var size = _sizeService.GetAll().FirstOrDefault(c => c.SizeName == c.SizeName);
+                    lstsize.Add(size);
+                }
+            }
+            return lstsize.ToList();
         }
     }
 }

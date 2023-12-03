@@ -21,18 +21,8 @@ selectImageBtn.addEventListener('click', function () {
     }
 });
 
-
 $(document).ready(function () {
     $("#myDropdown").select2();
-});
-$(function () {
-    //Initialize Select2 Elements
-    $('.select2').select2()
-
-    //Initialize Select2 Elements
-    $('.select2bs4').select2({
-        theme: 'bootstrap4'
-    })
 });
 $(document).ready(function () {
     $("#colorNameTextBox").change(function () {
@@ -56,5 +46,26 @@ $(document).ready(function () {
     });
 });
 
+$(document).ready(function () {
+    // Assuming districts is a JavaScript array containing your data
+    var districts = @Html.Raw(Json.Serialize(ViewBag.thongtinhuyen));
 
+    // Get the select element
+    var districtDropdown = $("#districtDropdown");
+
+    // Clear existing options
+    districtDropdown.empty();
+
+    // Add default option
+    districtDropdown.append("<option value=''>Chọn Quận huyện: </option>");
+
+    // Populate dropdown with data from districts
+    $.each(districts, function (index, district) {
+        var option = $("<option>")
+            .attr("value", district.ID)
+            .attr("data-url", "@Url.Action("ThanhToan", "GioHang", new { IdQuanHuyen = "district.ID" })")
+            .text(district.Name);
+        districtDropdown.append(option);
+    });
+});
 // Write your JavaScript code.

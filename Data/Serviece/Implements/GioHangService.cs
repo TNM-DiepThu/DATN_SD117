@@ -24,13 +24,12 @@ namespace AppData.Serviece.Implements
         {
             try
             {
-
-                GioHang GH = new GioHang()
-                {
-                    Id = Guid.NewGuid(),
-                    GhiChu = "Giỏ hàng của" + _context.Users.FirstOrDefault(c => c.Id == idnguoidung).UserName,
-                    IdNguoiDung = _context.Users.FirstOrDefault(c => c.Id == idnguoidung).Id,
-                };
+                GioHang GH = new GioHang();
+                //{
+                GH.Id = Guid.NewGuid();
+                GH.GhiChu = "Giỏ hàng của" + _context.Users.FirstOrDefault(c => c.Id == idnguoidung).UserName;
+                GH.IdNguoiDung = _context.Users.FirstOrDefault(c => c.Id == idnguoidung).Id;
+                //};
                 _context.gioHangs.Add(GH);
                 _context.SaveChanges();
                 return true;

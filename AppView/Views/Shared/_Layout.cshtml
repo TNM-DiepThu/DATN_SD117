@@ -200,9 +200,9 @@
                         </li>
                         <li class="nav-item">
                             <a asp-area="" asp-controller="" asp-action="" class="nav-link">
-                                <i class="fab fa-creative-commons-by"></i>
+                                <i class="fas fa-box"></i>
                                 <p>
-                                    Combo
+                                    Quản lý Combo
                                     <i class="fas fa-angle-left right"></i>
                                 </p>
                             </a>
@@ -210,7 +210,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link " asp-area="" asp-controller="ComBo" asp-action="GetlistComBO">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Quản lý ComBo</p>
+                                        <p>ComBo</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
@@ -221,34 +221,56 @@
                                 </li>
                             </ul>
                         </li>
-
                         <li class="nav-item">
-                            <a asp-area="" asp-controller="NguoiDung" asp-action="GetAllNV" class="nav-link">
-                                <i class="fas fa-user-tie"></i>
-                                <p>
-                                    Quản lý nhân viên
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a asp-area="" asp-controller="HoaDon" asp-action="GetAllHD" class="nav-link">
-                                <i class="fas fa-file-invoice"></i>
-                                <p>
-                                    Quản lý hóa đơn
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a asp-area="" asp-controller="NguoiDung" asp-action="NguoiDungView" class="nav-link">
+                            <a asp-area="" asp-controller="" asp-action="" class="nav-link">
                                 <i class="fas fa-users"></i>
                                 <p>
-                                    Quản lý khách hàng
+                                    Quản lý người dùng
+                                    <i class="fas fa-angle-left right"></i>
                                 </p>
                             </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a class="nav-link " asp-area="" asp-controller="NguoiDung" asp-action="GetAllNV">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Nhân viên</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " asp-area="" asp-controller="NguoiDung" asp-action="NguoiDungView">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Khách hàng</p>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                         <li class="nav-item">
+                            <a asp-area="" asp-controller="" asp-action="" class="nav-link">
+                                <i class="fas fa-money-bill-wave"></i>
+                                <p>
+                                    Quản lý giao dịch
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a class="nav-link " asp-area="" asp-controller="HoaDon" asp-action="GetAllHD">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Hóa đơn</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link " asp-area="" asp-controller="BanHangTaiQuay" asp-action="BanHangTaiQuay">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Bán tại quầy</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                       
+                        <li class="nav-item">
                             <a asp-area="" asp-controller="Voucher" asp-action="GetAllVoucher" class="nav-link">
-                                <i class="nav-icon fas fa-columns"></i>
+                                <i class="fas fa-gifts"></i>
                                 <p>
                                     Quản lý Voucher
                                 </p>
@@ -256,7 +278,7 @@
                         </li>
                         <li class="nav-item">
                             <a asp-area="" asp-controller="" asp-action="" class="nav-link">
-                                <i class="nav-icon fas fa-columns"></i>
+                                <i class="fas fa-chart-bar"></i>
                                 <p>
                                     Thống kê
                                 </p>

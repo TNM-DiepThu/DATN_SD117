@@ -15,12 +15,14 @@ namespace AppAPI.Controllers
     public class HoaDonController : ControllerBase
     {
         private readonly IHoaDonService _hoaDonService;
+        private readonly IHoaDonCTService _hdctservice;
         private MyDbContext _dbContext = new MyDbContext();
 
 
         public HoaDonController()
         {
             _hoaDonService = new HoaDonService();
+            _hdctservice = new HoaDonCTService();
         }
         [HttpGet("GetByID")]
         public HoaDon GetByID(Guid Id)
@@ -39,10 +41,48 @@ namespace AppAPI.Controllers
         {
             return _hoaDonService.GetAllByIDNguoiDung(id).OrderByDescending(c => c.NgayTao);
         }
+        [HttpGet("[action]")]
+        public IEnumerable<HoaDon> GetAllHoaDonCho()
+        {
+            return _hoaDonService.GetAll().Where(c => c.status == 7).ToList();
+        }
+        [HttpPost("[action]")]
+        public bool TaoHoaDonCho(HoaDon hoaDon)
+        {
+            // tạo hóa đơn
+            HoaDon hd = new HoaDon();
+            hd.Id = Guid.NewGuid();
+            hd.IdNguoiDunh = hoaDon.IdNguoiDunh;
+            hd.IdVoucherDetail = hoaDon.IdVoucherDetail;
+            hd.IDHTTT = hoaDon.IDHTTT;
+            hd.MaHD = Convert.ToString(hd.Id).Substring(0, 8).ToUpper();
+            hd.NgayTao = DateTime.Now;
+            hd.SoLuong = 0;
+            hd.TongTien = 0;
+            hd.TienVanChuyen = 0;
+            hd.NgayGiao = hoaDon.NgayGiao;
+            hd.NgayNhan = hoaDon.NgayNhan;
+            hd.NguoiNhan = hoaDon.NguoiNhan;
+            hd.SDT = hoaDon.SDT;
+            hd.QuanHuyen = hoaDon.QuanHuyen;
+            hd.Tinh = hoaDon.Tinh;
+            hd.DiaChi = hoaDon.DiaChi;
+            hd.NgayThanhToan = hoaDon.NgayThanhToan;
+            hd.GhiChu = hoaDon.GhiChu;
+            hd.status = 7;
+            _hoaDonService.AddItem(hd);
+
+            //tạo hóa đơn chi tiết
+            HoaDonChiTiet hdct = new HoaDonChiTiet();
+
+            hdct.Id = Guid.NewGuid();
+            hdct.IDHD = hd.Id;
+            return _hdctservice.AddItem(hdct);
+        }
 
         // POST api/<HoaDonController>
         [HttpPost("[action]")]
-        public bool CreateHoaDon(DateTime ngaygiao, DateTime ngaynhan, string nguoinhan, string sdt, string quanhuyen, string tinh, string diachi, DateTime ngaythanhtoan, string? ghichu,  Guid idnguoidung, Guid? idvoucherdetail, Guid idhttt)
+        public bool CreateHoaDon(DateTime ngaygiao, DateTime ngaynhan, string nguoinhan, string sdt, string quanhuyen, string tinh, string diachi, DateTime ngaythanhtoan, string? ghichu, Guid idnguoidung, Guid? idvoucherdetail, Guid idhttt)
         {
             HoaDon hd = new HoaDon();
             hd.Id = Guid.NewGuid();
@@ -69,10 +109,10 @@ namespace AppAPI.Controllers
 
         // PUT api/<HoaDonController>/5
         [HttpPut("[action]")]
-        public bool UpdateHoaDon( int sl , decimal tienvanchuyen, decimal tongtien , Guid id,  DateTime ngaygiao, DateTime ngaynhan, string nguoinhan, string sdt, string quanhuyen, string tinh, string diachi, DateTime ngaythanhtoan, string? ghichu, int trangthai,  Guid? idvoucherdetail, Guid idhttt)
+        public bool UpdateHoaDon(int sl, decimal tienvanchuyen, decimal tongtien, Guid id, DateTime ngaygiao, DateTime ngaynhan, string nguoinhan, string sdt, string quanhuyen, string tinh, string diachi, DateTime ngaythanhtoan, string? ghichu, int trangthai, Guid? idvoucherdetail, Guid idhttt)
         {
             var hd = _hoaDonService.GetAll().First(c => c.Id == id);
-          
+
             hd.NgayTao = DateTime.Now;
             hd.SoLuong = sl;
             hd.TongTien = tongtien;
@@ -122,7 +162,7 @@ namespace AppAPI.Controllers
             return _hoaDonService.UpdateDaThanhToan(idhb);
         }
         [HttpPut("[action]")]
-        public bool UpdateHuyHang (Guid idhb )
+        public bool UpdateHuyHang(Guid idhb)
         {
             return _hoaDonService.UpdateHuy(idhb);
         }

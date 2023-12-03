@@ -19,21 +19,19 @@ namespace AppData.Serviece.Implements
             comBoSer = new ComboService();
         }
 
-        public bool Add(ComboChiTiet p)
+        public string Add(ComboChiTiet p)
         {
             try
             {
                 _context.comboChiTiets.Add(p);
                 _context.SaveChanges();
-                return true;
+                return "Thêm thành công";
             }
             catch (Exception)
             {
-                return false;
-
+                return "Thêm thất bại";
             }
         }
-
         public bool Del(Guid id)
         {
             try
@@ -62,6 +60,11 @@ namespace AppData.Serviece.Implements
         public List<ComboChiTiet> GetAll()
         {
             return _context.comboChiTiets.ToList();
+        }
+
+        public ComboChiTiet GetById(Guid id)
+        {
+            return _context.comboChiTiets.FirstOrDefault(c => c.Id == id);
         }
     }
 }

@@ -45,19 +45,17 @@ namespace AppAPI.Controllers
 
             return comBoSer.Add(combo);
         }
-        [HttpDelete("Delete/{Id}")]
-
-        public bool DeleteAsync(Guid Id)
+        [HttpPut("[action]")]
+        public bool DeleteComBo(Guid Id)
         {
             var result = comBoSer.Del(Id);
             return result;
         }
 
-        [HttpPut("Update/{id}")]
-
+        [HttpPost("Update/{id}")]
         public bool UpdateAsync(Guid id, string Ten, string mota, decimal phantram)
         {
-            var cb = _dbContext.combos.FirstOrDefault(p => p.Id == id);
+            var cb = comBoSer.GetAll().FirstOrDefault(p => p.Id == id);
             cb.TenCombo = Ten;
             cb.MoTaCombo = mota;
             cb.PhanTramGiam = phantram;

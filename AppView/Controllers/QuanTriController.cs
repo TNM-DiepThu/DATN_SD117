@@ -42,6 +42,7 @@ namespace AppView.Controllers
         HttpClient _client = new HttpClient();
         private readonly MyDbContext _context;
         private readonly ISanPhamServiece _sanphamservice;
+        private readonly IGioHangService _giohangservice;
         private readonly ISanPhamChiTietServiece _sanphamchitietservice;
         private readonly IDanhMucServiece _danhmucservice;
         private readonly IMauSacServiece _mausacservice;
@@ -65,6 +66,7 @@ namespace AppView.Controllers
             _sanphamchitietservice = new SanPhamChiTietServiece();
             _mausacservice = new MauSacServiece();
             _ianhsanpham = new AnhSanPhamService();
+            _giohangservice = new GioHangService();
             sizeServiece = new SizeServiece();
             sanphanviewmodel = new SanPhamViewModelService();
             _chatlieuservice = new ChatLieuServiece();
@@ -705,9 +707,6 @@ namespace AppView.Controllers
             }
             else if (name == null || name == "")
             {
-
-
-
                 var products = list;
                 var model = new SanPhamChiTietViewModel
                 {
@@ -731,13 +730,13 @@ namespace AppView.Controllers
                 // return View(listbyname);
             }
         }
-       
+
         [HttpPost]
         public void IdSize([FromBody] string Size)
         {
-            if(Size == null || Size == "")
+            if (Size == null || Size == "")
             {
-                return ;
+                return;
             }
             else
             {
@@ -745,24 +744,25 @@ namespace AppView.Controllers
                 var jsonsize = JsonConvert.SerializeObject(idsize);
                 HttpContext.Session.SetString("Size", jsonsize);
             }
-        } 
+        }
 
         [HttpPost]
         public void IDmausac([FromBody] string color)
         {
-            if(color == null || color == "")
+            if (color == null || color == "")
             {
-                return ;
-            } else
+                return;
+            }
+            else
             {
                 string idmau = _mausacservice.GetAll().FirstOrDefault(c => c.TenMauSac == color).Id.ToString();
                 var jsoncolor = JsonConvert.SerializeObject(idmau);
                 HttpContext.Session.SetString("Color", jsoncolor);
             }
-            
+
         }
         [HttpGet]
-        public ActionResult GellByIDSanPhamCT(Guid id, int quantity , Guid idsize , Guid idcolor)
+        public ActionResult GellByIDSanPhamCT(Guid id, int quantity, Guid idsize, Guid idcolor)
         {
 
             //idsize = Guid.Parse( HttpContext.Session.GetString("Size")) ;
@@ -897,16 +897,23 @@ namespace AppView.Controllers
                     //var masp = _sanphamchitietservice.GetAll()[_sanphamchitietservice.GetAll().Count() - 1].MaSp;
 
                     string anhSanPhamsJson = HttpContext.Session.GetString("anhSanPhams");
-                    List<Anh> anhSanPham1s = JsonConvert.DeserializeObject<List<Anh>>(anhSanPhamsJson);
-                    AnhSanPham anhSanPham = new AnhSanPham();
-                    foreach (var idanh in anhSanPham1s)
+                    if (anhSanPhamsJson == null)
                     {
-                        anhSanPham.IdSanPhamChiTiet = _sanphamchitietservice.GetAll().OrderByDescending(c => c.MaSp).First().Id;
-                        anhSanPham.Idanh = idanh.Id;
-                        _ianhsanpham.AddAnhChoSanPham(anhSanPham);
+                        return RedirectToAction("GellAllSanPhamCT");
                     }
+                    else
+                    {
+                        List<Anh> anhSanPham1s = JsonConvert.DeserializeObject<List<Anh>>(anhSanPhamsJson);
+                        AnhSanPham anhSanPham = new AnhSanPham();
+                        foreach (var idanh in anhSanPham1s)
+                        {
+                            anhSanPham.IdSanPhamChiTiet = _sanphamchitietservice.GetAll().OrderByDescending(c => c.MaSp).First().Id;
+                            anhSanPham.Idanh = idanh.Id;
+                            _ianhsanpham.AddAnhChoSanPham(anhSanPham);
+                        }
 
-                    return RedirectToAction("GellAllSanPhamCT");
+                        return RedirectToAction("GellAllSanPhamCT");
+                    }
                 }
             }
             else
@@ -1067,7 +1074,17 @@ namespace AppView.Controllers
             if (email != null)
             {
                 var user = _context.Users.FirstOrDefault(c => c.Email == email);
+                var idgh = _giohangservice.GetAll().FirstOrDefault(c => c.IdNguoiDung == user.Id);
+                if (idgh == null)
+                {
+                    GioHang gioHang = new GioHang();
+                    string urlapigiohang = $"https://localhost:7214/api/GioHang/Create?idnguoidung={user.Id}";
+                    var obj = JsonConvert.SerializeObject(gioHang);
+                    StringContent stringContent = new StringContent(obj, Encoding.UTF8, "application/json");
+                    HttpResponseMessage httpResponseMessage = _client.PostAsync(urlapigiohang, stringContent).Result;
+                }
 
+                var idgh1 = idgh.Id;
                 var spct = _spctViewModel.GetAll().FirstOrDefault(C => C.TenSP == spctvm.TenSP && C.MauSac == spctvm.MauSac && C.Size == spctvm.Size);
                 if (spct == null)
                 {
@@ -1084,7 +1101,7 @@ namespace AppView.Controllers
                     string url = $"https://localhost:7214/api/SanPhamChiTiet/ThemSPCTVaoGioHang?idnguoidung={user.Id}&idSP={IDSP}&IdMau={IDMau}&IdSize={IDSize}&soluong={soluong}";
                     GioHangChiTiet ghct = new GioHangChiTiet()
                     {
-                        IdGioHang = new Guid("911a9476-05be-4a4f-8325-2ea61766e2a0"),
+                        IdGioHang = idgh1,
                         IdSanPhamChiTiet = spct.Id,
                         DonGia = spct.GiaBan,
                         IdComboChiTiet = null,
@@ -1165,7 +1182,7 @@ namespace AppView.Controllers
                                 ChatLieu = worksheet.Cells[row, 3].Value.ToString(),
                                 MauSac = worksheet.Cells[row, 4].Value.ToString(),
                                 Size = worksheet.Cells[row, 5].Value.ToString(),
-                                
+
                                 SoLuong = Convert.ToInt32(worksheet.Cells[row, 6].Value),
                                 GiaBan = Convert.ToDecimal(worksheet.Cells[row, 7].Value),
                                 MoTa = worksheet.Cells[row, 8].Value.ToString()
@@ -1187,12 +1204,13 @@ namespace AppView.Controllers
                                     status = 1,
                                 };
                                 lstspct.Add(spct);
-                            } catch
+                            }
+                            catch
                             {
                                 TempData["ErrorMessage"] = "Dữ liệu đầu vào không có trong cơ sở dữ liệu.";
                                 return RedirectToAction("CreateSanPhamCT", "QuanTri");
                             }
-                           
+
                         }
 
                         string productListJson = JsonConvert.SerializeObject(products);

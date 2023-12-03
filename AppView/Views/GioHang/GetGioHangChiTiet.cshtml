@@ -72,127 +72,139 @@
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <div class="container">
         <div class="row">
-            @foreach (var item in Model)
-            {
-                double Total = 0;
-                Total = (double)item.Soluong * (double)item.GiaSanPham;
+            <div class="col-xl-8">
+                @foreach (var item in Model)
+                {
+                    double Total = 0;
+                    Total = (double)item.Soluong * (double)item.GiaSanPham;
 
-                <div class="col-xl-8">
-                    <div class="card border shadow-none">
-                        <div class="card-body">
-                            <div class="d-flex align-items-start border-bottom pb-3">
-                                <div class="me-4">
-                                    <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = item.pathImage })" alt="Image" class="avatar-lg rounded" />
-                                </div>
-                                <div class="flex-grow-1 align-self-center overflow-hidden">
-                                    <div>
-                                        <h5 class="text-truncate font-size-18"><a href="#" class="text-dark">@item.TenSanPham</a></h5>
-                                        <p class="text-muted mb-0">
-                                            <i class="bx bxs-star text-warning"></i>
-                                            <i class="bx bxs-star text-warning"></i>
-                                            <i class="bx bxs-star text-warning"></i>
-                                            <i class="bx bxs-star text-warning"></i>
-                                            <i class="bx bxs-star-half text-warning"></i>
-                                        </p>
-                                        <p class="mb-0 mt-1">Color : <span class="fw-medium">@item.Mausac</span></p>
-                                        <p class="mb-0 mt-1">Size : <span class="fw-medium">@item.Size</span></p>
+                    <div>
+                        <div class="card border shadow-none">
+                            <div class="card-body">
+                                <div class="d-flex align-items-start border-bottom pb-3">
+                                    <div class="me-4">
+                                        <img src="@Url.Action("DisplayImage", "QuanTri", new { imagePath = item.pathImage })" alt="Image" class="avatar-lg rounded" />
                                     </div>
-                                </div>
-                                <div class="flex-shrink-0 ms-2">
-                                    <ul class="list-inline mb-0 font-size-16">
-                                        <li class="list-inline-item">
-                                            <a href="@Url.Action("XoaSanPhamKhoiGioHang","GioHang",new { id = item.ID})" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?');" class="text-muted px-1">
-                                                <i class="fas fa-trash" style="color: #ff0000;"></i>
-                                            </a>
-                                        </li>
-                                        <li class="list-inline-item">
-                                            <a href="#" class="text-muted px-1">
-                                                <i class="mdi mdi-heart-outline"></i>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <div class="mt-3">
-                                            <p class="text-muted mb-2">Giá sản phẩm</p>
-                                            <h5 class="mb-0 mt-2"><span class="text-muted me-2"><del class="font-size-16 fw-normal">@item.TienGiamGia.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</del></span>@item.GiaSanPham.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</h5>
+                                    <div class="flex-grow-1 align-self-center overflow-hidden">
+                                        <div>
+                                            <h5 class="text-truncate font-size-18"><a href="#" class="text-dark">@item.TenSanPham</a></h5>
+                                            <p class="text-muted mb-0">
+                                                <i class="bx bxs-star text-warning"></i>
+                                                <i class="bx bxs-star text-warning"></i>
+                                                <i class="bx bxs-star text-warning"></i>
+                                                <i class="bx bxs-star text-warning"></i>
+                                                <i class="bx bxs-star-half text-warning"></i>
+                                            </p>
+                                            <p class="mb-0 mt-1">Color : <span class="fw-medium">@item.Mausac</span></p>
+                                            <p class="mb-0 mt-1">Size : <span class="fw-medium">@item.Size</span></p>
                                         </div>
                                     </div>
-                                    <div class="col-md-5">
-                                        <div class="mt-3">
-                                            <p class="text-muted mb-2">Số lượng</p>
-                                            <div class="d-inline-flex">
-                                                <a class="btn" href="@Url.Action("DecreaseButton","GioHang",new { id = item.ID , soluong =item.Soluong})" id="decreaseButton"><i class="fas fa-minus-circle" style="color: #538ae9;"></i></a>
-                                                <input type="number" value="@item.Soluong" min="0">
-                                                <a class="btn" id="increaseButton" href="@Url.Action("IncreaseButton","GioHang",new { id = item.ID , soluong =item.Soluong})"><i class="fas fa-plus-circle" style="color: #538ae9;"></i></a>
+                                    <div class="flex-shrink-0 ms-2">
+                                        <ul class="list-inline mb-0 font-size-16">
+                                            <li class="list-inline-item">
+                                                <a href="@Url.Action("XoaSanPhamKhoiGioHang","GioHang",new { id = item.ID})" onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?');" class="text-muted px-1">
+                                                    <i class="fas fa-trash" style="color: #ff0000;"></i>
+                                                </a>
+                                            </li>
+                                            <li class="list-inline-item">
+                                                <a href="#" class="text-muted px-1">
+                                                    <i class="mdi mdi-heart-outline"></i>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <div class="mt-3">
+                                                <p class="text-muted mb-2">Giá sản phẩm</p>
+                                                <h5 class="mb-0 mt-2"><span class="text-muted me-2"><del class="font-size-16 fw-normal">@item.TienGiamGia.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</del></span>@item.GiaSanPham.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</h5>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mt-3">
+                                                <p class="text-muted mb-2" style="margin-left:40px;">Số lượng</p>
+                                                <div class="d-inline-flex">
+                                                    <a class="btn" href="@Url.Action("DecreaseButton","GioHang",new { id = item.ID , soluong =item.Soluong})" id="decreaseButton"><i class="fas fa-minus-circle" style="color: #538ae9;"></i></a>
+                                                    <input type="number" value="@item.Soluong" min="0" style="width:120px;">
+                                                    <a class="btn" id="increaseButton" href="@Url.Action("IncreaseButton","GioHang",new { id = item.ID , soluong =item.Soluong})"><i class="fas fa-plus-circle" style="color: #538ae9;"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mt-3">
+                                                <a class="btn btn-primary" style="margin-top:32px;">Cập nhật</a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mt-3">
+                                                <p class="text-muted mb-2">Total</p>
+                                                <h5>@Total.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</h5>
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
-                                        <div class="mt-3">
-                                            <p class="text-muted mb-2">Total</p>
-                                            <h5>@Total.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</h5>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            }
-            @{
-                double ThanhTien = Model.Sum(m => (double)m.Soluong * (double)m.GiaSanPham) - Model.Sum(m => (double)m.TienGiamGia);
-            }
+                }
+            </div>
             <div class="col-xl-4">
-                <div class="mt-5 mt-lg-0">
-                    <div class="card border shadow-none">
-                        <div class="card-header bg-transparent border-bottom py-3 px-4">
-                            <h5 class="font-size-16 mb-0">Tính tiền <span class="float-end">#MN0124</span></h5>
-                        </div>
-                        <div class="card-body p-4 pt-2">
-                            <div class="table-responsive">
-                                <table class="table mb-0">
-                                    <tbody>
-                                        <tr>
-                                            <td>Tổng tiền :</td>
-                                            <td class="text-end">@Model.Sum(m => (double) m.Soluong * (double) m.GiaSanPham).ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Tiền giảm giá : </td>
-                                            <td class="text-end">- @Model.Sum(m => (double) m.TienGiamGia).ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</td>
-                                        </tr>
-                                        <tr class="bg-light">
-                                            <th>Thành tiền :</th>
-                                            <td class="text-end">
-                                                <span class="fw-bold">
-                                            <td class="text-end">@ThanhTien.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</td>
-                                            </span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                @{
+                    double ThanhTien = Model.Sum(m => (double)m.Soluong * (double)m.GiaSanPham) - Model.Sum(m => (double)m.TienGiamGia);
+                }
+                <div>
+                    <div class="mt-5 mt-lg-0">
+                        <div class="card border shadow-none">
+                            <div class="card-header bg-transparent border-bottom py-3 px-4">
+                                <h5 class="font-size-16 mb-0">Tính tiền <span class="float-end">#MN0124</span></h5>
+                            </div>
+                            <div class="card-body p-4 pt-2">
+                                <div class="table-responsive">
+                                    <table class="table mb-0">
+                                        <tbody>
+                                            <tr>
+                                                <td>Tổng tiền :</td>
+                                                <td class="text-end">@Model.Sum(m => (double) m.Soluong * (double) m.GiaSanPham).ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Tiền giảm giá : </td>
+                                                <td class="text-end">- @Model.Sum(m => (double) m.TienGiamGia * m.Soluong).ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</td>
+                                            </tr>
+                                            <tr class="bg-light">
+                                                <th>Thành tiền :</th>
+                                                <td class="text-end">
+                                                    <span class="fw-bold">
+                                                <td class="text-end">@ThanhTien.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</td>
+                                                </span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="row my-4">
-                    <div class="col-sm-6">
-                        <a asp-controller="QuanTri" asp-action="GellAllSanPhamCT" class="btn btn-link text-muted">
-                            <i class="mdi mdi-arrow-left me-1"></i> Continue Shopping
-                        </a>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="text-sm-end mt-2 mt-sm-0">
-                            <a href="~/GioHang/ThanhToan" class="btn btn-success">
-                                <i class="mdi mdi-cart-outline me-1"></i> Checkout
+                    <div class="row my-4">
+                        <div class="col-sm-6">
+                            <a asp-controller="QuanTri" asp-action="GellAllSanPhamCT" class="btn btn-link text-muted">
+                                <i class="mdi mdi-arrow-left me-1"></i> Continue Shopping
                             </a>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="text-sm-end mt-2 mt-sm-0">
+                                <a href="~/GioHang/ThanhToan" class="btn btn-success">
+                                    <i class="mdi mdi-cart-outline me-1"></i> Checkout
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+
+
         </div>
     </div>
 </body>

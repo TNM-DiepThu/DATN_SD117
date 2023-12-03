@@ -52,8 +52,7 @@ namespace AppData.data
             if (!optionsBuilder.IsConfigured)
             {
                 //optionsBuilder.UseSqlServer("Data Source=DESKTOP-L9J8TJS;Initial Catalog=lzlzlzl;Integrated Security=True");
-                optionsBuilder.UseSqlServer("Server=.\\SQLEXPRESS;Database=DB_SD_117;Trusted_Connection=True;TrustServerCertificate=True");
-
+                optionsBuilder.UseSqlServer("Server=WINDOWS10\\SQLEXPRESS;Database=TestNew;Trusted_Connection=True;TrustServerCertificate=True");
             }
         }
         

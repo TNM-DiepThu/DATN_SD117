@@ -46,7 +46,7 @@
                         <input asp-for="TenSP" style="display:none;" value="@Model.TenSP" />
                         <br />
                         <!--IDsanpham-->
-                        <input asp-for="Id" style="display:none;">@Model.Id</input>
+                        <input asp-for="Id" style="display:none;" value="@Model.Id" />
                         <p>Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua butcher retro keffiyeh dreamcatcher synth. Cosby sweater eu banh mi, qui irure terr.</p>
                         <hr>
                         <h4>Available Colors</h4>
@@ -64,7 +64,7 @@
                             }
                         </div>
                         <br />
-                        <input asp-for="MauSac" type="text" id="colorNameTextBox" placeholder="Selected Color Name" value=""  readonly>
+                        <input asp-for="MauSac" type="text" id="colorNameTextBox" placeholder="Selected Color Name" value="" style="display:none;">
 
                         @*   <input type="text" id="colorIdTextBox" placeholder="Selected Color ID" readonly>*@
                         <br />
@@ -89,11 +89,11 @@
                             <h2 class="mb-0">
                                 @if (giamin > 0 && giamax > 0)
                                 {
-                                    <p> @giamin - @giamax VNĐ </p>
+                                    <p> @giamin.ToString("C0", new System.Globalization.CultureInfo("vi-VN")) - @giamax.ToString("C0", new System.Globalization.CultureInfo("vi-VN")) </p>
                                 }
                                 else
                                 {
-                                    <p> @giamax VNĐ </p>
+                                    <p> @giamax.ToString("C0", new System.Globalization.CultureInfo("vi-VN")) </p>
                                 }
 
                             </h2>
@@ -106,13 +106,12 @@
                         <a class="btn" id="increaseButton"><i class="fas fa-plus-circle" style="color: #538ae9;"></i></a>
 
                         <div class="mt-4">
-                            <div class="btn btn-primary btn-lg btn-flat">
+                            <button class="btn btn-primary btn-lg btn-flat" type="submit">
                                 <i class="fas fa-cart-plus fa-lg mr-2"></i>
-                                <button type="submit" style="color:white">Add to Cart</button>
+                                Thêm vào giỏ hàng
                                 @*href="@Url.Action("Themsanphamctvaogiohang","QuanTri", new {IDSP = idsp})"*@
-                            </div>
+                            </button>
                         </div>
-
                         <div class="mt-4 product-share">
                             <a href="#" class="text-gray">
                                 <i class="fab fa-facebook-square fa-2x"></i>
@@ -203,7 +202,6 @@
                 });
             });
         });
-        
         var valueTextBox = document.getElementById('valueTextBox');
         var increaseButton = document.getElementById('increaseButton');
         var decreaseButton = document.getElementById('decreaseButton');
@@ -221,14 +219,10 @@
                 updateValue();
             }
         });
-
         function updateValue() {
             valueTextBox.value = value;
             //soluong = value;
         }
-
-
-
     </script>
 }
 

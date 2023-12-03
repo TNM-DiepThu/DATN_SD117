@@ -4,56 +4,123 @@
     ViewData["Title"] = "GetlistComBO";
 }
 
-<h1>GetlistComBO</h1>
+<script type="text/javascript" src="~/AdminLTE-3.2.0/plugins/jquery/jquery.min.js"></script>
+<link rel="stylesheet" href="~/AdminLTE-3.2.0/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/AdminLTE-3.2.0/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+<link rel="stylesheet" href="~/AdminLTE-3.2.0/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+<!-- Theme style -->
+<link rel="stylesheet" href="~/Library/dist/css/adminlte.min.css">
+<!-- Bootstrap 4 -->
+<script type="text/javascript" src="~/AdminLTE-3.2.0/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- DataTables  & Plugins -->
+<script type="text/javascript" src="~/AdminLTE-3.2.0/plugins/datatables/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/AdminLTE-3.2.0/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript" src="~/AdminLTE-3.2.0/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+<script type="text/javascript" src="~/AdminLTE-3.2.0/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
 
-<p>
-    <a asp-action="CreateComBO">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th style="display:none">
-                @Html.DisplayNameFor(model => model.Id)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TenCombo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.MoTaCombo)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PhanTramGiam)
-            </th>
-            <th >
-                @Html.DisplayNameFor(model => model.status)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-                <td style="display:none">
-                @Html.DisplayFor(modelItem => item.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TenCombo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.MoTaCombo)
-            </td>
-            <td>
-                    @Html.DisplayFor(modelItem => item.PhanTramGiam)
-            </td>
-            <td >
-                @Html.DisplayFor(modelItem => item.status)
-            </td>
-            <td>
-                    @Html.ActionLink("Edit", "UpdateCB", new {  id=item.Id  }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("Delete", "DeleteCBAsync", new {  id=item.Id  })
-            </td>
-        </tr>
+   
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
 }
-    </tbody>
-</table>
+else
+{
+    <div class="alert alert-success">@TempData["SuccessFull"]</div>
+}
+<a asp-action="CreateComBO" class="btn btn-default" style="margin-top:8px;"><i class="fas fa-plus-square" style="color: #005eff;"></i> Thêm</a>
+
+<div class="hold-transition sidebar-mini" style="margin-top:8px;">
+    <div class="wrapper">
+        <div >
+            <section class="content">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Danh sách Combo</h3>
+                                </div>
+                                <div class="card-body">
+                                    <table id="example2" class="table table-bordered table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th style="display:none">
+                                                    @Html.DisplayNameFor(model => model.Id)
+                                                </th>
+                                                <th>
+                                                    Tên Combo
+                                                </th>
+                                                <th>
+                                                    Mô tả
+                                                </th>
+                                                <th>                                                
+                                                    Phầm trăm giảm
+                                                </th>
+                                                <th>
+                                                    Trạng thái
+                                                </th>
+                                                <th>Chọn</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model)
+                                            {
+                                                <tr>
+                                                    <td style="display:none">
+                                                        @Html.DisplayFor(modelItem => item.Id)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.TenCombo)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.MoTaCombo)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.PhanTramGiam) %
+                                                    </td>
+                                                    <td>
+                                                        @if (item.status == 1)
+                                                        {
+                                                            <p>Hoạt động</p>
+                                                        }
+                                                        @if (item.status == 0)
+                                                        {
+                                                            <p>Không hoạt động</p>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        <span style="margin-right:5px">
+                                                            <i class="fas fa-edit" style="color: #005eff;"></i>  @Html.ActionLink("Sửa", "UpdateCB", new {  Id = item.Id  }) 
+                                                        </span>
+                                                        <span style="margin-right:5px">
+                                                            <i class="fas fa-trash-alt" style="color: #ff0000;"></i>  @Html.ActionLink("Xóa", "DeleteCB", new {  Id = item.Id  })
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('#example2').DataTable({
+            "paging": true,
+            "lengthChange": false,
+            "searching": false,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "responsive": true,
+        });
+    });
+</script>
+
+

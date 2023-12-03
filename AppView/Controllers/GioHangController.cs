@@ -2,6 +2,7 @@
 using AppData.model;
 using AppData.Serviece.Implements;
 using AppData.Serviece.Interfaces;
+using AppData.Session;
 using AppData.ViewModal.GioHangChiTietViewModel;
 using AppData.ViewModal.SanPhamChiTietVM;
 using AppData.ViewModal.Usermodalview;
@@ -12,6 +13,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Security.Claims;
+using System.Security.Policy;
 using System.Text;
 
 namespace AppView.Controllers
@@ -22,11 +24,13 @@ namespace AppView.Controllers
         private readonly IGioHangCTService ghctservice;
         private readonly MyDbContext _context;
 
+
         public GioHangController()
         {
             //_nguoiDungServiece = nguoiDungServiece;
             ghctservice = new GioHangCTService();
             _context = new MyDbContext();
+
         }
 
         // GET: GioHangController
@@ -223,92 +227,236 @@ namespace AppView.Controllers
             ghctservice.EditSoluong(id, soluong);
             return RedirectToAction("GetGioHangChiTiet");
         }
+        // Thanh toán
 
-        //[HttpGet]
-        //[HttpPost]
-        //public int LayIDthanhPho(int idthanhpho)
-        //{
-        //    string json = JsonConvert.SerializeObject(idthanhpho);
-        //    HttpContext.Session.SetString("IDThongtinThanhPho", json);
-        //    return idthanhpho;
-        //}
-        [HttpGet]
+        // Lấy hết thành phố tỉnh
         [HttpPost]
-        public async Task<ActionResult> ThanhToan(int IdThanhPho, int IdQuanHuyen)
+        public List<ThongTinThanhPho> GetAllTinh()
         {
             string token = "be8ee160-008a-11ee-a281-3aa62a37e0a5";
+            _client.DefaultRequestHeaders.Add("token", token);
+            List<ThongTinThanhPho> thongtintp = new List<ThongTinThanhPho>();
+            var urlTinhThanhPho = "https://online-gateway.ghn.vn/shiip/public-api/master-data/province";
+            HttpResponseMessage response = _client.GetAsync(urlTinhThanhPho).Result;
+            // lấy ID tỉnh
+            if (response.IsSuccessStatusCode)
+            {
+                var provinces = response.Content.ReadAsStringAsync().Result; ;
 
+                JObject jsonObject = JObject.Parse(provinces);
+
+                // Lấy danh sách tỉnh/thành phố từ đối tượng JSON
+                JArray provinceArray = (JArray)jsonObject["data"];
+
+
+                if (provinceArray != null)
+                {
+                    foreach (JObject province in provinceArray)
+                    {
+                        ThongTinThanhPho thongTinThanhPho = new ThongTinThanhPho();
+                        thongTinThanhPho.Id = Convert.ToInt32(province["ProvinceID"]);
+                        thongTinThanhPho.Name = Convert.ToString(province["ProvinceName"]);
+                        thongtintp.Add(thongTinThanhPho);
+                    }
+                }
+                ViewBag.thongtin = thongtintp;
+            }
+            HttpContext.Session.Set("ThanhPho", thongtintp);
+            return thongtintp;
+        }
+
+
+        //[HttpGet]
+        ////Lấy hết quận huyện
+        //public List<ThongTinQuanHuyen> GetQuanHuyen(int? idtp)
+        //{
+
+        //    return thongtinquanhuyen;
+        //}
+        // Lấy Id thành phố tỉnh 
+        [HttpPost]
+        public IActionResult NhanIDTinh(int IdThanhPho)
+        {
+            List<ThongTinQuanHuyen> thongtinquanhuyen = new List<ThongTinQuanHuyen>();
+            string token = "be8ee160-008a-11ee-a281-3aa62a37e0a5";
+            _client.DefaultRequestHeaders.Add("token", token);
+            string url = $"https://online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id={IdThanhPho}";
+            HttpResponseMessage response1 = _client.GetAsync(url).Result;
+            if (response1.IsSuccessStatusCode)
+            {
+                var districts = response1.Content.ReadAsStringAsync().Result;
+
+                JObject jsonObject1 = JObject.Parse(districts);
+
+                // Lấy danh sách tỉnh/thành phố từ đối tượng JSON
+                JArray districtArray = (JArray)jsonObject1["data"];
+
+
+                if (districtArray != null)
+                {
+                    foreach (JObject district in districtArray)
+                    {
+                        ThongTinQuanHuyen QuanHuyen = new ThongTinQuanHuyen();
+                        QuanHuyen.ID = Convert.ToInt32(district["DistrictID"]);
+                        QuanHuyen.Name = Convert.ToString(district["DistrictName"]);
+                        thongtinquanhuyen.Add(QuanHuyen);
+                    }
+                }
+            }
+
+            HttpContext.Session.Set("Thongtinquanhuyen", thongtinquanhuyen);
+
+            HttpContext.Session.Remove("IdThanhPho");
+            HttpContext.Session.SetInt32("IdThanhPho", IdThanhPho);
+            return Json(thongtinquanhuyen);
+        }
+        [HttpGet]
+        public IActionResult LayQuanHuyen()
+        {
+            var thongTinQuanHuyen = HttpContext.Session.GetString("Thongtinquanhuyen");
+
+            // Trả về dữ liệu dưới dạng JSON
+            return Json(new { thongTinQuanHuyen });
+        }
+        // lấy ID quận huyện
+        //[HttpPost]
+        //public void NhanIDHuyen(int IdQuanHuyen)
+        //{
+        //    HttpContext.Session.Remove("IdQuanHuyen");
+        //    HttpContext.Session.SetInt32("IdQuanHuyen", IdQuanHuyen);
+
+        //}
+        [HttpPost]
+        public IActionResult NhanIDHuyen(int IdQuanHuyen)
+        {
+            List<XaPhuong> lstxaphuong = new List<XaPhuong>();
+            string token = "be8ee160-008a-11ee-a281-3aa62a37e0a5";
+            _client.DefaultRequestHeaders.Add("token", token);
+            string url = $"https://online-gateway.ghn.vn/shiip/public-api/master-data/ward?district_id={IdQuanHuyen}";
+            HttpResponseMessage response1 = _client.GetAsync(url).Result;
+            if (response1.IsSuccessStatusCode)
+            {
+                var districts = response1.Content.ReadAsStringAsync().Result;
+
+                JObject jsonObject1 = JObject.Parse(districts);
+
+                // Lấy danh sách tỉnh/thành phố từ đối tượng JSON
+                JArray WardCodeArray = (JArray)jsonObject1["data"];
+
+
+                if (WardCodeArray != null)
+                {
+                    foreach (JObject Ward in WardCodeArray)
+                    {
+                        XaPhuong xaphuong = new XaPhuong();
+                        xaphuong.WardCode = Convert.ToInt32(Ward["WardCode"]);
+                        xaphuong.WardName = Convert.ToString(Ward["WardName"]);
+                        lstxaphuong.Add(xaphuong);
+                    }
+                }
+            }
+
+            HttpContext.Session.Set("XaPhuong", lstxaphuong);
+
+            HttpContext.Session.Remove("IDQuanHuyen");
+            HttpContext.Session.SetInt32("IDQuanHuyen", IdQuanHuyen);
+            return Json(lstxaphuong);
+        }
+        [HttpGet]
+        public IActionResult GetAllXaPhuong()
+        {
+            var ThongTinXaPhuong = HttpContext.Session.GetString("XaPhuong");
+
+            // Trả về dữ liệu dưới dạng JSON
+            return Json(new { ThongTinXaPhuong });
+        }
+        // thanh toán
+        [HttpGet]
+        [HttpPost]
+        public async Task<ActionResult> ThanhToan()
+        {
+            List<ThongTinThanhPho> laytinh = GetAllTinh();
+            var idtp = HttpContext.Session.GetInt32("IdThanhPho");
+            var Idquanhuyen = HttpContext.Session.GetInt32("IdQuanHuyen");
+            //List<ThongTinQuanHuyen> layquanhuyen = NhanIDTinh(Convert.ToInt32(idtp));
+            //decimal tienShip = TinhTienShip(dquanhuyen);
             var idnguoidung = IDNguoiDung();
             string url = $"https://localhost:7214/api/GioHangCT/GetAllFullGioHangChiTiet?IDnguoiDung={idnguoidung}";
             var repos = await _client.GetAsync(url);
             var data = await repos.Content.ReadAsStringAsync();
             List<GioHangChiTietViewModel> lstghct = JsonConvert.DeserializeObject<List<GioHangChiTietViewModel>>(data);
-
             ViewBag.GioHang = lstghct;
-            _client.DefaultRequestHeaders.Add("token", token);
-            if (IdThanhPho == 0)
-            {
-                var urlTinhThanhPho = "https://online-gateway.ghn.vn/shiip/public-api/master-data/province";
-                HttpResponseMessage response = await _client.GetAsync(urlTinhThanhPho);
-                // lấy ID tỉnh
-                if (response.IsSuccessStatusCode)
-                {
-                    var provinces = await response.Content.ReadAsStringAsync();
-
-                    JObject jsonObject = JObject.Parse(provinces);
-
-                    // Lấy danh sách tỉnh/thành phố từ đối tượng JSON
-                    JArray provinceArray = (JArray)jsonObject["data"];
-
-                    List<ThongTinThanhPho> thongtintp = new List<ThongTinThanhPho>();
-                    if (provinceArray != null)
-                    {
-                        foreach (JObject province in provinceArray)
-                        {
-                            ThongTinThanhPho thongTinThanhPho = new ThongTinThanhPho();
-                            thongTinThanhPho.Id = Convert.ToInt32(province["ProvinceID"]);
-                            thongTinThanhPho.Name = Convert.ToString(province["ProvinceName"]);
-                            thongtintp.Add(thongTinThanhPho);
-                        }
-                    }
-                    ViewBag.thongtin = thongtintp;
-                }
-            }
-            else
-            {
-                HttpResponseMessage response1 = await _client.GetAsync($"https://online-gateway.ghn.vn/shiip/public-api/master-data/district?province_id={IdThanhPho}");
-                if (response1.IsSuccessStatusCode)
-                {
-                    var jsonData1 = await response1.Content.ReadAsStringAsync();
-
-                    JObject jsonObject1 = JObject.Parse(jsonData1);
-
-                    // Lấy danh sách tỉnh/thành phố từ đối tượng JSON
-                    JArray districtArray = (JArray)jsonObject1["data"];
-
-                    List<ThongTinQuanHuyen> thongtinquanhuyen = new List<ThongTinQuanHuyen>();
-                    if (districtArray != null)
-                    {
-                        foreach (JObject district in districtArray)
-                        {
-                            ThongTinQuanHuyen QuanHuyen = new ThongTinQuanHuyen();
-                            QuanHuyen.ID = Convert.ToInt32(district["DistrictID"]);
-                            QuanHuyen.Name = Convert.ToString(district["DistrictName"]);
-                            thongtinquanhuyen.Add(QuanHuyen);
-                        }
-                    }
-                    ViewBag.thongtinhuyen = thongtinquanhuyen;
-                    return View();
-                }
-            }
             return View();
         }
-
+        //Tính tiền ship
         [HttpPost]
         [HttpGet]
-        public void TinhTienShip(int IdThanhPho, int IdQuanHuyen)
+        public IActionResult TinhTienShip(int WardCode)
         {
+            var tienship = 0;
+            var tongtien = 0;
+            var IdQuanHuyen = HttpContext.Session.GetInt32("IDQuanHuyen");
+            List<DichVuChuyenPhat> lstdichvu = new List<DichVuChuyenPhat>();
+            // ChonDichVụ
+            string token = "be8ee160-008a-11ee-a281-3aa62a37e0a5";
+            _client.DefaultRequestHeaders.Add("token", token);
+            string urldichvu = $"https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/available-services?shop_id=3689187&from_district=3440&to_district={IdQuanHuyen}";
+            HttpResponseMessage response1 = _client.GetAsync(urldichvu).Result;
+            if (response1.IsSuccessStatusCode)
+            {
+                var Services = response1.Content.ReadAsStringAsync().Result;
 
+                JObject jsonObject = JObject.Parse(Services);
+
+                // Lấy danh sách tỉnh/thành phố từ đối tượng JSON
+                JArray ServicesArray = (JArray)jsonObject["data"];
+                if (ServicesArray != null)
+                {
+                    foreach (JObject service in ServicesArray)
+                    {
+                        DichVuChuyenPhat dichvucchuyenphat = new DichVuChuyenPhat();
+                        dichvucchuyenphat.service_id = Convert.ToInt32(service["service_id"]);
+                        dichvucchuyenphat.Name = Convert.ToString(service["short_name"]);
+                        lstdichvu.Add(dichvucchuyenphat);
+                    }
+                }
+            }
+
+            int idservice = lstdichvu.FirstOrDefault(c => c.Name == "Chuyển phát thương mại điện tử").service_id;
+
+            string urltinhphi = $"https://online-gateway.ghn.vn/shiip/public-api/v2/shipping-order/fee?service_id={idservice}&insurance_value={tongtien}&from_district_id=3440&to_district_id={IdQuanHuyen}&to_ward_code={WardCode}&height=20&length=20&weight=2000&width=20";
+            HttpResponseMessage httpResponseMessage = _client.GetAsync(urltinhphi).Result;
+            if (httpResponseMessage.IsSuccessStatusCode)
+            {
+                var ship = httpResponseMessage.Content.ReadAsStringAsync().Result;
+
+                JObject ships = JObject.Parse(ship);
+
+
+                JToken dataToken = ships["data"];
+                if (dataToken is JArray)
+                {
+                    JArray districtArray = (JArray)dataToken;
+                    // Tiếp tục xử lý với districtArray
+                }
+                else if (dataToken is JObject)
+                {
+                    JObject districtObject = (JObject)dataToken;
+                    // Tiếp tục xử lý nếu cần thiết
+                    tienship = Convert.ToInt32(districtObject["total"]);
+
+                }
+            }
+            HttpContext.Session.Remove("TienShip");
+            HttpContext.Session.SetInt32("TienShip", tienship);
+            return Json(tienship);
+        }
+        [HttpGet]
+        public IActionResult HienThiTienShip()
+        {
+            var tienship = HttpContext.Session.GetInt32("TienShip");
+            return Json(new { tienship });
         }
     }
 }
+

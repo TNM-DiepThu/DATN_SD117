@@ -32,58 +32,60 @@ namespace AppData.Serviece.ViewModeService
         }
         public IEnumerable<GioHangChiTietViewModel> GetAllListGioHang(Guid idNguoiDung)
         {
-            IEnumerable<GioHangChiTietViewModel> lst = new List<GioHangChiTietViewModel>();
+            List<GioHangChiTietViewModel> lst = new List<GioHangChiTietViewModel>();
 
             if (_giohangctservice.GetAllGioHangTheoNguoiDungDangNhap(idNguoiDung).Any(c => c.IdComboChiTiet == null))
             {
                 var ghct = _giohangctservice.GetAllGioHangTheoNguoiDungDangNhap(idNguoiDung);
-                for (var i =0; i < ghct.Count; i++)
+
+                IEnumerable<GioHangChiTietViewModel> lstspct = from a in _giohangctservice.GetAllGioHangTheoNguoiDungDangNhap(idNguoiDung)
+                                                               join b in _giohangservice.GetAll() on a.IdGioHang equals b.Id
+                                                               join c in _spctviewmodelservice.GetWithOneImage() on a.IdSanPhamChiTiet equals c.Id
+                                                               select new GioHangChiTietViewModel
+                                                               {
+                                                                   ID = a.Id,
+                                                                   IDGH = b.Id,
+                                                                   IDSanPham = _spctviewmodelservice.GetAll().FirstOrDefault(c => c.Id == a.IdSanPhamChiTiet).Id,
+                                                                   TenSanPham = _spctviewmodelservice.GetAll().FirstOrDefault(c => c.Id == a.IdSanPhamChiTiet).TenSP,
+                                                                   Mausac = c.MauSac,
+                                                                   Size = c.Size,
+                                                                   pathImage = c.Images != null ? c.Images[0].Connect : null,
+                                                                   Soluong = a.SoLuong,
+                                                                   GiaSanPham = a.DonGia,
+                                                                   TienGiamGia = 0,
+                                                               };
+                foreach (var obj in lstspct)
                 {
-                    //List<GioHangChiTietViewModel> newlst = _spctviewmodelservice.GetById();
+                    lst.Add(obj);
                 }
-                
-                lst = from a in _giohangctservice.GetAllGioHangTheoNguoiDungDangNhap(idNguoiDung)
-                      join b in _giohangservice.GetAll() on a.IdGioHang equals b.Id
-                      join c in _spctviewmodelservice.GetAll() on a.IdSanPhamChiTiet equals c.Id
-                      select new GioHangChiTietViewModel
-                      {
-                          ID = a.Id,
-                          IDGH = b.Id,
-                          IDSanPham = _spctviewmodelservice.GetAll().FirstOrDefault(c => c.Id == a.IdSanPhamChiTiet).Id,
-                          TenSanPham = _spctviewmodelservice.GetAll().FirstOrDefault(c => c.Id == a.IdSanPhamChiTiet).TenSP,
-                          Mausac = c.MauSac,
-                          Size = c.Size,
-                          //pathImage = _spctviewmodelservice.GetById(c.Id).Images[0].Connect.ToString() != null ? _spctviewmodelservice.GetById(c.Id).Images[0].Connect.ToString() : "C:\\Users\\Administrator\\Desktop\\TestDATN\\AppView\\wwwroot\\uploads\\default-image_450.png",
-                          Soluong = a.SoLuong,
-                          GiaSanPham = a.DonGia,
-                          TienGiamGia = 0,
-                      };
-                lst.ToList();
+
+
             }
-            else if (_giohangctservice.GetAllGioHangTheoNguoiDungDangNhap(idNguoiDung).Any(c => c.IdSanPhamChiTiet == null))
+            if (_giohangctservice.GetAllGioHangTheoNguoiDungDangNhap(idNguoiDung).Any(c => c.IdSanPhamChiTiet == null))
             {
-                lst = from a in _giohangctservice.GetAllGioHangTheoNguoiDungDangNhap(idNguoiDung)
-                      join b in _giohangservice.GetAll() on a.IdGioHang equals b.Id
-                      join c in _spctviewmodelservice.GetAll() on a.IdSanPhamChiTiet equals c.Id
-                      join d in _comboctservice.GetAllComBoChiTiet() on a.IdComboChiTiet equals d.Id
-                      select new GioHangChiTietViewModel
-                      {
-                          ID = a.Id,
-                          IDGH = b.Id,
-                          IDSanPham = _comboctservice.GetAllComBoChiTiet().FirstOrDefault(c => c.Id == a.IdComboChiTiet).Id,
-                          TenSanPham = _comboctservice.GetAllComBoChiTiet().FirstOrDefault(c => c.Id == a.IdComboChiTiet).TenComBo,
-                          Mausac = c.MauSac,
-                          Size = c.Size,
-                          //pathImage = _spctviewmodelservice.GetById(c.Id).Images[0].Connect.ToString() != null ? _spctviewmodelservice.GetById(c.Id).Images[0].Connect.ToString() : "C:\\Users\\Administrator\\Desktop\\TestDATN\\AppView\\wwwroot\\uploads\\default-image_450.png",
-                          Soluong = a.SoLuong,
-                          GiaSanPham = a.DonGia,
-                          TienGiamGia = 0,
-                      };
-                lst.ToList();
+                var comboct = _giohangctservice.GetAllGioHangTheoNguoiDungDangNhap(idNguoiDung);
+                IEnumerable<GioHangChiTietViewModel> lstCombo = from a in _giohangctservice.GetAllGioHangTheoNguoiDungDangNhap(idNguoiDung)
+                                                                join b in _giohangservice.GetAll() on a.IdGioHang equals b.Id
+                                                                join d in _comboctservice.GetAllComBoChiTiet() on a.IdComboChiTiet equals d.Id
+                                                                select new GioHangChiTietViewModel
+                                                                {
+                                                                    ID = a.Id,
+                                                                    IDGH = b.Id,
+                                                                    IDSanPham = _comboctservice.GetAllComBoChiTiet().FirstOrDefault(c => c.Id == a.IdComboChiTiet).Id,
+                                                                    TenSanPham = _comboctservice.GetAllComBoChiTiet().FirstOrDefault(c => c.Id == a.IdComboChiTiet).TenComBo,
+                                                                    Mausac = d.MauSac,
+                                                                    Size = d.Size,
+                                                                    pathImage = d.PathAnh,
+                                                                    Soluong = a.SoLuong,
+                                                                    GiaSanPham = d.ThanhTienComBo,
+                                                                    TienGiamGia = d.TienGiamGia,
+                                                                };
+                foreach (var obj in lstCombo)
+                {
+                    lst.Add(obj);
+                }
             }
             return lst;
-
         }
-
     }
 }

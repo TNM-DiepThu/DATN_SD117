@@ -1,30 +1,34 @@
 ﻿@using System.Text.Json;
+@using AppData.ViewModal.GioHangChiTietViewModel;
+@using AppData.Session;
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor httpAccess
 
 @{
-    var provinces = ViewBag.thongtin as List<AppData.ViewModal.GioHangChiTietViewModel.ThongTinThanhPho>;
-    var districts = ViewBag.thongtinhuyen as List<AppData.ViewModal.GioHangChiTietViewModel.ThongTinQuanHuyen>;
+
+    List<ThongTinThanhPho> provinces = httpAccess.HttpContext.Session.Get<List<ThongTinThanhPho>>("ThanhPho");
+    List<ThongTinQuanHuyen> districts = httpAccess.HttpContext.Session.Get<List<ThongTinQuanHuyen>>("Thongtinquanhuyen");
     var GioHang = ViewBag.GioHang as List<AppData.ViewModal.GioHangChiTietViewModel.GioHangChiTietViewModel>;
-    var soluong = GioHang.Count();
+    double tongtien = 0;
+    double tiengiamgia = 0;
+    double thanhtien = 0;
+
+    //var soluong = GioHang.Count();
 }
 <script type="text/javascript" src="~/library/plugins/jquery/jquery.min.js"></script>
-
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script type="text/javascript" src="~/js/thanhtoan.js"></script>
 <link type="text/css" href="~/css/thanhtoan.css" rel="stylesheet" />
 <link href="~/library/plugins/bootstrap/css/bootstrap.min.css" type="text/javascript" rel="stylesheet" />
-<link href="~/library/plugins/fontawesome-free/css/all.min.css" rel="stylesheet" />
-
 <link type="text/css" href="~/library/plugins/select2/css/select2.min.css" rel="stylesheet" />
 <link type="text/css" href="~/library/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css" rel="stylesheet" />
-
 <script type="text/javascript" src="~/library/plugins/select2/js/select2.min.js"></script>
 <script type="text/javascript" src="~/library/plugins/select2/js/select2.full.min.js"></script>
 
 <main role="main">
     <!-- Block content - Đục lỗ trên giao diện bố cục chung, đặt tên là `content` -->
     <div class="container mt-4">
-        <form class="needs-validation" name="frmthanhtoan" method="post"
-              action="#">
+        <form class="needs-validation" asp-action="ThanhToan" name="frmthanhtoan" method="post" enctype="multipart/form-data">
             <input type="hidden" name="kh_tendangnhap" value="dnpcuong">
-
             <div class="py-5 text-center">
                 <i class="fa fa-credit-card fa-4x" aria-hidden="true"></i>
                 <h2>Thanh toán</h2>
@@ -35,14 +39,16 @@
                 <div class="col-md-4 order-md-2 mb-4">
                     <h4 class="d-flex justify-content-between align-items-center mb-3">
                         <span class="text-muted">Giỏ hàng</span>
-                        <span class="badge badge-secondary badge-pill">@soluong</span>
+                        <span class="badge badge-secondary badge-pill">@GioHang.Count()</span>
                     </h4>
                     <ul class="list-group mb-3">
                         @if (GioHang != null)
                         {
                             foreach (var giohangchitiet in GioHang)
                             {
-                                double thanhtien = (double)(giohangchitiet.Soluong * giohangchitiet.GiaSanPham);
+                                thanhtien = (double)(giohangchitiet.Soluong * giohangchitiet.GiaSanPham);
+                                
+                               
                                 <li class="list-group-item d-flex justify-content-between lh-condensed">
                                     <div>
                                         <h6 class="my-0">@giohangchitiet.TenSanPham</h6>
@@ -51,10 +57,23 @@
                                     <span class="text-muted">@thanhtien.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</span>
                                 </li>
                             }
-                            double tongtien = (double)GioHang.Sum(c => c.GiaSanPham * c.Soluong);
+                            tiengiamgia = (double)GioHang.Sum(c => c.Soluong * c.TienGiamGia);
+                            tongtien = (double)GioHang.Sum(c => c.GiaSanPham * c.Soluong);
                             <li class="list-group-item d-flex justify-content-between">
-                                <span>Tổng thành tiền</span>
-                                <strong>@tongtien.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</strong>
+                                <span>Thành tiền</span>
+                                <strong id="tongtien">@tongtien.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Thành giảm giá</span>
+                                <strong id="tiemgiamgia">@tiengiamgia.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Tiền ship</span>
+                                <strong id="tienship">@*@tienship.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))*@</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between">
+                                <span>Tổng tiền</span>
+                                <strong id="tientra"></strong>
                             </li>
                         }
                     </ul>
@@ -78,45 +97,53 @@
                             <label for="kh_gioitinh">Giới tính</label>
                             <input type="text" class="form-control" name="kh_gioitinh" id="kh_gioitinh" value="Nam">
                         </div>
-                        <div class="col-md-12 row" style="margin:2px;">
-                            <div class="col-md-6 row">
-                                <label for="Tinh_ThanhPho">Tỉnh/ Thành phố: </label>
-                                <select id="provinceDropdown" class="form-control col-md-11">
-                                    <option value="">Chọn tỉnh/thành phố</option>
-                                    @if (provinces != null)
-                                    {
-                                        foreach (var province in provinces)
+                        <div class="col-md-12" style="margin:2px;">
+                            <div class="row">
+                                <div class="col-md-4 ">
+                                    <label for="Tinh_ThanhPho">Tỉnh/ Thành phố: </label>
+                                    <select id="provinceDropdown" class="form-control col-md-11">
+                                        <option value="">Chọn tỉnh/thành phố: </option>
+                                        @if (provinces != null)
                                         {
-                                            <option value="@province.Id" data-url="@Url.Action("ThanhToan", "GioHang", new { IdThanhPho = province.Id })">@province.Name</option>
+                                            foreach (var province in provinces)
+                                            {
+                                                <option value="@province.Id" data-url="@Url.Action("NhanIDTinh", "GioHang", new { IdThanhPho = province.Id })">@province.Name</option>
+                                            }
                                         }
-                                    }
-                                </select>
-                                <a id="searchButton" class="col-md-1" style="margin-top:3px;"><i class="fas fa-search" style="color: #005eff;"></i></a>
-                                <div id="searchContainer" style="display: none;">
-                                    <input type="text" id="searchBox" class="form-control col-md-11" placeholder="Tìm kiếm" />
+                                    </select>
+                                    <div class="row">
+                                        <a id="searchButton" class="col-md-1" style="margin-top:3px;"><i class="fas fa-search" style="color: #005eff;"></i></a>
+                                        <div id="searchContainer" style="display: none;">
+                                            <input type="text" id="searchBox" class="form-control col-md-11" placeholder="Tìm kiếm" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 ">
+                                    <label for="quanhuyen">Quận Huyện: </label>
+                                    <select id="districtDropdown" class="form-control col-md-11">
+                                        <option value="">Chọn Quận huyện: </option>
+                                    </select>
+                                    <div class="row">
+                                        <a id="searchButton1" class="col-md-1" style="margin-top:3px;"><i class="fas fa-search" style="color: #005eff;"></i></a>
+                                        <div id="searchContainer1" style="display: none;">
+                                            <input type="text" id="searchBox1" class="form-control col-md-11" placeholder="Tìm kiếm" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label for="XaPhuong">Xã/Phường: </label>
+                                    <select id="WardDropdown" class="form-control col-md-11">
+                                        <option value="">Chọn xã phường: </option>
+                                    </select>
+                                    <div class="row">
+                                        <a id="searchButton1" class="col-md-1" style="margin-top:3px;"><i class="fas fa-search" style="color: #005eff;"></i></a>
+                                        <div id="searchContainer1" style="display: none;">
+                                            <input type="text" id="searchBox1" class="form-control col-md-11" placeholder="Tìm kiếm" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6 row">
-                                <label for="quanhuyen">Quận Huyện: </label>
-                                @*  <select id="IdQuanHuyen"  class="form-control" asp-items="ViewBag.thongtinhuyen">
-                                <option value="">Chọn Quận huyện</option>
-                                </select>*@
-                                <select id="districtDropdown" class="form-control col-md-11">
-                                    <option value="">Chọn Quận huyện</option>
-                                    @if (districts != null)
-                                    {
-                                        foreach (var district in districts)
-                                        {
-                                            <option value="@district.ID" data-url="@Url.Action("ThanhToan", "GioHang", new { IdQuanHuyen = district.ID })">@district.Name</option>
-                                        }
-
-                                    }
-                                </select>
-                                <a id="searchButton" class="col-md-1" style="margin-top:3px;"><i class="fas fa-search" style="color: #005eff;"></i></a>
-                                <div id="searchContainer" style="display: none;">
-                                    <input type="text" id="searchBox" class="form-control col-md-11" placeholder="Tìm kiếm" />
-                                </div>
-                            </div>
+                           
                         </div>
                         <div class="col-md-12">
                             <label for="kh_diachi">Địa chỉ</label>
@@ -147,6 +174,9 @@
                         </div>
                     </div>
                     <hr class="mb-4">
+                    @* <a href="@Url.Action("ThanhToan","GioHang")" class="btn btn-primary btn-lg btn-block" name="btnDatHang">
+                    Đặt hàng
+                    </a>*@
                     <button class="btn btn-primary btn-lg btn-block" type="submit" name="btnDatHang">
                         Đặt hàng
                     </button>
@@ -158,47 +188,110 @@
     <!-- End block content -->
 </main>
 
-<script>
-    $(document).ready(function () {
-        var isInputVisible = false;
-        $("#searchButton").click(function () {
-            if (isInputVisible) {
-                $("#searchContainer").hide();
-            } else {
-                $("#searchContainer").show();
-            }
-            isInputVisible = !isInputVisible;
-        });
-        $("#searchBox").on("input", function () {
-            var searchValue = $(this).val().toLowerCase();
-            $("#provinceDropdown option").each(function () {
-                if ($(this).text().toLowerCase().indexOf(searchValue) === -1) {
-                    $(this).hide();
-                } else {
-                    $(this).show();
-                }
-            });
-        });
-
-        $("#provinceDropdown").change(function () {
-            var selectedId = $(this).val();
-            var selectedOption = $(this).find("option:selected");
-            var url = selectedOption.data("url");
-            if (selectedId && url) {
-                $.ajax({
-                    url: url,
-                    method: "POST",
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify({ IdThanhPho: selectedId }),
-                    success: function (data) {
-                        alert("Lấy ID thành công: " + selectedId);
-                    },
-                    error: function () {
-                        alert("Có lỗi xảy ra");
-                    }
-                });
-            }
-        });
-    });
+<script type="text/javascript">
+    //$(document).ready(function () {
+    //    var isInputVisible = false;
+    //    $("#searchButton").click(function () {
+    //        if (isInputVisible) {
+    //            $("#searchContainer").hide();
+    //        } else {
+    //            $("#searchContainer").show();
+    //        }
+    //        isInputVisible = !isInputVisible;
+    //    });
+    //    $("#searchButton1").click(function () {
+    //        if (isInputVisible) {
+    //            $("#searchContainer1").hide();
+    //        } else {
+    //            $("#searchContainer1").show();
+    //        }
+    //        isInputVisible = !isInputVisible;
+    //    });
+    //    $("#searchBox").on("input", function () {
+    //        var searchValue = $(this).val().toLowerCase();
+    //        $("#provinceDropdown option").each(function () {
+    //            if ($(this).text().toLowerCase().indexOf(searchValue) === -1) {
+    //                $(this).hide();
+    //            } else {
+    //                $(this).show();
+    //            }
+    //        });
+    //    });
+    //    $("#searchBox1").on("input", function () {
+    //        var searchValue = $(this).val().toLowerCase();
+    //        $("#districtDropdown option").each(function () {
+    //            if ($(this).text().toLowerCase().indexOf(searchValue) === -1) {
+    //                $(this).hide();
+    //            } else {
+    //                $(this).show();
+    //            }
+    //        });
+    //    });
+    //    $("#provinceDropdown").change(function () {
+    //        var selectedId = $(this).val();
+    //        var selectedOption = $(this).find("option:selected");
+    //        var url = selectedOption.data("url");
+    //        if (selectedId && url) {
+    //            $.ajax({
+    //                url: url,
+    //                method: "POST",
+    //                contentType: "application/json; charset=utf-8",
+    //                data: JSON.stringify({ IdThanhPho: selectedId }),
+    //                success: function (data) {
+    //                    //alert("Lấy ID thành công: " + selectedId);
+    //                    updateDistrictDropdown(data);
+    //                    layDuLieuTuSession();
+    //                },
+    //                error: function () {
+    //                    alert("Có lỗi xảy ra");
+    //                }
+    //            });
+    //        }
+    //    });
+    //    //$("#districtDropdown").change(function () {
+    //    //    var selectedId = $(this).val();
+    //    //    var selectedOption = $(this).find("option:selected");
+    //    //    var url = selectedOption.data("url");
+    //    //    if (selectedId && url) {
+    //    //        $.ajax({
+    //    //            url: url,
+    //    //            method: "POST",
+    //    //            contentType: "application/json; charset=utf-8",
+    //    //            data: JSON.stringify({ IdQuanHuyen: selectedId }),
+    //    //            success: function (data) {
+    //    //                //alert("Lấy ID thành công: " + selectedId);
+    //    //            },
+    //    //            error: function () {
+    //    //                alert("Có lỗi xảy ra");
+    //    //            }
+    //    //        });
+    //    //    }
+    //    //});
+    //});
+    //function updateDistrictDropdown(data) {
+    //    // Xóa tất cả các option hiện tại trong dropdown "district"
+    //    $("#districtDropdown").empty();
+    //    $("#districtDropdown").append('<option value="">Chọn Quận huyện: </option>');
+    //    if (data != null) {
+    //        for (var i = 0; i < data.length; i++) {
+    //            $("#districtDropdown").append('<option value="' + data[i].ID + '">' + data[i].Name + '</option>');
+    //        }
+    //    }
+    //}
+    //function layDuLieuTuSession() {
+    //    $.ajax({
+    //        type: 'GET',
+    //        url: '/GioHang/LayQuanHuyen', // Điều chỉnh đường dẫn tùy thuộc vào định tuyến của bạn
+    //        success: function (result) {
+    //            // Dữ liệu được trả về từ controller
+    //            var thongTinQuanHuyen = result.thongTinQuanHuyen;
+    //            //updateDistrictDropdown(thongTinQuanHuyen)
+    //            console.log(thongTinQuanHuyen);
+    //        },
+    //        error: function (error) {
+    //            console.error('Lỗi khi lấy dữ liệu từ Session:', error);
+    //        }
+    //    });
+    //}
 </script>
 

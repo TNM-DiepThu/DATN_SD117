@@ -34,12 +34,12 @@ namespace AppData.Serviece.Implements
 
         public bool Del(Guid id)
         {
-
             try
             {
                 var list = _context.combos.ToList();
                 var obj = list.FirstOrDefault(c => c.Id == id);
-                _context.combos.Remove(obj);
+                obj.status = 0;
+                _context.combos.Update(obj);
                 _context.SaveChangesAsync();
                 return true;
             }
