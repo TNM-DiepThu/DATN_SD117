@@ -24,7 +24,7 @@ namespace AppAPI.Controllers
             return BadRequest();
         }
         [HttpPost("Create")]
-        public async Task<IActionResult> CreateUserAsync([FromBody] VoucherVM p)
+        public async Task<IActionResult> CreateUserAsync([FromBody] VoucherViewModel p)
         {
             var result = await _voucher.Add(p);
             return Ok(result);
@@ -39,7 +39,7 @@ namespace AppAPI.Controllers
 
         [HttpPut("Update/{id}")]
 
-        public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] VoucherVM p)
+        public async Task<IActionResult> UpdateAsync(Guid id, [FromBody] VoucherViewModel p)
         {
             var result = await _voucher.Edit(id, p);
             return Ok(result);

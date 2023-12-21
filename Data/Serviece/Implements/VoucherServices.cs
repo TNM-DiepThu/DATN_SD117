@@ -19,7 +19,7 @@ namespace AppData.Serviece.Implements
             _context = new MyDbContext();
         }
 
-        public async Task<bool> Add(VoucherVM v)
+        public async Task<bool> Add(VoucherViewModel v)
         {
             try
             {
@@ -27,14 +27,16 @@ namespace AppData.Serviece.Implements
                 {
                     Id = Guid.NewGuid(),
                     MaVoucher = v.MaVoucher,
-                    NgayTao = v.NgayTao,
+                    NgayTao = DateTime.Now,
                     NgayBatDau = v.NgayBatDau,
                     NgayKetThuc = v.NgayKetThuc,
                     GiaTriVoucher = v.GiaTriVoucher,
-                    SoLuong =v.SoLuong,
+                    SoLuong = v.SoLuong,
+                    Min = v.Min,
+                    Max = v.Max,
                     MoTa = v.MoTa,
                     DieuKienGiamGia = v.DieuKienGiamGia,
-                    status = v.TrangThai
+                    status = 1
                 };
                 _context.Add(vc);
                 _context.SaveChanges();
@@ -47,7 +49,7 @@ namespace AppData.Serviece.Implements
             }
         }
 
-        public async Task<bool> Delete(Guid id)
+        public async Task<string> Delete(Guid id)
         {
             try
             {
@@ -55,30 +57,32 @@ namespace AppData.Serviece.Implements
                 var obj = list.FirstOrDefault(c => c.Id == id);
                 _context.voucher.Remove(obj);
                 await _context.SaveChangesAsync();
-                return true;
+                return "Xóa thành công.";
             }
             catch (Exception)
             {
 
-                return false;
+                return "Xóa thất bại.";
             }
         }
 
-        public async Task<bool> Edit(Guid id, VoucherVM v)
+        public async Task<bool> Edit(Guid id, VoucherViewModel v)
         {
             try
             {
                 var listobj = await _context.voucher.ToListAsync();
                 var obj = listobj.FirstOrDefault(c => c.Id == id);
-                    obj.MaVoucher = v.MaVoucher;
-                    obj.NgayTao = v.NgayTao;
-                    obj.NgayBatDau = v.NgayBatDau;
-                    obj.NgayKetThuc = v.NgayKetThuc;
-                    obj.GiaTriVoucher = v.GiaTriVoucher;
-                    obj.SoLuong = v.SoLuong;
-                    obj.MoTa = v.MoTa;
-                    obj.DieuKienGiamGia = v.DieuKienGiamGia;
-                    obj.status = v.TrangThai;
+                obj.MaVoucher = v.MaVoucher;
+                obj.NgayTao = v.NgayTao;
+                obj.NgayBatDau = v.NgayBatDau;
+                obj.NgayKetThuc = v.NgayKetThuc;
+                obj.GiaTriVoucher = v.GiaTriVoucher;
+                obj.SoLuong = v.SoLuong;
+                obj.Min = v.Min;
+                obj.Max = v.Max;
+                obj.MoTa = v.MoTa;
+                obj.DieuKienGiamGia = v.DieuKienGiamGia;
+                obj.status = v.TrangThai;
                 _context.voucher.Update(obj);
                 await _context.SaveChangesAsync();
                 return true;
@@ -91,13 +95,13 @@ namespace AppData.Serviece.Implements
             }
         }
 
-        public async Task<List<VoucherVM>> GetAll()
+        public async Task<List<VoucherViewModel>> GetAll()
         {
             var list = await _context.voucher.ToListAsync();
-            var listvm = new List<VoucherVM>();
+            var listvm = new List<VoucherViewModel>();
             foreach (var v in list)
             {
-                var obj = new VoucherVM();
+                var obj = new VoucherViewModel();
                 obj.Id = v.Id;
                 obj.MaVoucher = v.MaVoucher;
                 obj.NgayTao = v.NgayTao;
@@ -106,6 +110,8 @@ namespace AppData.Serviece.Implements
                 obj.GiaTriVoucher = v.GiaTriVoucher;
                 obj.SoLuong = v.SoLuong;
                 obj.MoTa = v.MoTa;
+                obj.Min = v.Min;
+                obj.Max = v.Max;
                 obj.DieuKienGiamGia = v.DieuKienGiamGia;
                 obj.TrangThai = v.status;
                 listvm.Add(obj);

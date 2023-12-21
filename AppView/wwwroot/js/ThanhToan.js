@@ -38,6 +38,9 @@
     });
     $("#provinceDropdown").change(function () {
         var selectedId = $(this).val();
+        var textofSelect = document.getElementById("provinceDropdown");
+        var selectedOption = textofSelect.options[textofSelect.selectedIndex];;
+
         var selectedOption = $(this).find("option:selected");
         var url = selectedOption.data("url");
         if (selectedId && url) {
@@ -48,6 +51,7 @@
                 data: JSON.stringify({ IdThanhPho: selectedId }),
                 success: function (data) {
                     //alert("Lấy ID thành công: " + selectedId);
+                    //document.getElementById("searchBox").value = $(this).val();
                     updateDistrictDropdown(data);
                     layDuLieuTuQuanHuyen();
                 },
@@ -99,40 +103,74 @@
             });
         }
     });
+    //$("#voucherCodeInput").on("change", function () {
+    //    sendDataToServer();
+    //});
 });
 function hienthitienship() {
     $.ajax({
         type: 'GET',
         url: '/GioHang/HienThiTienShip', // Điều chỉnh đường dẫn tùy thuộc vào định tuyến của bạn
         success: function (result) {
-            var tientra = 0;
             // Dữ liệu được trả về từ controller
             var tienship = result.tienship;
-            var hienthitiienship = document.getElementById("tienship");
+            if (tienship == null) {
+                jQuery("#btnChon").attr("style", "pointer-events: none;");
+            } else {
+                var hienthitiienship = document.getElementById("tienship");
 
-            var formattedNumber = tienship.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                var formattedNumber = tienship.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+
+                hienthitiienship.innerText = formattedNumber;
+
+                // tổng tiền phải trả
+                var tongtien = document.getElementById("tongtien").innerText;
+                var number = parseFloat(tongtien.replace(/[^\d]/g, ''));
+                var tiemgiamgia = document.getElementById("tiemgiamgia").innerText;
+                var tiengiam = parseFloat(tiemgiamgia.replace(/[^\d]/g, ''));
+                var number1 = parseFloat(number);
+                var number2 = parseFloat(tienship);
+                var tiemgiamgia1 = parseFloat(tiengiam);
+                var sum = number1 + number2 - tiemgiamgia1;
+                var formattedNumber1 = sum.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+                document.getElementById("thanhtien").innerText = formattedNumber1;
+                document.getElementById("tientra").value = sum;
+                //document.getElementById("tientra").value = formattedNumber1;
+                console.log(formattedNumber);
+                console.log(formattedNumber1);
+                jQuery("#btnChon").attr("style", "pointer-events: auto;");
+            }
             
-            hienthitiienship.innerText = formattedNumber;
-
-            // tổng tiền phải trả
-            var tongtien = document.getElementById("tongtien").innerText;
-            var number = parseFloat(tongtien.replace(/[^\d]/g, ''));
-            var tiemgiamgia = document.getElementById("tiemgiamgia").innerText;
-            var tiengiam = parseFloat(tiemgiamgia.replace(/[^\d]/g, ''));
-            var number1 = parseFloat(number);
-            var number2 = parseFloat(tienship);
-            var tiemgiamgia1 = parseFloat(tiengiam);
-            var sum = number1 + number2 - tiemgiamgia1;
-            var formattedNumber1 = sum.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
-            var hienthitientra = document.getElementById("tientra");
-            hienthitientra.innerText = formattedNumber1;
-            console.log(formattedNumber);
         },
         error: function (error) {
             console.error('Lỗi khi lấy dữ liệu từ Session:', error);
         }
     });
 }
+function hienthiGiaTriVoucher() {
+    $.ajax({
+        type: 'GET',
+        url: '/GioHang/NhanMaVoucher', // Điều chỉnh đường dẫn tùy thuộc vào định tuyến của bạn
+        success: function (result) {
+            // Dữ liệu được trả về từ controller
+            console.log(result);
+            var GiaTriVoucher = result.giatrivoucher;
+            var hienthiGiaTriVoucher = document.getElementById("GiaTriVoucher");
+            hienthiGiaTriVoucher.innerText = GiaTriVoucher + " %";
+            var thanhtien = document.getElementById("tientra").value;
+            var TongTien = thanhtien - (thanhtien * GiaTriVoucher) / 100; 
+            thanhtien = TongTien; 
+            var formattedNumber1 = TongTien.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+            document.getElementById("thanhtien").innerText = formattedNumber1;
+            console.log(thanhtien);
+            
+        },
+        error: function (error) {
+            console.error('Lỗi khi lấy dữ liệu từ Session:', error);
+        }
+    });
+}
+
 function updateDistrictDropdown(data) {
     // Xóa tất cả các option hiện tại trong dropdown "district"
 
@@ -163,11 +201,9 @@ function layDuLieuTuQuanHuyen() {
 function layDuLieuTuXaPhuong() {
     $.ajax({
         type: 'GET',
-        url: '/GioHang/GetAllXaPhuong', // Điều chỉnh đường dẫn tùy thuộc vào định tuyến của bạn
+        url: '/GioHang/GetAllXaPhuong', 
         success: function (result) {
-            // Dữ liệu được trả về từ controller
             var ThongTinXaPhuong = result.thongTinXaPhuong;
-            //updateDistrictDropdown(thongTinQuanHuyen)
             console.log(ThongTinXaPhuong);
         },
         error: function (error) {
@@ -185,4 +221,29 @@ function CapNhatXaPhuong(data) {
             $("#WardDropdown").append('<option value="' + data[i].wardCode + '" data-url="' + '/GioHang/TinhTienShip?WardCode=' + data[i].wardCode + '">' + data[i].wardName + '</option>');
         }
     }
+}
+function useVoucher(voucherCode) {
+    $('#voucherCodeInput').val(voucherCode);
+}
+$(document).ready(function () {
+    // Bắt sự kiện khi giá trị của input thay đổi
+
+});
+function sendDataToServer() {
+    // Lấy giá trị từ input
+    var voucherCode = $("#voucherCodeInput").val();
+    $.ajax({
+        type: "POST",
+        url: "/GioHang/NhanMaVoucher",
+        data: JSON.stringify(voucherCode),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (result) {
+            console.log(voucherCode);
+            hienthiGiaTriVoucher();
+        },
+        error: function (err) {
+            // Xử lý lỗi nếu có
+        }
+    });
 }

@@ -52,5 +52,5 @@ selectElement.addEventListener("change", function () {
             })
         });
     });
+});
 
-   

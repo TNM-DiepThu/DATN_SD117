@@ -1,0 +1,144 @@
+﻿@model IEnumerable<AppData.ViewModal.VoucherVM.VoucherDetailHoanThien>
+<style type="text/css">
+    .vc_my-wallet-page-vouchers_noneRightBorder {
+        border-right: none;
+    }
+    .vc_Logo_imageLogo {
+        align-items: center;
+        display: flex;
+        justify-content: center;
+    }
+    .vc_VoucherStandardTemplate_left {
+        align-items: center;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: relative;
+        width: var(--vc-card-height,7.375rem);
+    }
+    .vc_my-wallet-page-vouchers_shopeeVoucher {
+        --vc-icon-text-color: #fff;
+        --vc-card-left-border-color: #ee4d2d;
+        --vc-card-left-fill-color: #ee4d2d;
+        --vc-card-right-border-color: #e8e8e8;
+        --vc-card-background-color: #fff;
+    }
+    .vc_Card_card, .vc_Card_container {
+        width: var(--vc-card-width,28.375rem);
+    }
+    .vc_my-wallet-page-vouchers_pc {
+        --vc-card-width: 28.375rem;
+        --vc-card-height: 7.375rem;
+        --vc-card-sawtooth-margin: 0.25rem;
+        --vc-template-box-shadow: 0.125rem 0.125rem 0.3125rem rgba(0,0,0,.07);
+        --vc-logo-size: 3.5rem;
+        --vc-expiry-font-size: 0.75rem;
+        --vc-expiry-line-height: 0.875rem;
+        --vc-expiry-margin-top: 0.25rem;
+        --vc-main-title-font-size: 1rem;
+        --vc-main-title-line-height: 1.25rem;
+        --vc-subtitle-font-size: 0.875rem;
+        --vc-subtitle-line-height: 1rem;
+        --vc-product-scope-font-size: 0.75rem;
+        --vc-product-scope-line-height: 0.875rem;
+        --vc-product-scope-padding: 0.0625rem 0.25rem;
+        --vc-icon-text-font-size: 0.75rem;
+        --vc-icon-text-line-height: 0.875rem;
+        --vc-icon-text-max-height: 1.75rem;
+        --vc-icon-text-margin-top: 0.25rem;
+        --vc-radio-button-border: 0.0625rem solid rgba(0,0,0,.14);
+        --vc-radio-button-box-shadow: var(--black2) 0 0.125rem 0 0;
+    }
+</style>
+@{
+    <div class="container">
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 vc_Card_container vc_my-wallet-page-vouchers_pc vc_my-wallet-page-vouchers_shopeeVoucher" data-testid="vcCard">
+                    <div class="card">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="vc_my-wallet-page-vouchers_noneRightBorder vc_VoucherStandardTemplate_left" role="presentation">
+                                    <div data-testid="vcLogo" class="vc_Logo_imageLogo" data-target="shop_icon">
+                                        <img class="vc_Logo_logo" src="	https://cf.shopee.vn/file/e6a3b7beffa95ca492926978d5235f79" alt="Logo" />
+                                    </div>
+                                    <div data-testid="vcIconText" class="vc_IconText_iconText vc_IconText_white vc_IconText_defaultLine" data-cy="voucher_card_icon_text" style="text-transform: initial;">SHOPEE</div>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="card-body">
+                                    <h4 class="card-title">John Doe</h4>
+                                    <p class="card-text">Some example text some example text. John Doe is an architect and engineer</p>
+                                    <a href="#" class="btn btn-primary">See Profile</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th style="display:none;">
+                    @Html.DisplayNameFor(model => model.IDVoucherDetail)
+                </th>
+                <th>
+                    Mã Voucher
+                </th>
+                <th>
+                    Số lượng
+                </th>
+                <th>
+                    Trạng thái
+                </th>
+                <th style="display:none;">
+                    @Html.DisplayNameFor(model => model.IDVoucher)
+                </th>
+                <th style="display:none;">
+                    @Html.DisplayNameFor(model => model.IDNguoiDuong)
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td style="display:none;">
+                        @Html.DisplayFor(modelItem => item.IDVoucherDetail)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.MaVoucher)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Soluong)
+                    </td>
+                    <td>
+                        @if (item.TrangThai == 0)
+                        {
+                            <p>Đã hết hạn</p>
+                        }
+                        else
+                        {
+                            <p>Sử dụng</p>
+                        }
+                    </td>
+                    <td style="display:none;">
+                        @Html.DisplayFor(modelItem => item.IDVoucher)
+                    </td>
+                    <td style="display:none;">
+                        @Html.DisplayFor(modelItem => item.IDNguoiDuong)
+                    </td>
+                    <td>
+                        <a href="@Url.Action("GetVoucherViewModelById","VoucherDetail",new { Idvoucher = item.IDVoucherDetail})">
+                            <i class="fas fa-eye" style="color: #0084ff;"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

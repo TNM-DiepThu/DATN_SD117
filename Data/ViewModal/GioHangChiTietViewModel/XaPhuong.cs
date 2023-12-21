@@ -8,7 +8,7 @@ namespace AppData.ViewModal.GioHangChiTietViewModel
 {
     public class XaPhuong
     {
-        public int WardCode { get; set; }
+        public string WardCode { get; set; }
         public string WardName { get; set; }
     }
 }

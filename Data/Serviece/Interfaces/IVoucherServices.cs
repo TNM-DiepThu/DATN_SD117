@@ -9,9 +9,9 @@ namespace AppData.Serviece.Interfaces
 {
     public interface IVoucherServices
     {
-        public Task<bool> Add(VoucherVM v);
-        public Task<bool> Edit(Guid id,VoucherVM v);
-        public Task<bool> Delete(Guid id);
-        public Task<List<VoucherVM>> GetAll();
+        public Task<bool> Add(VoucherViewModel v);
+        public Task<bool> Edit(Guid id,VoucherViewModel v);
+        public Task<string> Delete(Guid id);
+        public Task<List<VoucherViewModel>> GetAll();
     }
 }

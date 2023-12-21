@@ -12,8 +12,8 @@ namespace AppData.model
         public string MaHD { get; set; }
         public DateTime NgayTao { get; set; }
         public int? SoLuong { get; set; }
-        public decimal? TongTien { get; set; }
-        public decimal? TienVanChuyen { get; set; }
+        public decimal TongTien { get; set; }
+        public decimal TienVanChuyen { get; set; }
         public DateTime? NgayGiao { get; set; }
         public DateTime? NgayNhan { get; set; }
         public string? NguoiNhan { get; set; }

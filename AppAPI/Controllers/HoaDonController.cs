@@ -2,6 +2,9 @@
 using AppData.model;
 using AppData.Serviece.Implements;
 using AppData.Serviece.Interfaces;
+using AppData.Serviece.ViewModeService;
+using AppData.ViewModal.HoaDon;
+using AppData.ViewModal.VoucherVM;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Http.Headers;
@@ -16,12 +19,18 @@ namespace AppAPI.Controllers
     {
         private readonly IHoaDonService _hoaDonService;
         private readonly IHoaDonCTService _hdctservice;
+        private readonly VoucherViewModelService VoucherviewModel;
+        private readonly IGioHangCTService _giohangchitietservice;
+        private readonly IVoucherDetailServices _ivoucherdetail;
         private MyDbContext _dbContext = new MyDbContext();
 
 
         public HoaDonController()
         {
             _hoaDonService = new HoaDonService();
+            _giohangchitietservice = new GioHangCTService();
+            VoucherviewModel = new VoucherViewModelService();
+            _ivoucherdetail = new VoucherDetailServices();
             _hdctservice = new HoaDonCTService();
         }
         [HttpGet("GetByID")]
@@ -79,23 +88,21 @@ namespace AppAPI.Controllers
             hdct.IDHD = hd.Id;
             return _hdctservice.AddItem(hdct);
         }
-
-        // POST api/<HoaDonController>
         [HttpPost("[action]")]
-        public bool CreateHoaDon(DateTime ngaygiao, DateTime ngaynhan, string nguoinhan, string sdt, string quanhuyen, string tinh, string diachi, DateTime ngaythanhtoan, string? ghichu, Guid idnguoidung, Guid? idvoucherdetail, Guid idhttt)
+        public string TaoHoaDonKhongCoVoucher(string nguoinhan, string sdt, string quanhuyen, string tinh, string diachi, DateTime ngaythanhtoan, string? ghichu, Guid idnguoidung, Guid idhttt, decimal tienship)
         {
             HoaDon hd = new HoaDon();
             hd.Id = Guid.NewGuid();
             hd.IdNguoiDunh = idnguoidung;
-            hd.IdVoucherDetail = idvoucherdetail;
+            hd.IdVoucherDetail = null;
             hd.IDHTTT = idhttt;
             hd.MaHD = Convert.ToString(hd.Id).Substring(0, 8).ToUpper();
             hd.NgayTao = DateTime.Now;
             hd.SoLuong = 0;
             hd.TongTien = 0;
             hd.TienVanChuyen = 0;
-            hd.NgayGiao = ngaygiao;
-            hd.NgayNhan = ngaynhan;
+            hd.NgayGiao = DateTime.Now;
+            hd.NgayNhan = DateTime.Now;
             hd.NguoiNhan = nguoinhan;
             hd.SDT = sdt;
             hd.QuanHuyen = quanhuyen;
@@ -104,7 +111,129 @@ namespace AppAPI.Controllers
             hd.NgayThanhToan = ngaythanhtoan;
             hd.GhiChu = ghichu;
             hd.status = 1;
-            return _hoaDonService.AddItem(hd);
+            _hoaDonService.AddItem(hd);
+
+            List<GioHangChiTiet> ghct = _giohangchitietservice.GetAllGioHangTheoNguoiDungDangNhap(idnguoidung);
+            if (ghct.Count > 0)
+            {
+                foreach (var item in ghct)
+                {
+                    HoaDonChiTiet hoct = new HoaDonChiTiet()
+                    {
+                        Id = Guid.NewGuid(),
+                        IDHD = hd.Id,
+                        IdCombo = item.IdComboChiTiet,
+                        IdSPCT = item.IdSanPhamChiTiet,
+                        SoLuong = item.SoLuong,
+                        Gia = item.DonGia,
+                    };
+                    _hdctservice.AddItem(hoct);
+                    _giohangchitietservice.Del(item.Id);
+                }
+                var lsthoadonct = _hdctservice.GetAllByIdHd(hd.Id);
+                HoaDon hdupdate = _hoaDonService.GetByID(hd.Id);
+                hdupdate.SoLuong = lsthoadonct.Sum(c => c.SoLuong);
+                hdupdate.TongTien = lsthoadonct.Sum(c => c.SoLuong * c.Gia);
+                hdupdate.TienVanChuyen = tienship;
+                hdupdate.NgayGiao = DateTime.Now;
+                hdupdate.NgayNhan = DateTime.Now;
+                hdupdate.NguoiNhan = nguoinhan;
+                hdupdate.SDT = sdt;
+                hdupdate.QuanHuyen = quanhuyen;
+                hdupdate.Tinh = tinh;
+                hdupdate.DiaChi = diachi;
+                hdupdate.NgayThanhToan = ngaythanhtoan;
+                hdupdate.GhiChu = ghichu;
+                hdupdate.status = 1;
+                 _hoaDonService.EditItem(hdupdate);
+                return "Tạo hóa đơn thành công";
+
+            }
+            else
+            {
+                return "Tạo hóa đơn thất bại";
+            }
+        }
+        // POST api/<HoaDonController>
+        [HttpPost("[action]")]
+        public string TaoHoaDonCoVoucher(string nguoinhan, string sdt, string quanhuyen, string tinh, string diachi, DateTime ngaythanhtoan, string? ghichu, Guid idnguoidung, Guid? idvoucherdetail, Guid idhttt, decimal tienship)
+        {
+            VoucherDetailHoanThien voucher = VoucherviewModel.GetListVoucherViewModel().FirstOrDefault(c => c.IDNguoiDuong == idnguoidung && c.IDVoucherDetail == idvoucherdetail);
+            if(voucher.Soluong <= 0)
+            {
+                return "Voucher đã hết";
+            } else
+            {
+                //Gọi list giỏ hàng của người dùng đăng nhập
+                List<GioHangChiTiet> ghct = _giohangchitietservice.GetAllGioHangTheoNguoiDungDangNhap(idnguoidung);
+                // thực hiện check điều kiện với tổng giá 
+
+                // tạo hóa đơn
+                HoaDon hd = new HoaDon();
+                hd.Id = Guid.NewGuid();
+                hd.IdNguoiDunh = idnguoidung;
+                hd.IdVoucherDetail = idvoucherdetail;
+                hd.IDHTTT = idhttt;
+                hd.MaHD = Convert.ToString(hd.Id).Substring(0, 8).ToUpper();
+                hd.NgayTao = DateTime.Now;
+                hd.SoLuong = 0;
+                hd.TongTien = 0;
+                hd.TienVanChuyen = 0;
+                hd.NgayGiao = DateTime.Now;
+                hd.NgayNhan = DateTime.Now;
+                hd.NguoiNhan = nguoinhan;
+                hd.SDT = sdt;
+                hd.QuanHuyen = quanhuyen;
+                hd.Tinh = tinh;
+                hd.DiaChi = diachi;
+                hd.NgayThanhToan = ngaythanhtoan;
+                hd.GhiChu = ghichu;
+                hd.status = 1;
+                _hoaDonService.AddItem(hd);
+
+                
+                if (ghct.Count > 0)
+                {
+                    foreach (var item in ghct)
+                    {
+                        HoaDonChiTiet hoct = new HoaDonChiTiet()
+                        {
+                            Id = Guid.NewGuid(),
+                            IDHD = hd.Id,
+                            IdCombo = item.IdComboChiTiet,
+                            IdSPCT = item.IdSanPhamChiTiet,
+                            SoLuong = item.SoLuong,
+                            Gia = item.DonGia,
+                        };
+                        _hdctservice.AddItem(hoct);
+                        _giohangchitietservice.Del(item.Id);
+                    }
+                    var lsthoadonct = _hdctservice.GetAllByIdHd(hd.Id);
+                    HoaDon hdupdate = _hoaDonService.GetByID(hd.Id);
+                    hdupdate.SoLuong = lsthoadonct.Sum(c => c.SoLuong);
+                    hdupdate.TongTien = lsthoadonct.Sum(c => c.SoLuong * c.Gia) - (lsthoadonct.Sum(c => c.SoLuong * c.Gia) * voucher.GiaTriVoucher);
+                    hdupdate.TienVanChuyen = tienship;
+                    hdupdate.NgayGiao = DateTime.Now;
+                    hdupdate.NgayNhan = DateTime.Now;
+                    hdupdate.NguoiNhan = nguoinhan;
+                    hdupdate.SDT = sdt;
+                    hdupdate.QuanHuyen = quanhuyen;
+                    hdupdate.Tinh = tinh;
+                    hdupdate.DiaChi = diachi;
+                    hdupdate.NgayThanhToan = ngaythanhtoan;
+                    hdupdate.GhiChu = ghichu;
+                    hdupdate.status = 1;
+                    _hoaDonService.EditItem(hdupdate);
+
+                    return "Tạo hóa đơn thành công.";
+
+                }
+                else
+                {
+                    return "Tạo hóa đơn thất bại";
+                }
+            }
+          
         }
 
         // PUT api/<HoaDonController>/5

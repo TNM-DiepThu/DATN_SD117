@@ -47,7 +47,7 @@ namespace AppData.Serviece.Implements
             {
                 GioHangChiTiet obj = _context.gioHangChiTiets.FirstOrDefault(c => c.Id == id);
                 _context.gioHangChiTiets.Remove(obj);
-                _context.SaveChangesAsync();
+                _context.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -62,7 +62,7 @@ namespace AppData.Serviece.Implements
             GioHangChiTiet ghct = _context.gioHangChiTiets.FirstOrDefault(c => c.Id == idghct);
             ghct.SoLuong = soluong;
             _context.gioHangChiTiets.Update(ghct);
-            _context.SaveChangesAsync();
+            _context.SaveChanges();
             return true;
         }
         public List<GioHangChiTiet> GetAllGioHangTheoNguoiDungDangNhap(Guid idnguoidung)

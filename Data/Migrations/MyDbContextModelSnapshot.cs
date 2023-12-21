@@ -321,13 +321,13 @@ namespace AppData.Migrations
                     b.Property<int?>("SoLuong")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("TienVanChuyen")
+                    b.Property<decimal>("TienVanChuyen")
                         .HasColumnType("decimal");
 
                     b.Property<string>("Tinh")
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<decimal?>("TongTien")
+                    b.Property<decimal>("TongTien")
                         .HasColumnType("decimal");
 
                     b.Property<int>("status")
@@ -704,6 +704,12 @@ namespace AppData.Migrations
                     b.Property<string>("MaVoucher")
                         .IsRequired()
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("Max")
+                        .HasColumnType("Decimal");
+
+                    b.Property<decimal>("Min")
+                        .HasColumnType("Decimal");
 
                     b.Property<string>("MoTa")
                         .IsRequired()

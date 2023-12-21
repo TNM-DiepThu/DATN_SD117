@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AppData.Migrations
 {
-    public partial class Test : Migration
+    public partial class tesst : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -177,6 +177,8 @@ namespace AppData.Migrations
                     NgayBatDau = table.Column<DateTime>(type: "DateTime", nullable: false),
                     NgayKetThuc = table.Column<DateTime>(type: "DateTime", nullable: false),
                     GiaTriVoucher = table.Column<decimal>(type: "Decimal", nullable: false),
+                    Min = table.Column<decimal>(type: "Decimal", nullable: false),
+                    Max = table.Column<decimal>(type: "Decimal", nullable: false),
                     SoLuong = table.Column<int>(type: "int", nullable: false),
                     MoTa = table.Column<string>(type: "nvarchar(200)", nullable: false),
                     DieuKienGiamGia = table.Column<string>(type: "nvarchar(200)", nullable: false),
@@ -387,8 +389,8 @@ namespace AppData.Migrations
                     MaHD = table.Column<string>(type: "nvarchar(100)", nullable: false),
                     NgayTao = table.Column<DateTime>(type: "DateTime", nullable: false),
                     SoLuong = table.Column<int>(type: "int", nullable: true),
-                    TongTien = table.Column<decimal>(type: "decimal", nullable: true),
-                    TienVanChuyen = table.Column<decimal>(type: "decimal", nullable: true),
+                    TongTien = table.Column<decimal>(type: "decimal", nullable: false),
+                    TienVanChuyen = table.Column<decimal>(type: "decimal", nullable: false),
                     NgayGiao = table.Column<DateTime>(type: "DateTime", nullable: true),
                     NgayNhan = table.Column<DateTime>(type: "DateTime", nullable: true),
                     NguoiNhan = table.Column<string>(type: "nvarchar(100)", nullable: true),

@@ -11,7 +11,7 @@ namespace AppData.Serviece.Interfaces
     {
         public List<HoaDon> GetAll();
         public List<HoaDon> GetAllByIDNguoiDung(Guid IDnguoidung);
-        public bool AddItem(HoaDon item);
+        public string AddItem(HoaDon item);
         public bool RemoveItem(HoaDon item);
         public bool EditItem(HoaDon item);
         public HoaDon GetByID(Guid id);

@@ -43,7 +43,7 @@ namespace AppView.Controllers
             string url = $"https://localhost:7214/api/Voucher/GetVooucherById?id={id}";
             var respon = _client.GetAsync(url).Result;
             var data = respon.Content.ReadAsStringAsync().Result;
-            VoucherVM voucherVM = JsonConvert.DeserializeObject<VoucherVM>(data);
+            VoucherViewModel voucherVM = JsonConvert.DeserializeObject<VoucherViewModel>(data);
             return View(data);
         }
 
@@ -55,7 +55,14 @@ namespace AppView.Controllers
             var obj = JsonConvert.SerializeObject(voucher);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
             HttpResponseMessage httpResponseMessage = await _client.PostAsync(url, content);
-            return View("CreateVoucher");
+            if (httpResponseMessage.IsSuccessStatusCode)
+            {
+                return View();
+            }
+            else
+            {
+                return View("CreateVoucher");
+            }        
         }
 
         [HttpGet]
@@ -66,7 +73,14 @@ namespace AppView.Controllers
             var obj = JsonConvert.SerializeObject(voucher);
             StringContent content = new StringContent(obj, Encoding.UTF8, "application/json");
             HttpResponseMessage httpResponseMessage = await _client.PutAsync(url, content);
-            return View("GetAllVoucher");
+            if (httpResponseMessage.IsSuccessStatusCode)
+            {
+                return View();
+            }
+            else
+            {
+                return View("EditVoucher");
+            }
         }
 
         [HttpGet]
@@ -83,7 +97,7 @@ namespace AppView.Controllers
                 if (Error == "true")
                 {
 
-                    TempData["SuccessFull"] = "Ok ";
+                    TempData["SuccessFull"] = "Xóa thành công.";
                     return RedirectToAction("GellAllSanPhamCT", "QuanTri");
                 }
                 else

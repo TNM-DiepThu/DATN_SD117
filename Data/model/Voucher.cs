@@ -14,6 +14,8 @@ namespace AppData.model
         public DateTime NgayBatDau { get; set; }
         public DateTime NgayKetThuc { get; set; }   
         public decimal GiaTriVoucher { get; set; }
+        public decimal Min { get; set; }
+        public decimal Max { get; set; }
         public int SoLuong { get; set; }
         public string MoTa { get; set; }
         public string DieuKienGiamGia { get; set; }

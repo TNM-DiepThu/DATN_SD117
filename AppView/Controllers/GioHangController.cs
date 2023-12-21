@@ -6,6 +6,7 @@ using AppData.Session;
 using AppData.ViewModal.GioHangChiTietViewModel;
 using AppData.ViewModal.SanPhamChiTietVM;
 using AppData.ViewModal.Usermodalview;
+using AppData.ViewModal.VoucherVM;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -349,7 +350,7 @@ namespace AppView.Controllers
                     foreach (JObject Ward in WardCodeArray)
                     {
                         XaPhuong xaphuong = new XaPhuong();
-                        xaphuong.WardCode = Convert.ToInt32(Ward["WardCode"]);
+                        xaphuong.WardCode = Convert.ToString(Ward["WardCode"]);
                         xaphuong.WardName = Convert.ToString(Ward["WardName"]);
                         lstxaphuong.Add(xaphuong);
                     }
@@ -372,21 +373,65 @@ namespace AppView.Controllers
         }
         // thanh toán
         [HttpGet]
-        [HttpPost]
-        public async Task<ActionResult> ThanhToan()
+        public ActionResult ThanhToan()
         {
             List<ThongTinThanhPho> laytinh = GetAllTinh();
             var idtp = HttpContext.Session.GetInt32("IdThanhPho");
             var Idquanhuyen = HttpContext.Session.GetInt32("IdQuanHuyen");
-            //List<ThongTinQuanHuyen> layquanhuyen = NhanIDTinh(Convert.ToInt32(idtp));
-            //decimal tienShip = TinhTienShip(dquanhuyen);
+
             var idnguoidung = IDNguoiDung();
+            string urlvoucherDetailByID = $"https://localhost:7214/api/VoucherDetail/GetlistVoucherViewModelByIdNguoiDung?idnguoidung={idnguoidung}";
+            var reposVocuher = _client.GetAsync(urlvoucherDetailByID).Result;
+            var data1 = reposVocuher.Content.ReadAsStringAsync().Result;
+            List<VoucherDetailHoanThien> lstvoucher = JsonConvert.DeserializeObject<List<VoucherDetailHoanThien>>(data1);
+            ViewBag.LstVoucher = lstvoucher;
+
             string url = $"https://localhost:7214/api/GioHangCT/GetAllFullGioHangChiTiet?IDnguoiDung={idnguoidung}";
-            var repos = await _client.GetAsync(url);
-            var data = await repos.Content.ReadAsStringAsync();
+            var repos = _client.GetAsync(url).Result;
+            var data = repos.Content.ReadAsStringAsync().Result;
             List<GioHangChiTietViewModel> lstghct = JsonConvert.DeserializeObject<List<GioHangChiTietViewModel>>(data);
             ViewBag.GioHang = lstghct;
             return View();
+        }
+        [HttpPost]
+        public IActionResult ThanhToan(HoaDon hd)
+        {
+            VoucherDetailHoanThien vouchersd = null;
+            Guid Idnguoidung = IDNguoiDung();
+            var obj = JsonConvert.SerializeObject(hd);
+            var tienship = HttpContext.Session.GetInt32("TienShip");
+
+            byte[] serializedData = HttpContext.Session.Get("Voucher");
+
+            if (serializedData != null)
+            {
+                string json = Encoding.UTF8.GetString(serializedData);
+                vouchersd = JsonConvert.DeserializeObject<VoucherDetailHoanThien>(json);
+            }
+            if (vouchersd == null)
+            {
+                string urlnotVoucher = $"https://localhost:7214/api/HoaDon/CreateHoaDon?nguoinhan={hd.NguoiNhan}&sdt={hd.SDT}&quanhuyen={hd.QuanHuyen}&tinh={hd.Tinh}&diachi={hd.DiaChi}&ngaythanhtoan={hd.NgayThanhToan}&ghichu={hd.GhiChu}&idnguoidung={Idnguoidung}&idhttt={hd.IDHTTT}&tienship={tienship}";
+
+                StringContent content = new StringContent(urlnotVoucher, Encoding.UTF8, "application/json");
+                HttpResponseMessage message = _client.PostAsync(obj, content).Result;
+                if (message.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("GetAllHDById", "HoaDon");
+                }
+            }
+            else
+            {
+                ViewBag.GiaTriVoucher = vouchersd != null ? Convert.ToInt32(vouchersd.GiaTriVoucher) : 0;
+                string urlhaveVoucher = $"https://localhost:7214/api/HoaDon/CreateHoaDon?nguoinhan={hd.NguoiNhan}&sdt={hd.SDT}&quanhuyen={hd.QuanHuyen}&tinh={hd.Tinh}&diachi={hd.DiaChi}&ngaythanhtoan={hd.NgayThanhToan}&ghichu={hd.GhiChu}&idnguoidung={Idnguoidung}&idvoucherdetail={vouchersd.IDVoucherDetail}&idhttt={hd.IDHTTT}&tienship={tienship}";
+                StringContent content1 = new StringContent(urlhaveVoucher, Encoding.UTF8, "application/json");
+                HttpResponseMessage message1 = _client.PostAsync(obj, content1).Result;
+                if (message1.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("GetAllHDById", "HoaDon");
+                }
+            }
+            return RedirectToAction("ThanhToan", "GioHang");
+
         }
         //Tính tiền ship
         [HttpPost]
@@ -444,7 +489,6 @@ namespace AppView.Controllers
                     JObject districtObject = (JObject)dataToken;
                     // Tiếp tục xử lý nếu cần thiết
                     tienship = Convert.ToInt32(districtObject["total"]);
-
                 }
             }
             HttpContext.Session.Remove("TienShip");
@@ -456,6 +500,45 @@ namespace AppView.Controllers
         {
             var tienship = HttpContext.Session.GetInt32("TienShip");
             return Json(new { tienship });
+        }
+        [HttpPost]
+        public IActionResult NhanMaVoucher([FromBody] string Ma)
+        {
+            try
+            {
+                var urlVoucherDetail = $"https://localhost:7214/api/VoucherDetail/GetListVoucherViewModelByName?MaVoucher={Ma}";
+                var repos = _client.GetAsync(urlVoucherDetail).Result;
+                var data = repos.Content.ReadAsStringAsync().Result;
+                VoucherDetailHoanThien voucherhoanthien = JsonConvert.DeserializeObject<VoucherDetailHoanThien>(data);
+                if (voucherhoanthien != null)
+                {
+                    HttpContext.Session.Set("Voucher", voucherhoanthien);
+                    return Json(voucherhoanthien.GiaTriVoucher);
+                }
+                else
+                {
+                    return Json(0);
+                }
+            }
+            catch
+            {
+                return Json(0);
+            }
+
+        }
+        [HttpGet]
+        public IActionResult NhanMaVoucher()
+        {
+            VoucherDetailHoanThien vouchersd = null;
+            int giatrivoucher = 0;
+            byte[] serializedData = HttpContext.Session.Get("Voucher");
+            if (serializedData != null)
+            {
+                string json = Encoding.UTF8.GetString(serializedData);
+                vouchersd = JsonConvert.DeserializeObject<VoucherDetailHoanThien>(json);
+                giatrivoucher = Convert.ToInt32(vouchersd.GiaTriVoucher);
+            }
+            return Json(new { giatrivoucher });
         }
     }
 }

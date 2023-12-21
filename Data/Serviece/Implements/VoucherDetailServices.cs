@@ -14,9 +14,11 @@ namespace AppData.Serviece.Implements
     public class VoucherDetailServices : IVoucherDetailServices
     {
         private readonly MyDbContext _context;
+        private readonly  IVoucherServices _voucherService;
         public VoucherDetailServices()
         {
             _context = new MyDbContext();
+            _voucherService = new VoucherServices();
         }
 
         public async Task<bool> Add(VoucherDetailVM v)
@@ -26,8 +28,8 @@ namespace AppData.Serviece.Implements
                 var vc = new VoucherDetail()
                 {
                     Id = Guid.NewGuid(),
-                    IdNguoiDung = v.Id_NguoiDung,
-                    IdVoucher = v.Id_Voucher,
+                    IdNguoiDung = _context.Users.FirstOrDefault(c => c.Id == v.Id_NguoiDung).Id,
+                    IdVoucher = _voucherService.GetAll().Result.FirstOrDefault(c => c.Id == v.Id_Voucher).Id,
                     Soluong = v.SoLuong,
                     status = v.TrangThai
                 };

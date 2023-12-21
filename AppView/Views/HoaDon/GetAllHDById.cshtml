@@ -1,4 +1,5 @@
-﻿@model IEnumerable<AppData.model.HoaDon>
+﻿@using Microsoft.Azure.Cosmos.Linq;
+@model IEnumerable<AppData.model.HoaDon>
 
 @{
     ViewData["Title"] = "GetAllHDById";
@@ -32,7 +33,7 @@
     </li>
 </ul>
 
-<form asp-action="GetAllHD" method="get">
+<form asp-action="GetAllHD" method="post" enctype="multipart/form-data">
     <div class="row" style="padding:5px ; margin : 5px;">
         <div class="col-3">
             <a asp-action="CreateHoaDon" class="btn btn-primary">Thêm mới</a>
@@ -78,9 +79,10 @@
         <tbody>
             @foreach (var item in Model)
             {
+                
                 <tr>
                     <td>
-                        <a href="@Url.Action("GetAllHoaDonCTByIDHD","HoaDon",new { Idhb = item.Id})">@Html.DisplayFor(modelItem => item.MaHD)</a>
+                        <a href="@Url.Action("GetAllHoaDonCTByIDHD","HoaDon",new { idhd = item.Id})">@Html.DisplayFor(modelItem => item.MaHD)</a>
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.NgayTao)
@@ -89,10 +91,10 @@
                         @Html.DisplayFor(modelItem => item.SoLuong)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.TongTien)
+                        @item.TongTien.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.TienVanChuyen)
+                        @item.TienVanChuyen.ToString("C0", new System.Globalization.CultureInfo("vi-VN"))
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.NgayGiao)

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppData.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20231125113847_Test")]
-    partial class Test
+    [Migration("20231217172233_tesst")]
+    partial class tesst
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -323,13 +323,13 @@ namespace AppData.Migrations
                     b.Property<int?>("SoLuong")
                         .HasColumnType("int");
 
-                    b.Property<decimal?>("TienVanChuyen")
+                    b.Property<decimal>("TienVanChuyen")
                         .HasColumnType("decimal");
 
                     b.Property<string>("Tinh")
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<decimal?>("TongTien")
+                    b.Property<decimal>("TongTien")
                         .HasColumnType("decimal");
 
                     b.Property<int>("status")
@@ -706,6 +706,12 @@ namespace AppData.Migrations
                     b.Property<string>("MaVoucher")
                         .IsRequired()
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("Max")
+                        .HasColumnType("Decimal");
+
+                    b.Property<decimal>("Min")
+                        .HasColumnType("Decimal");
 
                     b.Property<string>("MoTa")
                         .IsRequired()

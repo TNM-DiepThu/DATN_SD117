@@ -19,17 +19,17 @@ namespace AppData.Serviece.Implements
             _dbContext = new MyDbContext();
 
         }
-        public bool AddItem(HoaDon hd)
+        public string AddItem(HoaDon hd)
         {
             try
             {
                 _dbContext.hoaDons.Add(hd);
                 _dbContext.SaveChanges();
-                return true;
+                return "Tạo hóa đơn thành công";
             }
             catch (Exception)
             {
-                return false;
+                return "Tạo hóa đơn thất bại";
             }
         }
 

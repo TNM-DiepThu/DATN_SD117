@@ -1,4 +1,6 @@
 ﻿using AppData.Serviece.Interfaces;
+using AppData.Serviece.ViewModeService;
+using AppData.ViewModal.HoaDon;
 using AppData.ViewModal.VoucherVM;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,9 +13,11 @@ namespace AppAPI.Controllers
     public class VoucherDetailController : ControllerBase
     {
         private readonly IVoucherDetailServices _voucherDetail;
+        private readonly VoucherViewModelService voucherViewModelService;
         public VoucherDetailController(IVoucherDetailServices voucherDetailServiece)
         {
             _voucherDetail = voucherDetailServiece;
+            voucherViewModelService = new VoucherViewModelService();
         }
         [HttpGet("GetAll")]
 
@@ -43,6 +47,28 @@ namespace AppAPI.Controllers
         {
             var result = await _voucherDetail.Edit(id, p);
             return Ok(result);
+        }
+
+        [HttpGet("[action]")]
+        public List<VoucherDetailHoanThien> GetlistVoucherViewModelByIdNguoiDung(Guid idnguoidung)
+        {
+            return  voucherViewModelService.GetListVoucherViewModelByIDNguoiDung(idnguoidung);
+        }
+        [HttpGet("[action]")]
+        public List<VoucherDetailHoanThien> GetlistVoucherViewModel()
+        {
+            return  voucherViewModelService.GetListVoucherViewModel();
+        }
+        [HttpGet("[action]")]
+        public VoucherDetailHoanThien GetlistVoucherViewModelByID(Guid IdVoucherDetail)
+        {
+            return voucherViewModelService.GetListVoucherViewModelById(IdVoucherDetail);
+        }
+
+        [HttpGet("[action]")]
+        public VoucherDetailHoanThien GetListVoucherViewModelByName(string MaVoucher)
+        {
+            return voucherViewModelService.GetListVoucherViewModelByName(MaVoucher);    
         }
     }
 }
